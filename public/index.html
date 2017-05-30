@@ -1,0 +1,381 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Panels</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /*html,
+        body,
+        .reader {
+            height: 100%;
+        }
+        body {
+            margin: 0;
+        }
+        .reader {
+            box-sizing: border-box;
+            padding: 10px;
+        }
+        .wrapper {
+            position: relative;
+            width: 69vh;
+            height: 100%;
+            box-sizing: border-box;
+            margin: 0 auto;
+            padding-bottom: 60px;
+            border: 1px solid black;
+            overflow: hidden;
+        }
+        .canvas {
+            width: 100%;
+            height: 500px;
+        }
+        .controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: gray;
+            text-align: center;
+        }
+        .controls__nav {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin-top: 5px;
+        }*/
+        html,
+        body {
+            margin: 0;
+        }
+        .viewport {
+            overflow: hidden;
+        }
+        .book__page {
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport">
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var PanelsApp = {
+                init: function() {
+                    ViewPort.init();
+                    Book.init();
+                }
+            };
+            var ViewPort = {
+
+                $element: $('.viewport'),
+
+                $container: $(window),
+
+                init: function() {
+                    this.setEventListeners();
+                    this.setViewPortSize();
+                },
+
+                setContainer: function($container) {
+                    this.$container = $container;
+                },
+
+                setEventListeners: function() {
+                    this.$container.on('resize',this.setViewPortSize.bind(this));
+                },
+
+                setViewPortSize: function(e) {
+                    this.$element.width(this.$container.outerWidth());
+                    this.$element.height(this.$container.outerHeight());
+                },
+
+                getWidth: function() {
+                    return this.$element.outerWidth();
+                },
+
+                getHeight: function() {
+                    return this.$element.outerHeight();
+                }
+            };
+
+            var Book = {
+
+                pageSources: [
+                    'http://panels.app/images/tmnt-01-01.png',
+                    'http://panels.app/images/tmnt-01-02.png',
+                    'http://panels.app/images/tmnt-01-04.png'
+                ],
+
+                pages: [],
+
+                init: function() {
+                    for(var x in this.pageSources) {
+                        var src = this.pageSources[x];
+                        this.addPage(new Page({src: src, index: x}));
+                    }
+                },
+
+                addPage: function(page) {
+                    this.pages.push(page);
+                }
+
+            };
+
+            class Page {
+                constructor(config) {
+                    this.index = config.index;
+                    this.loadSrc(config.src);
+                }
+
+                loadSrc(src) {
+                    $('<img src="'+ src +'" />').on('load',this.onPageLoaded.bind(this));
+                }
+
+                onPageLoaded(e) {
+                    this.$element = $(e.currentTarget)
+                        .addClass('book__page')
+                        .appendTo(ViewPort.$element);
+                    this.originalWidth = this.$element.width();
+                    this.originalHeight = this.$element.height();
+                    this.fitToViewPort();
+                    this.setOriginalLeftPosition();
+                    this.centerVerticallyInViewPort();
+                }
+
+                fitToViewPort() {
+                    var width = ViewPort.getWidth();
+                    var height = this.getHeight() * ViewPort.getWidth() / this.getWidth();
+                    this.$element.width(width).height(height);
+                }
+
+                centerVerticallyInViewPort() {
+                    var leftOver = ViewPort.getHeight() - this.getHeight();
+                    this.$element.css('top',leftOver / 2);
+                }
+
+                setOriginalLeftPosition() {
+                    this.$element.css('left',this.index * ViewPort.getWidth());
+                }
+
+                getOriginalWidth() {
+                    return this.originalWidth;
+                }
+
+                getOriginalHeight() {
+                    return this.originalHeight;
+                }
+
+                getWidth() {
+                    return this.$element.width();
+                }
+
+                getHeight() {
+                    return this.$element.height();
+                }
+            }
+
+            PanelsApp.init();
+        });
+    </script>
+    <!--<div id="app" class="reader">
+        <div id="wrapper" class="wrapper">
+            <canvas id="canvas" class="canvas" width="600" height="700"></canvas>
+            <div class="controls">
+                <button class="controls__nav controls__nav--prev" onclick="prev();">Prev</button>
+                <button class="controls__nav controls__nav--next" onclick="next();">Next</button>
+            </div>
+        </div>
+    </div>-->
+    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.3/fabric.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>!-->
+    <script>
+        /*var app = new Vue({
+            el: '#app',
+            data: function() {
+                return {
+                  windowWidth: 0,
+                  windowHeight: 0,
+                }
+            },
+
+            mounted() {
+                this.$nextTick(function() {
+                      window.addEventListener('resize', this.getWindowWidth);
+                      window.addEventListener('resize', this.getWindowHeight);
+                      this.getWindowWidth()
+                      this.getWindowHeight()
+                })
+
+            },
+
+            methods: {
+                getWindowWidth(event) {
+                    this.windowWidth = document.documentElement.clientWidth;
+                },
+
+                getWindowHeight(event) {
+                    this.windowHeight = document.documentElement.clientHeight;
+                }
+            },
+            beforeDestroy() {
+                window.removeEventListener('resize', this.getWindowWidth);
+                window.removeEventListener('resize', this.getWindowHeight);
+            }
+        });
+
+        var panels = [
+            {
+                width: 188,
+                height: 241,
+                top: 20,
+                left: 25
+            },
+            {
+                width: 305,
+                height: 240,
+                top: 20,
+                left: 219
+            },
+            {
+                width: 243,
+                height: 208,
+                top: 272,
+                left: 25
+            },
+            {
+                width: 247,
+                height: 208,
+                top: 272,
+                left: 277
+            },
+            {
+                width: 498,
+                height: 282,
+                top: 491,
+                left: 25
+            }
+        ];
+
+        var currentPanel = -1;
+        var $wrapper = document.getElementById('wrapper');
+        var canvas = new fabric.Canvas('canvas',{ preserveObjectStacking:true });
+        var blinderA = new fabric.Rect({ width: 0, height: 0, fill: '#000', opacity: 0.7 });
+        var blinderB = new fabric.Rect({ width: 0, height: 0, fill: '#000', opacity: 0.7 });
+        fabric.Image.fromURL('images/superman-01.jpg', function(img) {
+            img = setPagePosition(img);
+            canvas.add(img).sendToBack(img).setActiveObject(img);
+            canvas.item(0).hasControls = canvas.item(0).hasBorders = false;
+            canvas.renderAll();
+        });
+        canvas.setWidth($wrapper.offsetWidth).setHeight($wrapper.offsetHeight-60);
+        canvas.add(blinderA).add(blinderB);
+
+        window.removeEventListener('resize', resize);
+        function resize() {
+            windowWidth = document.documentElement.clientWidth;
+            windowHeight = document.documentElement.clientHeight;
+            var $wrapper = document.getElementById('wrapper');
+
+        }
+        function next() {
+            currentPanel++;
+            setPosition();
+        }
+        function prev() {
+            currentPanel--;
+            setPosition();
+        }
+        function setPosition() {
+            if (currentPanel >= panels.length  || currentPanel < 0) {
+                setPagePosition(canvas.getActiveObject());
+                currentPanel = -1;
+            } else {
+                positionPanel(panels[currentPanel]);
+            }
+        }
+        function setPagePosition(page) {
+            console.log('Set Page Position');
+            var width = page.getOriginalSize().width >= page.getOriginalSize().height ? canvas.width : page.getOriginalSize().width * canvas.height / page.getOriginalSize().height;
+            var height = page.getOriginalSize().height > page.getOriginalSize().width ? canvas.height : page.getOriginalSize().height * canvas.width / page.getOriginalSize().width;
+            var top = (canvas.height - height) / 2;
+            var left = (canvas.width - width) / 2;
+            page.set({
+                top: top,
+                left: left,
+                height: height,
+                width: width
+            });
+            setBlinders(top,left);
+            canvas.renderAll();
+            return page;
+        }
+        function positionPanel(panel)
+        {
+            var page = canvas.getActiveObject();
+            var width = panel.width >= panel.height ? canvas.width : panel.width * canvas.height / panel.height;
+            var height = panel.height > panel.width ? canvas.height : panel.height * canvas.width / panel.width;
+
+            // Size up the whole page now that we have the resized panel width/height
+            var pageHeight = height * page.getOriginalSize().height / panel.height;
+            var pageWidth = width * page.getOriginalSize().width / panel.width;
+            console.log(panel.width,page.getOriginalSize().width,width);
+            var top = panel.top * pageHeight / page.getOriginalSize().height;
+            var left = panel.left * pageWidth / page.getOriginalSize().width;
+            page.set({
+                top: -top + (canvas.height - height) / 2,
+                left: -left + ((canvas.width - width) / 2),
+                height: pageHeight,
+                width: pageWidth
+            });
+            setBlinders((canvas.height - height) / 2,((canvas.width - width) / 2));
+            canvas.renderAll();
+        }
+        function setBlinders(top,left) {
+            console.log('SET BLINDERS',top,left);
+            if (top > 0) {
+                blinderA.set({
+                    top: 0,
+                    left: 0,
+                    width: canvas.width,
+                    height: top
+                });
+                blinderB.set({
+                    top: canvas.height - top,
+                    left: 0,
+                    width: canvas.width,
+                    height: top
+                });
+            }
+            if (left > 0) {
+                blinderA.set({
+                    top: 0,
+                    left: 0,
+                    width: left,
+                    height: canvas.height
+                });
+                blinderB.set({
+                    top: 0,
+                    left: canvas.width - left,
+                    width: left,
+                    height: canvas.height
+                });
+            }
+            if (top <=0 && left <= 0) {
+                blinderA.set({width:0,height:0});
+                blinderB.set({width:0,height:0});
+            }
+        }*/
+    </script>
+</body>
+</html>
