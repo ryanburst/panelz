@@ -6,6 +6,7 @@
     <title>Panels</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="msapplication-tap-highlight" content="no" />
     <style>
         /*html,
         body,
@@ -60,6 +61,7 @@
             display: block;
             top: 0;
             left: 0;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -160,10 +162,12 @@
                         page.left = parseInt( page.$element.css( "left" ), 10 );
                     });
                     ViewPort.interactable.on("pan", function(ev) {
-                        var delta = page.left + ev.deltaX
-                        console.log(delta);
+                        // Stop vertical pan flick
+                        if(ev.offsetDirection === 8) {
+                            return true;
+                        }
                         page.$element.css( {
-                            "left": delta
+                            "left": page.left + ev.deltaX
                         } );
                     });
                 }
