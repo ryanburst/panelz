@@ -63,6 +63,11 @@
             left: 0;
             pointer-events: none;
         }
+        .page__image {
+            position: relative;
+            top: 0;
+            left: 0;
+        }
     </style>
 </head>
 <body>
@@ -148,9 +153,10 @@
                 }
 
                 onPageLoaded(e) {
+                    this.$container = $('<div />').addClass('book__page page').appendTo(ViewPort.$element);
                     this.$element = $(e.currentTarget)
-                        .addClass('book__page')
-                        .appendTo(ViewPort.$element);
+                        .addClass('page__image')
+                        .appendTo(this.$container);
                     this.originalWidth = this.$element.width();
                     this.originalHeight = this.$element.height();
                     this.fitToViewPort();
@@ -159,14 +165,14 @@
 
                     var page = this;
                     ViewPort.interactable.on("panstart", function(ev) {
-                        page.left = parseInt( page.$element.css( "left" ), 10 );
+                        page.left = parseInt( page.$container.css( "left" ), 10 );
                     });
                     ViewPort.interactable.on("pan", function(ev) {
                         // Stop vertical pan flick
                         if(ev.offsetDirection === 8) {
                             return true;
                         }
-                        page.$element.css( {
+                        page.$container.css( {
                             "left": page.left + ev.deltaX
                         } );
                     });
@@ -176,6 +182,7 @@
                     var width = ViewPort.getWidth();
                     var height = this.getHeight() * ViewPort.getWidth() / this.getWidth();
                     this.$element.width(width).height(height);
+                    this.$container.width(width).height(height);
                 }
 
                 centerVerticallyInViewPort() {
@@ -184,7 +191,7 @@
                 }
 
                 setOriginalLeftPosition() {
-                    this.$element.css('left',this.index * ViewPort.getWidth());
+                    this.$container.css('left',this.index * ViewPort.getWidth());
                 }
 
                 getOriginalWidth() {
