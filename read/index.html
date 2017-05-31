@@ -164,7 +164,9 @@
                     this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
                     this.interactable.add(new Hammer.Tap({threshold: 2}));
-
+                    this.interactable.on('pan',function(env) {
+                        ViewPort.$menu.removeClass('viewport__menu--active');
+                    });
                     this.interactable.on('panend',function(env) {
                         var newPage = false;
                         Book.pages.forEach(function(page,index) {
