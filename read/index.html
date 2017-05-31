@@ -54,8 +54,15 @@
             margin: 0;
         }
         .viewport {
+            position: relative;
             background-color: black;
             overflow: hidden;
+        }
+        .viewport__interactable {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            z-index: 3;
         }
         .book__page {
             position: fixed;
@@ -63,6 +70,7 @@
             top: 0;
             left: 0;
             pointer-events: none;
+            z-index: 2;
         }
         .page__image {
             position: relative;
@@ -73,7 +81,10 @@
 </head>
 <body>
     <div class="viewport">
+        <div class="viewport__interactable"></div>
+        <div class="viewport__menu">
 
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
@@ -103,7 +114,7 @@
                     this.setViewPortSize();
                     this.setTapThresholds();
 
-                    this.interactable = new Hammer.Manager(this.$element[0]);
+                    this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
                     this.interactable.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
                     this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
@@ -208,7 +219,6 @@
 
                 snapPagesToCurrent: function() {
                     var amount = -this.currentPage.left
-                    console.log(amount);
                     this.pages.forEach(function(page) {
                         page.snapTo(amount);
                     });
