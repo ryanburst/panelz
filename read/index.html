@@ -95,6 +95,15 @@
                     this.setViewPortSize();
 
                     this.interactable = new Hammer(this.$element[0]);
+
+                    this.interactable.on('panend',function(env) {
+                        console.log(env);
+                        Book.pages.forEach(function(page,index) {
+                            if(page.shouldBeSetAsCurrent(env)) {
+                                Book.snapPagesToCurrent(-page.left);
+                            }
+                        });
+                    });
                 },
 
                 setContainer: function($container) {
@@ -132,12 +141,24 @@
                 init: function() {
                     for(var x in this.pageSources) {
                         var src = this.pageSources[x];
-                        this.addPage(new Page({src: src, index: x}));
+                        console.log(x);
+                        this.addPage(new Page({
+                            src: src,
+                            index: x,
+                            isFirst: x==0,
+                            isLast: x==(this.pageSources.length-1)
+                        }));
                     }
                 },
 
                 addPage: function(page) {
                     this.pages.push(page);
+                },
+
+                snapPagesToCurrent: function(amount) {
+                    this.pages.forEach(function(page) {
+                        page.snapTo(amount);
+                    });
                 }
 
             };
@@ -145,6 +166,9 @@
             class Page {
                 constructor(config) {
                     this.index = config.index;
+                    this.isFirst = config.isFirst;
+                    this.isLast = config.isLast;
+                    this.TURN_THRESHHOLD = 30;
                     this.loadSrc(config.src);
                 }
 
@@ -165,15 +189,16 @@
 
                     var page = this;
                     ViewPort.interactable.on("panstart", function(ev) {
-                        page.left = parseInt( page.$container.css( "left" ), 10 );
+                        page.originalLeft = parseInt( page.$container.css( "left" ), 10 );
                     });
                     ViewPort.interactable.on("pan", function(ev) {
                         // Stop vertical pan flick
                         if(ev.offsetDirection === 8) {
                             return true;
                         }
+                        page.left = page.originalLeft + ev.deltaX
                         page.$container.css( {
-                            "left": page.left + ev.deltaX
+                            "left": page.left
                         } );
                     });
                 }
@@ -188,6 +213,30 @@
                 centerVerticallyInViewPort() {
                     var leftOver = ViewPort.getHeight() - this.getHeight();
                     this.$element.css('top',leftOver / 2);
+                }
+
+                shouldBeSetAsCurrent(env) {
+                    console.log(this.isFirst,this.left);
+                    if(this.isFirst && this.left > 0) {
+                        return true;
+                    }
+                    if(this.isLast && this.left < 0) {
+                        return true;
+                    }
+                    if(env.deltaX < 0 && this.left > 0 && this.left < this.getWidth() - this.TURN_THRESHHOLD) {
+                        return true;
+                    }
+                    if(env.deltaX > 0 && this.left + this.getWidth() > this.TURN_THRESHHOLD && this.left + this.getWidth() < this.getWidth()) {
+                        return true;
+                    }
+                    return false
+                }
+
+                snapTo(amount) {
+                    this.left = this.left + amount;
+                    this.$container.animate({
+                        left: this.left
+                    },600);
                 }
 
                 setOriginalLeftPosition() {
