@@ -98,12 +98,17 @@
                     this.interactable = new Hammer(this.$element[0]);
 
                     this.interactable.on('panend',function(env) {
-                        console.log(env);
+                        var newPage = false;
                         Book.pages.forEach(function(page,index) {
                             if(page.shouldBeSetAsCurrent(env)) {
-                                Book.snapPagesToCurrent(-page.left,env.overallVelocity);
+                                newPage = true;
+                                Book.snapPagesToCurrent(-page.left);
+                                Book.setCurrentPage(page);
                             }
                         });
+                        if(!newPage) {
+                            Book.snapPagesToCurrent(-Book.currentPage.left);
+                        }
                     });
                 },
 
@@ -149,15 +154,20 @@
                             isLast: x==(this.pageSources.length-1)
                         }));
                     }
+                    Book.setCurrentPage(this.pages[0]);
                 },
 
                 addPage: function(page) {
                     this.pages.push(page);
                 },
 
-                snapPagesToCurrent: function(amount,velocity) {
+                setCurrentPage(page) {
+                    this.currentPage = page;
+                },
+
+                snapPagesToCurrent: function(amount) {
                     this.pages.forEach(function(page) {
-                        page.snapTo(amount,velocity);
+                        page.snapTo(amount);
                     });
                 }
 
@@ -232,7 +242,7 @@
                     return false
                 }
 
-                snapTo(amount,velocity) {
+                snapTo(amount) {
                     this.left = this.left + amount;
                     this.$container.animate({
                         left: this.left
