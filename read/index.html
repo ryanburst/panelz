@@ -70,6 +70,8 @@
             left: 0;
         }
     </style>
+    <script src="/panelz/read/js/touch-emulator.js"></script>
+    <script> TouchEmulator(); </script>
 </head>
 <body>
     <div class="viewport">
@@ -96,7 +98,9 @@
                     this.setEventListeners();
                     this.setViewPortSize();
 
-                    this.interactable = new Hammer(this.$element[0]);
+                    this.interactable = new Hammer.Manager(this.$element[0]);
+                    this.interactable.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+                    this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
 
                     this.interactable.on('panend',function(env) {
                         var newPage = false;
@@ -211,7 +215,9 @@
                         page.$container.css( {
                             "left": page.left
                         } );
-                        //console.log(ev);
+                    });
+                    ViewPort.interactable.on("pinch",function(env) {
+                        alert(env);
                     });
                 }
 
