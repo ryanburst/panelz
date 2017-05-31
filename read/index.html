@@ -160,10 +160,10 @@
                     this.setTapThresholds();
 
                     this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
-                    this.interactable.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
+                    this.interactable.add(new Hammer.Pan());
                     this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
-                    this.interactable.add(new Hammer.Tap({threshold: 5}));
+                    this.interactable.add(new Hammer.Tap({threshold: 2}));
 
                     this.interactable.on('panend',function(env) {
                         var newPage = false;
