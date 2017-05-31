@@ -66,12 +66,12 @@
         }
         .viewport__menu {
             position: absolute;
-            bottom: -60px;
-            height: 60px;
+            bottom: -10vh;
+            height: 10vh;
             width: 100%;
             z-index: 4;
             background-color: rgba(0,0,0,0.75);
-            transition: bottom 250ms ease;
+            transition: bottom 350ms ease;
         }
         .viewport__menu--active {
             bottom: 0;
@@ -160,8 +160,8 @@
                     this.setTapThresholds();
 
                     this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
-                    this.interactable.add(new Hammer.Pan());
-                    this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
+                    this.interactable.add(new Hammer.Pan({threshold: 20}));
+                    //this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
                     this.interactable.add(new Hammer.Tap({threshold: 2}));
                     this.interactable.on('pan',function(env) {
