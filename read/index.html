@@ -64,6 +64,41 @@
             width: 100%;
             z-index: 3;
         }
+        .viewport__menu {
+            position: absolute;
+            bottom: -60px;
+            height: 60px;
+            width: 100%;
+            z-index: 4;
+            background-color: rgba(0,0,0,0.75);
+            transition: bottom 250ms ease;
+        }
+        .viewport__menu--active {
+            bottom: 0;
+        }
+        .menu {
+            display: flex;
+            padding: 0;
+            margin: 0;
+            align-items: stretch;
+            list-style: none;
+        }
+        .menu__option {
+            display: flex;
+            flex-grow: 1;
+            padding: 0;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fafafa;
+            font-size: 28px;
+            border-right: 1px solid #fafafa;
+        }
+        .menu__option:last-child {
+            border-right: none;
+        }
         .book__page {
             position: fixed;
             display: block;
@@ -78,13 +113,20 @@
             left: 0;
         }
     </style>
+    <script src="https://use.fontawesome.com/c2451ef033.js"></script>
 </head>
 <body>
     <div class="viewport">
         <div class="viewport__interactable"></div>
-        <div class="viewport__menu">
-
-        </div>
+        <ul class="viewport__menu menu">
+            <li class="menu__option">
+                <i class="fa fa-clone" aria-hidden="true"></i>
+            </li>
+            <li class="menu__option"></li>
+            <li class="menu__option">
+                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+            </li>
+        </ul>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
@@ -102,6 +144,8 @@
                 $element: $('.viewport'),
 
                 $container: $(window),
+
+                $menu: $('.viewport__menu'),
 
                 init: function() {
                     this.PAGE_TURN_THRESHOLD = 0.25;
@@ -136,6 +180,9 @@
                         }
                         if( cmd === ViewPort.cmds.PAGE_BACK ) {
                             return Book.pageBackward();
+                        }
+                        if( cmd === ViewPort.cmds.TOGGLE_MAIN_MENU ) {
+                            ViewPort.$menu.toggleClass('viewport__menu--active');
                         }
                     });
                 },
