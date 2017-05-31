@@ -163,7 +163,7 @@
                     this.interactable.add(new Hammer.Pan({threshold: 20}));
                     //this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     //this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
-                    this.interactable.add(new Hammer.Tap({threshold: 2, posThreshold: 19}));
+                    this.interactable.add(new Hammer.Tap({threshold: 2, posThreshold: 50}));
                     this.interactable.on('pan',function(env) {
                         ViewPort.$menu.removeClass('viewport__menu--active');
                     });
