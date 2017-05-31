@@ -200,7 +200,7 @@
                     this.originalHeight = this.$element.height();
                     this.fitToViewPort();
                     this.setOriginalLeftPosition();
-                    this.centerVerticallyInViewPort();
+                    this.centerInViewPort();
 
                     var page = this;
                     ViewPort.interactable.on("panstart", function(ev) {
@@ -230,14 +230,11 @@
                         width = this.getWidth() * ViewPort.getHeight() / this.getHeight();
                     }
 
-                    /*var width = this.getWidth() >= this.getHeight() ? ViewPort.getWidth() : this.getWidth() * ViewPort.getHeight() / this.getHeight();
-                    var height = this.getHeight() > this.getWidth() ? ViewPort.getHeight() : this.getHeight() * ViewPort.getWidth() / this.getWidth();*/
-
                     this.$element.width(width).height(height);
                     this.$container.width(ViewPort.getWidth()).height(ViewPort.getHeight());
                 }
 
-                centerVerticallyInViewPort() {
+                centerInViewPort() {
                     this.$element.css('top',(ViewPort.getHeight() - this.getHeight()) / 2);
                     this.$element.css('left',(ViewPort.getWidth() - this.getWidth()) / 2);
                 }
