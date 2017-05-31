@@ -93,24 +93,38 @@
                 $container: $(window),
 
                 init: function() {
+                    this.PAGE_TURN_THRESHOLD = 0.25;
+                    this.cmds = {};
+                    this.cmds.PAGE_BACK = 'PAGE_BACK';
+                    this.cmds.PAGE_FORWARD = 'PAGE_FORWARD';
+                    this.cmds.TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
+
                     this.setEventListeners();
                     this.setViewPortSize();
+                    this.setTapThresholds();
 
                     this.interactable = new Hammer.Manager(this.$element[0]);
                     this.interactable.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
                     this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
+                    this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
+                    this.interactable.add(new Hammer.Tap());
 
                     this.interactable.on('panend',function(env) {
                         var newPage = false;
                         Book.pages.forEach(function(page,index) {
                             if(page.shouldBeSetAsCurrent(env)) {
-                                newPage = true;
-                                Book.snapPagesToCurrent(-page.left);
                                 Book.setCurrentPage(page);
                             }
                         });
-                        if(!newPage) {
-                            Book.snapPagesToCurrent(-Book.currentPage.left);
+                        Book.snapPagesToCurrent();
+                    });
+                    this.interactable.on("tap", function(ev) {
+                        var cmd = ViewPort.findTapZone(ev.center.x,ev.center.y);
+                        if( cmd === ViewPort.cmds.PAGE_FORWARD ) {
+                            return Book.pageForward();
+                        }
+                        if( cmd === ViewPort.cmds.PAGE_BACK ) {
+                            return Book.pageBackward();
                         }
                     });
                 },
@@ -126,6 +140,23 @@
                 setViewPortSize: function(e) {
                     this.$element.width(this.$container.outerWidth());
                     this.$element.height(this.$container.outerHeight());
+                },
+
+                setTapThresholds: function() {
+                    this.PAGE_FORWARD_MIN = this.getWidth() - (this.getWidth() * this.PAGE_TURN_THRESHOLD);
+                    this.PAGE_FORWARD_MAX = this.getWidth();
+                    this.PAGE_BACK_MIN = 0;
+                    this.PAGE_BACK_MAX = this.getWidth() * this.PAGE_TURN_THRESHOLD;
+                },
+
+                findTapZone: function(x,y) {
+                    if( x >= this.PAGE_BACK_MIN && x <= this.PAGE_BACK_MAX) {
+                        return this.cmds.PAGE_BACK;
+                    }
+                    if( x >= this.PAGE_FORWARD_MIN && x <= this.PAGE_FORWARD_MAX) {
+                        return this.cmds.PAGE_FORWARD;
+                    }
+                    return this.cmds.TOGGLE_MAIN_MENU;
                 },
 
                 getWidth: function() {
@@ -148,15 +179,14 @@
                 pages: [],
 
                 init: function() {
-                    for(var x in this.pageSources) {
-                        var src = this.pageSources[x];
-                        this.addPage(new Page({
+                    this.pageSources.forEach(function(src,index,pageSources) {
+                        Book.addPage(new Page({
                             src: src,
-                            index: x,
-                            isFirst: x==0,
-                            isLast: x==(this.pageSources.length-1)
+                            index: index,
+                            isFirst: index===0,
+                            isLast: index===(Book.pageSources.length-1)
                         }));
-                    }
+                    });
                     Book.setCurrentPage(this.pages[0]);
                 },
 
@@ -164,14 +194,41 @@
                     this.pages.push(page);
                 },
 
-                setCurrentPage(page) {
+                setCurrentPage: function(page) {
                     this.currentPage = page;
                 },
 
-                snapPagesToCurrent: function(amount) {
+                getNextPage: function() {
+                    return this.pages[this.currentPage.index+1];
+                },
+
+                getPreviousPage: function() {
+                    return this.pages[this.currentPage.index-1];
+                },
+
+                snapPagesToCurrent: function() {
+                    var amount = -this.currentPage.left
+                    console.log(amount);
                     this.pages.forEach(function(page) {
                         page.snapTo(amount);
                     });
+                },
+
+                pageForward: function() {
+                    if( this.currentPage.isLast ) {
+                        return false;
+                    }
+                    this.setCurrentPage(this.getNextPage());
+                    this.snapPagesToCurrent();
+                    return true;
+                },
+
+                pageBackward: function() {
+                    if( this.currentPage.isFirst ) {
+                        return false;
+                    }
+                    this.setCurrentPage(this.getPreviousPage());
+                    this.snapPagesToCurrent();
                 }
 
             };
@@ -244,10 +301,10 @@
                     if(this.isLast && this.left < 0) {
                         return true;
                     }
-                    if(env.deltaX < 0 && this.left > 0 && this.left < this.getWidth() - this.TURN_THRESHHOLD) {
+                    if(env.deltaX < 0 && this.left > 0 && this.left < this.getFullWidth() - this.TURN_THRESHHOLD) {
                         return true;
                     }
-                    if(env.deltaX > 0 && this.left + this.getWidth() > this.TURN_THRESHHOLD && this.left + this.getWidth() < this.getWidth()) {
+                    if(env.deltaX > 0 && this.left + this.getFullWidth() > this.TURN_THRESHHOLD && this.left + this.getFullWidth() < this.getFullWidth()) {
                         return true;
                     }
                     return false
@@ -264,7 +321,8 @@
                 }
 
                 setOriginalLeftPosition() {
-                    this.$container.css('left',this.index * ViewPort.getWidth());
+                    this.left = this.index * ViewPort.getWidth();
+                    this.$container.css('left',this.left);
                 }
 
                 getOriginalWidth() {
@@ -279,8 +337,16 @@
                     return this.$element.width();
                 }
 
+                getFullWidth() {
+                    return this.$container.width();
+                }
+
                 getHeight() {
                     return this.$element.height();
+                }
+
+                getFullHeight() {
+                    return this.$container.height();
                 }
             }
 
