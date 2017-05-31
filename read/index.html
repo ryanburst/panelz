@@ -162,7 +162,7 @@
                     this.interactable.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
                     this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
-                    this.interactable.add(new Hammer.Tap());
+                    this.interactable.add(new Hammer.Tap({threshold: 5}));
 
                     this.interactable.on('panend',function(env) {
                         var newPage = false;
