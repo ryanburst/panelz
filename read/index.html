@@ -54,6 +54,7 @@
             margin: 0;
         }
         .viewport {
+            background-color: black;
             overflow: hidden;
         }
         .book__page {
@@ -100,7 +101,7 @@
                         console.log(env);
                         Book.pages.forEach(function(page,index) {
                             if(page.shouldBeSetAsCurrent(env)) {
-                                Book.snapPagesToCurrent(-page.left);
+                                Book.snapPagesToCurrent(-page.left,env.overallVelocity);
                             }
                         });
                     });
@@ -141,7 +142,6 @@
                 init: function() {
                     for(var x in this.pageSources) {
                         var src = this.pageSources[x];
-                        console.log(x);
                         this.addPage(new Page({
                             src: src,
                             index: x,
@@ -155,9 +155,9 @@
                     this.pages.push(page);
                 },
 
-                snapPagesToCurrent: function(amount) {
+                snapPagesToCurrent: function(amount,velocity) {
                     this.pages.forEach(function(page) {
-                        page.snapTo(amount);
+                        page.snapTo(amount,velocity);
                     });
                 }
 
@@ -200,6 +200,7 @@
                         page.$container.css( {
                             "left": page.left
                         } );
+                        //console.log(ev);
                     });
                 }
 
@@ -216,7 +217,6 @@
                 }
 
                 shouldBeSetAsCurrent(env) {
-                    console.log(this.isFirst,this.left);
                     if(this.isFirst && this.left > 0) {
                         return true;
                     }
@@ -232,11 +232,11 @@
                     return false
                 }
 
-                snapTo(amount) {
+                snapTo(amount,velocity) {
                     this.left = this.left + amount;
                     this.$container.animate({
                         left: this.left
-                    },600);
+                    },350);
                 }
 
                 setOriginalLeftPosition() {
