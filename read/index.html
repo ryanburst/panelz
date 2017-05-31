@@ -218,13 +218,22 @@
                 fitToViewPort() {
                     var width = ViewPort.getWidth();
                     var height = this.getHeight() * ViewPort.getWidth() / this.getWidth();
+
+                    if( height > ViewPort.getHeight() ) {
+                        height = ViewPort.getHeight();
+                        width = this.getWidth() * ViewPort.getHeight() / this.getHeight();
+                    }
+
+                    /*var width = this.getWidth() >= this.getHeight() ? ViewPort.getWidth() : this.getWidth() * ViewPort.getHeight() / this.getHeight();
+                    var height = this.getHeight() > this.getWidth() ? ViewPort.getHeight() : this.getHeight() * ViewPort.getWidth() / this.getWidth();*/
+
                     this.$element.width(width).height(height);
-                    this.$container.width(width).height(height);
+                    this.$container.width(ViewPort.getWidth()).height(ViewPort.getHeight());
                 }
 
                 centerVerticallyInViewPort() {
-                    var leftOver = ViewPort.getHeight() - this.getHeight();
-                    this.$element.css('top',leftOver / 2);
+                    this.$element.css('top',(ViewPort.getHeight() - this.getHeight()) / 2);
+                    this.$element.css('left',(ViewPort.getWidth() - this.getWidth()) / 2);
                 }
 
                 shouldBeSetAsCurrent(env) {
