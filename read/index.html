@@ -62,19 +62,49 @@
             position: absolute;
             height: 100%;
             width: 100%;
-            z-index: 3;
+            z-index: 5;
         }
         .viewport__menu {
             position: absolute;
             bottom: -10vh;
             height: 10vh;
             width: 100%;
-            z-index: 4;
+            z-index: 10;
             background-color: rgba(0,0,0,0.75);
             transition: bottom 350ms ease;
         }
         .viewport__menu--active {
             bottom: 0;
+        }
+        .letterbox {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            z-index: 4;
+        }
+        .letterbox__horizontal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: rgba(0,0,0,1);
+        }
+        .letterbox__horizontal--bottom {
+            top: auto;
+            bottom: 0;
+        }
+        .letterbox__vertical {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background-color: rgba(0,0,0,1);
+        }
+        .letterbox__vertical--right {
+            left: auto;
+            right: 0;
         }
         .menu {
             display: flex;
@@ -118,6 +148,12 @@
 <body>
     <div class="viewport">
         <div class="viewport__interactable"></div>
+        <div class="letterbox">
+            <div class="letterbox__horizontal letterbox__horizontal--top"></div>
+            <div class="letterbox__horizontal letterbox__horizontal--bottom"></div>
+            <div class="letterbox__vertical letterbox__vertical--left"></div>
+            <div class="letterbox__vertical letterbox__vertical--right"></div>
+        </div>
         <ul class="viewport__menu menu">
             <li class="menu__option">
                 <i class="fa fa-clone" aria-hidden="true"></i>
@@ -137,7 +173,88 @@
             var PanelsApp = {
                 init: function() {
                     ViewPort.init();
-                    Book.init();
+                    Book.init({
+                        pages: [
+                            {
+                                src: "/panelz/read/images/tmnt-01-01.png",
+                                index: 0,
+                                isFirst: true,
+                                isLast: false,
+                                panels: []
+                            },
+                            {
+                                src: "/panelz/read/images/tmnt-01-02.png",
+                                index: 1,
+                                isFirst: false,
+                                isLast: false,
+                                panels: [
+                                    {
+                                        x: 40,
+                                        y: 90,
+                                        nextPanel: 1,
+                                        previousPanel: false,
+                                        width: 626,
+                                        height: 442
+                                    },
+                                    {
+                                        x: 324,
+                                        y: 222,
+                                        nextPanel: 2,
+                                        previousPanel: 0,
+                                        width: 626,
+                                        height: 442
+                                    },
+                                    {
+                                        x: 0,
+                                        y: 0,
+                                        nextPanel: 3,
+                                        previousPanel: 1,
+                                        width: 954,
+                                        height: 776
+                                    },
+                                    {
+                                        x: 0,
+                                        y: 775,
+                                        nextPanel: 4,
+                                        previousPanel: 2,
+                                        width: 453,
+                                        height: 372
+                                    },
+                                    {
+                                        x: 456,
+                                        y: 808,
+                                        nextPanel: 5,
+                                        previousPanel: 3,
+                                        width: 495,
+                                        height: 344
+                                    },
+                                    {
+                                        x: 16,
+                                        y: 1154,
+                                        nextPanel: 6,
+                                        previousPanel: 4,
+                                        width: 550,
+                                        height: 298
+                                    },
+                                    {
+                                        x: 392,
+                                        y: 1154,
+                                        nextPanel: false,
+                                        previousPanel: 5,
+                                        width: 556,
+                                        height: 298
+                                    }
+                                ]
+                            },
+                            {
+                                src: "/panelz/read/images/tmnt-01-04.png",
+                                index: 2,
+                                isFirst: false,
+                                isLast: true,
+                                panels: []
+                            }
+                        ]
+                    });
                 }
             };
             var ViewPort = {
@@ -148,7 +265,14 @@
 
                 $menu: $('.viewport__menu'),
 
+                $horizontalLetterBox: $('.letterbox__horizontal'),
+
+                $verticalLetterBox: $('.letterbox__vertical'),
+
                 init: function() {
+                    this.PAGE_MODE = 'PAGE_MODE';
+                    this.PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
+                    this.MODE = this.PANEL_ZOOM_MODE;
                     this.PAGE_TURN_THRESHOLD = 0.25;
                     this.cmds = {};
                     this.cmds.PAGE_BACK = 'PAGE_BACK';
@@ -160,16 +284,17 @@
                     this.setTapThresholds();
 
                     this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
-                    this.interactable.add(new Hammer.Pan({threshold: 20}));
+                    //this.interactable.add(new Hammer.Pan({threshold: 20}));
                     //this.interactable.add(new Hammer.Pinch({ threshold: 0 })).recognizeWith([this.interactable.get('pan')]);
                     //this.interactable.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
                     this.interactable.add(new Hammer.Tap({threshold: 2, posThreshold: 150}));
+                    this.interactable.add(new Hammer.Swipe());
                     this.interactable.on('pan',function(env) {
                         ViewPort.$menu.removeClass('viewport__menu--active');
                     });
                     this.interactable.on('panend',function(env) {
                         var newPage = false;
-                        Book.pages.forEach(function(page,index) {
+                        Book.pages.forEach(function(page) {
                             if(page.shouldBeSetAsCurrent(env)) {
                                 Book.setCurrentPage(page);
                             }
@@ -186,6 +311,16 @@
                         }
                         if( cmd === ViewPort.cmds.TOGGLE_MAIN_MENU ) {
                             ViewPort.$menu.toggleClass('viewport__menu--active');
+                        }
+                    });
+                    this.interactable.on("swipeleft", function(ev) {
+                        if( this.MODE === this.PANEL_ZOOM_MODE ) {
+                            Book.pageForward();
+                        }
+                    });
+                    this.interactable.on("swiperight", function(ev) {
+                        if( this.MODE === this.PANEL_ZOOM_MODE ) {
+                            Book.pageBackward();
                         }
                     });
                 },
@@ -220,6 +355,24 @@
                     return this.cmds.TOGGLE_MAIN_MENU;
                 },
 
+                setLetterBoxing: function(height,width) {
+                    var horizSize = height > 0 ? height / 2 : 0;
+                    var vertSize = width > 0 ? width / 2 : 0;
+
+                    this.$horizontalLetterBox.animate({
+                        height: horizSize
+                    },{
+                        duration: 250,
+                        easing: 'easeOutSine'
+                    });
+                    this.$verticalLetterBox.animate({
+                        height: vertSize
+                    },{
+                        duration: 250,
+                        easing: 'easeOutSine'
+                    });
+                },
+
                 getWidth: function() {
                     return this.$element.outerWidth();
                 },
@@ -231,22 +384,11 @@
 
             var Book = {
 
-                pageSources: [
-                    '/panelz/read/images/tmnt-01-01.png',
-                    '/panelz/read/images/tmnt-01-02.png',
-                    '/panelz/read/images/tmnt-01-04.png'
-                ],
-
                 pages: [],
 
-                init: function() {
-                    this.pageSources.forEach(function(src,index,pageSources) {
-                        Book.addPage(new Page({
-                            src: src,
-                            index: index,
-                            isFirst: index===0,
-                            isLast: index===(Book.pageSources.length-1)
-                        }));
+                init: function(config) {
+                    config.pages.forEach(function(page) {
+                        Book.addPage(new Page(page));
                     });
                     Book.setCurrentPage(this.pages[0]);
                 },
@@ -256,6 +398,9 @@
                 },
 
                 setCurrentPage: function(page) {
+                    if(this.currentPage && this.currentPage.panels.length) {
+                        this.currentPage.currentPanel = null;
+                    }
                     this.currentPage = page;
                 },
 
@@ -275,6 +420,29 @@
                 },
 
                 pageForward: function() {
+                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE ) {
+                        if( this.currentPage.panels.length && this.currentPage.currentPanel === null ) {
+                            console.log('Zoom to first panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
+                            return true;
+                        }
+                        if( this.currentPage.panels.length && this.currentPage.currentPanel === false ) {
+                            console.log('Next Page');
+                            this.currentPage.setCurrentPanel(null);
+                        } else if( this.currentPage.panels.length && this.currentPage.hasNextPanel() ) {
+                            console.log('Zoom to next panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
+                            return true;
+                        } else if( this.currentPage.panels.length && ! this.currentPage.hasNextPanel() && this.currentPage.currentPanel ) {
+                            console.log('Zoom out');
+                            this.currentPage.centerInViewPort(true);
+                            this.currentPage.setCurrentPanel(false);
+                            ViewPort.setLetterBoxing(0,0);
+                            return true;
+                        }
+
+                    }
+
                     if( this.currentPage.isLast ) {
                         return false;
                     }
@@ -284,6 +452,29 @@
                 },
 
                 pageBackward: function() {
+                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE ) {
+                        if( this.currentPage.panels.length && this.currentPage.currentPanel === null ) {
+                            console.log('Zoom to last panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getLastPanel());
+                            return true;
+                        }
+                        if( this.currentPage.panels.length && this.currentPage.currentPanel === false ) {
+                            console.log('Previous Page');
+                            this.currentPage.setCurrentPanel(null);
+                        } else if( this.currentPage.panels.length && this.currentPage.hasPreviousPanel() ) {
+                            console.log('Zoom to last panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getPreviousPanel());
+                            return true;
+                        } else if( this.currentPage.panels.length && ! this.currentPage.hasPreviousPanel() && this.currentPage.currentPanel ) {
+                            console.log('Zoom out');
+                            this.currentPage.centerInViewPort(true);
+                            this.currentPage.setCurrentPanel(false);
+                            ViewPort.setLetterBoxing(0,0);
+                            return true;
+                        }
+
+                    }
+
                     if( this.currentPage.isFirst ) {
                         return false;
                     }
@@ -298,8 +489,13 @@
                     this.index = config.index;
                     this.isFirst = config.isFirst;
                     this.isLast = config.isLast;
+                    this.panels = [];
                     this.TURN_THRESHHOLD = 30;
+                    this.currentPanel = null;
                     this.loadSrc(config.src);
+                    config.panels.forEach( function(panel) {
+                        this.panels.push(new Panel(panel));
+                    }.bind(this));
                 }
 
                 loadSrc(src) {
@@ -313,9 +509,8 @@
                         .appendTo(this.$container);
                     this.originalWidth = this.$element.width();
                     this.originalHeight = this.$element.height();
-                    this.fitToViewPort();
-                    this.setOriginalLeftPosition();
                     this.centerInViewPort();
+                    this.setOriginalLeftPosition();
 
                     var page = this;
                     ViewPort.interactable.on("panstart", function(ev) {
@@ -336,7 +531,7 @@
                     });
                 }
 
-                fitToViewPort() {
+                centerInViewPort(animate) {
                     var width = ViewPort.getWidth();
                     var height = this.getHeight() * ViewPort.getWidth() / this.getWidth();
 
@@ -345,13 +540,20 @@
                         width = this.getWidth() * ViewPort.getHeight() / this.getHeight();
                     }
 
-                    this.$element.width(width).height(height);
-                    this.$container.width(ViewPort.getWidth()).height(ViewPort.getHeight());
-                }
+                    var top = (ViewPort.getHeight() - height) / 2;
+                    var left = (ViewPort.getWidth() - width) / 2;
 
-                centerInViewPort() {
-                    this.$element.css('top',(ViewPort.getHeight() - this.getHeight()) / 2);
-                    this.$element.css('left',(ViewPort.getWidth() - this.getWidth()) / 2);
+                    this.$container.width(ViewPort.getWidth()).height(ViewPort.getHeight());
+
+                    this.$element.animate({
+                        top: top,
+                        left: left,
+                        width: width,
+                        height: height
+                    },{
+                        duration: (animate ? 250 : 0),
+                        easing: 'easeOutSine'
+                    });
                 }
 
                 shouldBeSetAsCurrent(env) {
@@ -381,8 +583,71 @@
                 }
 
                 setOriginalLeftPosition() {
-                    this.left = this.index * ViewPort.getWidth();
+                    this.left = (this.index) * ViewPort.getWidth();
                     this.$container.css('left',this.left);
+                }
+
+                setCurrentPanel(panel) {
+                    this.currentPanel = panel;
+                }
+
+                hasPreviousPanel() {
+                    return this.currentPanel.previousPanel !== false;
+                }
+
+                getPreviousPanel() {
+                    return this.panels[this.currentPanel.previousPanel];
+                }
+
+                getLastPanel() {
+                    return this.panels[this.panels.length-1];
+                }
+
+                hasNextPanel() {
+                    return this.currentPanel.nextPanel !== false;
+                }
+
+                getNextPanel() {
+                    return this.panels[this.currentPanel.nextPanel];
+                }
+
+                getFirstPanel() {
+                    return this.panels[0];
+                }
+
+                zoomToPanel(panel) {
+                    console.log('Zoom to: ',panel);
+                    // var width = panel.width >= panel.height ? canvas.width : panel.width * canvas.height / panel.height;
+                    // var height = panel.height > panel.width ? canvas.height : panel.height * canvas.width / panel.width;
+                    var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getWidth();
+                    var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+
+                    var pageHeight = height * this.getOriginalHeight() / panel.getHeight();
+                    var pageWidth = width * this.getOriginalWidth() / panel.getWidth();
+
+                    var top = panel.getTopPos() * pageHeight / this.getOriginalHeight();
+                    var left = panel.getLeftPos() * pageWidth / this.getOriginalWidth();
+
+                    this.$element.animate({
+                        top: -top + (ViewPort.getHeight() - height) / 2,
+                        left: -left + ((ViewPort.getWidth() - width) / 2),
+                        width: pageWidth,
+                        height: pageHeight
+                    },{
+                        duration: 250,
+                        easing: 'easeOutSine'
+                    });
+
+                    ViewPort.setLetterBoxing(ViewPort.getHeight()-height,ViewPort.getWidth()-width);
+
+                    this.setCurrentPanel(panel);
+
+                    // // Size up the whole page now that we have the resized panel width/height
+                    // var pageHeight = height * page.getOriginalSize().height / panel.height;
+                    // var pageWidth = width * page.getOriginalSize().width / panel.width;
+                    // console.log(panel.width,page.getOriginalSize().width,width);
+                    // var top = panel.top * pageHeight / page.getOriginalSize().height;
+                    // var left = panel.left * pageWidth / page.getOriginalSize().width;
                 }
 
                 getOriginalWidth() {
@@ -407,6 +672,33 @@
 
                 getFullHeight() {
                     return this.$container.height();
+                }
+            }
+
+            class Panel {
+                constructor(config) {
+                    this.x = config.x;
+                    this.y = config.y;
+                    this.nextPanel = config.nextPanel;
+                    this.previousPanel = config.previousPanel;
+                    this.width = config.width;
+                    this.height = config.height;
+                }
+
+                getWidth() {
+                    return this.width;
+                }
+
+                getHeight() {
+                    return this.height;
+                }
+
+                getLeftPos() {
+                    return this.x;
+                }
+
+                getTopPos() {
+                    return this.y;
                 }
             }
 
