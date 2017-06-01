@@ -399,7 +399,7 @@
 
                 setCurrentPage: function(page) {
                     if(this.currentPage && this.currentPage.panels.length) {
-                        this.currentPage.currentPanel = null;
+                        this.currentPage.currentPanel = false;
                     }
                     this.currentPage = page;
                 },
@@ -420,15 +420,27 @@
                 },
 
                 pageForward: function() {
-                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE ) {
-                        if( this.currentPage.panels.length && this.currentPage.currentPanel === null ) {
+                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.currentPage.panels.length ) {
+                        if( this.currentPage.hasNextPanel() ) {
+                            console.log('Zoom to next panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
+                            return true;
+                        }
+                        if( this.currentPage.currentPanel !== false && ! this.currentPage.hasNextPanel() ) {
+                            console.log('Zoom out');
+                            this.currentPage.setCurrentPanel(false);
+                            this.currentPage.centerInViewPort(true);
+                            this.currentPage.setCurrentPanel(false);
+                            ViewPort.setLetterBoxing(0,0);
+                            return true;
+                        }
+                        /*if( this.currentPage.panels.length && ! this.currentPage.currentPanel && this.currentPage.getLastPanelSeen() === false ) {
                             console.log('Zoom to first panel');
                             this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
                             return true;
                         }
-                        if( this.currentPage.panels.length && this.currentPage.currentPanel === false ) {
+                        if( this.currentPage.panels.length && ! this.currentPage.currentPanel && this.currentPage.getLastPanelSeen() !== false ) {
                             console.log('Next Page');
-                            this.currentPage.setCurrentPanel(null);
                         } else if( this.currentPage.panels.length && this.currentPage.hasNextPanel() ) {
                             console.log('Zoom to next panel');
                             this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
@@ -439,47 +451,65 @@
                             this.currentPage.setCurrentPanel(false);
                             ViewPort.setLetterBoxing(0,0);
                             return true;
-                        }
+                        }*/
 
                     }
 
                     if( this.currentPage.isLast ) {
                         return false;
                     }
+                    this.currentPage.onPageLeaveFoward();
                     this.setCurrentPage(this.getNextPage());
                     this.snapPagesToCurrent();
+                    this.currentPage.onPageEnterForward();
                     return true;
                 },
 
                 pageBackward: function() {
-                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE ) {
-                        if( this.currentPage.panels.length && this.currentPage.currentPanel === null ) {
-                            console.log('Zoom to last panel');
-                            this.currentPage.zoomToPanel(this.currentPage.getLastPanel());
-                            return true;
-                        }
-                        if( this.currentPage.panels.length && this.currentPage.currentPanel === false ) {
-                            console.log('Previous Page');
-                            this.currentPage.setCurrentPanel(null);
-                        } else if( this.currentPage.panels.length && this.currentPage.hasPreviousPanel() ) {
+                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.currentPage.panels.length ) {
+                        if( this.currentPage.hasPreviousPanel() ) {
                             console.log('Zoom to last panel');
                             this.currentPage.zoomToPanel(this.currentPage.getPreviousPanel());
                             return true;
-                        } else if( this.currentPage.panels.length && ! this.currentPage.hasPreviousPanel() && this.currentPage.currentPanel ) {
+                        }
+                        if( this.currentPage.currentPanel !== false && ! this.currentPage.hasPreviousPanel() ) {
                             console.log('Zoom out');
+                            this.currentPage.setCurrentPanel(false);
                             this.currentPage.centerInViewPort(true);
                             this.currentPage.setCurrentPanel(false);
                             ViewPort.setLetterBoxing(0,0);
                             return true;
                         }
+                        /*var isCurrentPanel = this.currentPage.currentPanel !== false;
+                        var wasInPanel = this.currentPage.getLastPanelSeen() !== false;
+                        if(  ! isCurrentPanel && this.currentPage.getLastPanelSeen() !== false ) {
+                            console.log('Zoom to last panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getLastPanel());
+                            return true;
+                        }
+                        if( ! isCurrentPanel && wasInPanel ) {
+                            console.log('Previous page');
+                        } else if( isCurrentPanel && this.currentPage.hasPreviousPanel() ) {
+                            console.log('Zoom to last panel');
+                            this.currentPage.zoomToPanel(this.currentPage.getPreviousPanel());
+                            return true;
+                        } else if( isCurrentPanel && ! this.currentPage.hasPreviousPanel() ) {
+                            console.log('Zoom out');
+                            this.currentPage.centerInViewPort(true);
+                            this.currentPage.setCurrentPanel(false);
+                            ViewPort.setLetterBoxing(0,0);
+                            return true;
+                        }*/
 
                     }
 
                     if( this.currentPage.isFirst ) {
                         return false;
                     }
+                    this.currentPage.onPageLeaveBackward();
                     this.setCurrentPage(this.getPreviousPage());
                     this.snapPagesToCurrent();
+                    this.currentPage.onPageEnterBackward();
                 }
 
             };
@@ -491,7 +521,10 @@
                     this.isLast = config.isLast;
                     this.panels = [];
                     this.TURN_THRESHHOLD = 30;
-                    this.currentPanel = null;
+                    this.currentPanel = false;
+                    this.previousPanel = false;
+                    this.nextPanel = false;
+                    this.lastPanelSeen = false;
                     this.loadSrc(config.src);
                     config.panels.forEach( function(panel) {
                         this.panels.push(new Panel(panel));
@@ -529,6 +562,27 @@
                     ViewPort.interactable.on("pinch",function(env) {
                         console.log(env);
                     });
+                }
+
+                onPageEnterForward() {
+                    if( this.panels.length ) {
+                        this.nextPanel = this.getFirstPanel();
+                    }
+                }
+
+                onPageLeaveFoward() {
+
+                }
+
+                onPageEnterBackward() {
+                    if( this.panels.length ) {
+                        this.previousPanel = this.getLastPanel();
+                    }
+                    console.log(this);
+                }
+
+                onPageLeaveBackward() {
+
                 }
 
                 centerInViewPort(animate) {
@@ -588,15 +642,36 @@
                 }
 
                 setCurrentPanel(panel) {
+                    this.lastPanelSeen = this.currentPanel;
                     this.currentPanel = panel;
                 }
 
+                setNextPanel() {
+                    this.nextPanel = this.currentPanel !== false
+                        ? (this.currentPanel.nextPanel !== false
+                            ? this.panels[this.currentPanel.nextPanel]
+                            : false)
+                        : false
+                }
+
+                setPreviousPanel() {
+                    this.previousPanel = this.currentPanel !== false
+                        ? (this.currentPanel.previousPanel !== false
+                            ? this.panels[this.currentPanel.previousPanel]
+                            : false)
+                        : false
+                }
+
+                getLastPanelSeen() {
+                    return this.lastPanelSeen;
+                }
+
                 hasPreviousPanel() {
-                    return this.currentPanel.previousPanel !== false;
+                    return this.previousPanel !== false;
                 }
 
                 getPreviousPanel() {
-                    return this.panels[this.currentPanel.previousPanel];
+                    return this.previousPanel;
                 }
 
                 getLastPanel() {
@@ -604,15 +679,15 @@
                 }
 
                 hasNextPanel() {
-                    return this.currentPanel.nextPanel !== false;
+                    return this.nextPanel !== false;
                 }
 
                 getNextPanel() {
-                    return this.panels[this.currentPanel.nextPanel];
+                    return this.nextPanel;
                 }
 
                 getFirstPanel() {
-                    return this.panels[0];
+                    return this.panels.length ? this.panels[0] : false;
                 }
 
                 zoomToPanel(panel) {
@@ -641,7 +716,8 @@
                     ViewPort.setLetterBoxing(ViewPort.getHeight()-height,ViewPort.getWidth()-width);
 
                     this.setCurrentPanel(panel);
-
+                    this.setNextPanel();
+                    this.setPreviousPanel();
                     // // Size up the whole page now that we have the resized panel width/height
                     // var pageHeight = height * page.getOriginalSize().height / panel.height;
                     // var pageWidth = width * page.getOriginalSize().width / panel.width;
