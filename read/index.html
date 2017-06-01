@@ -420,6 +420,7 @@
                 },
 
                 pageForward: function() {
+                    ViewPort.$menu.removeClass('viewport__menu--active');
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.currentPage.panels.length ) {
                         if( this.currentPage.hasNextPanel() ) {
                             console.log('Zoom to next panel');
@@ -466,6 +467,7 @@
                 },
 
                 pageBackward: function() {
+                    ViewPort.$menu.removeClass('viewport__menu--active');
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.currentPage.panels.length ) {
                         if( this.currentPage.hasPreviousPanel() ) {
                             console.log('Zoom to last panel');
