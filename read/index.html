@@ -136,6 +136,7 @@
             left: 0;
             pointer-events: none;
             z-index: 2;
+            opacity: 0;
         }
         .page__image {
             position: relative;
@@ -390,7 +391,6 @@
                     config.pages.forEach(function(page) {
                         Book.addPage(new Page(page));
                     });
-                    Book.setCurrentPage(this.pages[0]);
                 },
 
                 addPage: function(page) {
@@ -401,7 +401,17 @@
                     if(this.currentPage && this.currentPage.panels.length) {
                         this.currentPage.currentPanel = false;
                     }
+                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.currentPage ) {
+                        this.currentPage.$container.animate({
+                            opacity: 0
+                        },{ duration: 250, easing: 'easeOutSine' });
+                    }
                     this.currentPage = page;
+                    if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE ) {
+                        this.currentPage.$container.css('left',0).animate({
+                            opacity: 1
+                        },{ duration: 250, easing: 'easeOutSine' });
+                    }
                 },
 
                 getNextPage: function() {
@@ -435,25 +445,6 @@
                             ViewPort.setLetterBoxing(0,0);
                             return true;
                         }
-                        /*if( this.currentPage.panels.length && ! this.currentPage.currentPanel && this.currentPage.getLastPanelSeen() === false ) {
-                            console.log('Zoom to first panel');
-                            this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
-                            return true;
-                        }
-                        if( this.currentPage.panels.length && ! this.currentPage.currentPanel && this.currentPage.getLastPanelSeen() !== false ) {
-                            console.log('Next Page');
-                        } else if( this.currentPage.panels.length && this.currentPage.hasNextPanel() ) {
-                            console.log('Zoom to next panel');
-                            this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
-                            return true;
-                        } else if( this.currentPage.panels.length && ! this.currentPage.hasNextPanel() && this.currentPage.currentPanel ) {
-                            console.log('Zoom out');
-                            this.currentPage.centerInViewPort(true);
-                            this.currentPage.setCurrentPanel(false);
-                            ViewPort.setLetterBoxing(0,0);
-                            return true;
-                        }*/
-
                     }
 
                     if( this.currentPage.isLast ) {
@@ -461,7 +452,9 @@
                     }
                     this.currentPage.onPageLeaveFoward();
                     this.setCurrentPage(this.getNextPage());
-                    this.snapPagesToCurrent();
+                    if( ViewPort.MODE === ViewPort.PAGE_MODE ) {
+                        this.snapPagesToCurrent();
+                    }
                     this.currentPage.onPageEnterForward();
                     return true;
                 },
@@ -482,27 +475,6 @@
                             ViewPort.setLetterBoxing(0,0);
                             return true;
                         }
-                        /*var isCurrentPanel = this.currentPage.currentPanel !== false;
-                        var wasInPanel = this.currentPage.getLastPanelSeen() !== false;
-                        if(  ! isCurrentPanel && this.currentPage.getLastPanelSeen() !== false ) {
-                            console.log('Zoom to last panel');
-                            this.currentPage.zoomToPanel(this.currentPage.getLastPanel());
-                            return true;
-                        }
-                        if( ! isCurrentPanel && wasInPanel ) {
-                            console.log('Previous page');
-                        } else if( isCurrentPanel && this.currentPage.hasPreviousPanel() ) {
-                            console.log('Zoom to last panel');
-                            this.currentPage.zoomToPanel(this.currentPage.getPreviousPanel());
-                            return true;
-                        } else if( isCurrentPanel && ! this.currentPage.hasPreviousPanel() ) {
-                            console.log('Zoom out');
-                            this.currentPage.centerInViewPort(true);
-                            this.currentPage.setCurrentPanel(false);
-                            ViewPort.setLetterBoxing(0,0);
-                            return true;
-                        }*/
-
                     }
 
                     if( this.currentPage.isFirst ) {
@@ -510,7 +482,9 @@
                     }
                     this.currentPage.onPageLeaveBackward();
                     this.setCurrentPage(this.getPreviousPage());
-                    this.snapPagesToCurrent();
+                    if( ViewPort.MODE === ViewPort.PAGE_MODE ) {
+                        this.snapPagesToCurrent();
+                    }
                     this.currentPage.onPageEnterBackward();
                 }
 
@@ -564,6 +538,10 @@
                     ViewPort.interactable.on("pinch",function(env) {
                         console.log(env);
                     });
+
+                    if( this.isFirst ) {
+                        Book.setCurrentPage(this);
+                    }
                 }
 
                 onPageEnterForward() {
