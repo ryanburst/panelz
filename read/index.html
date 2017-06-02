@@ -7,51 +7,12 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="msapplication-tap-highlight" content="no" />
+    <script src="https://use.fontawesome.com/c2451ef033.js"></script>
     <style>
-        /*html,
-        body,
-        .reader {
-            height: 100%;
-        }
-        body {
-            margin: 0;
-        }
-        .reader {
-            box-sizing: border-box;
-            padding: 10px;
-        }
-        .wrapper {
-            position: relative;
-            width: 69vh;
-            height: 100%;
-            box-sizing: border-box;
-            margin: 0 auto;
-            padding-bottom: 60px;
-            border: 1px solid black;
-            overflow: hidden;
-        }
-        .canvas {
-            width: 100%;
-            height: 500px;
-        }
-        .controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background-color: gray;
-            text-align: center;
-        }
-        .controls__nav {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            margin-top: 5px;
-        }*/
         html,
         body {
             margin: 0;
+            font-family: Arial;
         }
         .viewport {
             position: relative;
@@ -93,11 +54,10 @@
         }
         .message__text {
             position: relative;
-            max-width: 25vh;
+            max-width: 25vw;
             margin: 0 auto;
             padding: 10px;
             color: white;
-            font-family: Arial;
             text-align: center;
             background-color: rgba(0,0,0,0.75);
         }
@@ -148,11 +108,80 @@
             align-items: center;
             text-align: center;
             color: #fafafa;
-            font-size: 28px;
+            font-size: 16px;
             border-right: 1px solid #fafafa;
+            cursor: pointer;
         }
         .menu__option:last-child {
             border-right: none;
+        }
+        .menu__option--active {
+            color: #    ;
+        }
+        .menu__icon {
+            font-size: 28px;
+        }
+        .panes {
+
+        }
+        .pane {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            z-index: 15;
+            transition: opacity 450ms ease, z-index 450ms ease;
+        }
+        .pane--hidden {
+            opacity: 0;
+            z-index: 0;
+        }
+        .pane__container {
+            position: relative;
+            height: 90vh;
+            max-height: 90vh;
+            width: 90vw;
+            max-width: 90vw;
+            overflow-y: auto;
+            color: white;
+            background-color: #5c5c5d;
+        }
+        .pane__header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            font-size: 24px;
+            border-bottom: 1px solid #55a1e6;
+        }
+        .pane__close {
+            padding-left: 10px;
+            cursor: pointer;
+        }
+        .pane__content {
+            padding: 15px;
+        }
+        .page-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .page-list__page {
+            width: 48%;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .page-list__image {
+            max-width: 100%;
         }
         .book__page {
             position: fixed;
@@ -161,7 +190,6 @@
             left: 0;
             pointer-events: none;
             z-index: 2;
-            opacity: 0;
         }
         .page__image {
             position: relative;
@@ -169,7 +197,6 @@
             left: 0;
         }
     </style>
-    <script src="https://use.fontawesome.com/c2451ef033.js"></script>
 </head>
 <body>
     <div class="viewport">
@@ -184,14 +211,56 @@
             <div class="message__text">Panel Zoom mode activated.</div>
         </div>
         <ul class="viewport__menu menu">
-            <li class="menu__option">
-                <i class="fa fa-clone" aria-hidden="true"></i>
+            <li class="menu__option menu__option--pages">
+                <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
             </li>
-            <li class="menu__option"></li>
-            <li class="menu__option">
-                <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+            <li class="menu__option menu__option--panel-zoom">
+                Panel<br />Zoom
+            </li>
+            <li class="menu__option menu__option--settings">
+                <i class="fa fa-ellipsis-v menu__icon" aria-hidden="true"></i>
             </li>
         </ul>
+        <div class="panes">
+            <div class="panes__pane pane pane--pages pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Pages</span>
+                        <span class="pane__close" data-close>
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <div class="pane__content">
+                        <ul class="page-list">
+                            <li class="page-list__page" data-skip-to-page="1">
+                                <img src="/panelz/read/images/tmnt-01-01.png" class="page-list__image" />
+                                <span class="page-list__number">1</span>
+                            </li>
+                            <li class="page-list__page" data-skip-to-page="2">
+                                <img src="/panelz/read/images/tmnt-01-02.png" class="page-list__image" />
+                                <span class="page-list__number">2</span>
+                            </li>
+                            <li class="page-list__page" data-skip-to-page="3">
+                                <img src="/panelz/read/images/tmnt-01-04.png" class="page-list__image" />
+                                <span class="page-list__number">3</span>
+                            </li>
+                            <li class="page-list__page" data-skip-to-page="1">
+                                <img src="/panelz/read/images/tmnt-01-01.png" class="page-list__image" />
+                                <span class="page-list__number">1</span>
+                            </li>
+                            <li class="page-list__page" data-skip-to-page="2">
+                                <img src="/panelz/read/images/tmnt-01-02.png" class="page-list__image" />
+                                <span class="page-list__number">2</span>
+                            </li>
+                            <li class="page-list__page" data-skip-to-page="3">
+                                <img src="/panelz/read/images/tmnt-01-04.png" class="page-list__image" />
+                                <span class="page-list__number">3</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
@@ -203,6 +272,7 @@
             var PanelsApp = {
                 init: function() {
                     ViewPort.init();
+                    Menu.init();
                     Book.init({
                         pages: [
                             {
@@ -285,8 +355,36 @@
                             }
                         ]
                     });
+                    $('[data-close]').on('click',function() {
+                        var $this = $(this);
+                        $this.closest('.pane').addClass('pane--hidden');
+                    });
                 }
             };
+            var Menu = {
+                $menu: $('.menu'),
+
+                init: function() {
+                    this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
+                    this.$menu.on('click','.menu__option--pages',this.onPageClick.bind(this));
+                },
+
+                activateOption: function(option) {
+                    this.$menu.find('.menu__option--' + option).addClass('menu__option--active');
+                },
+
+                deactivateOption: function(option) {
+                    this.$menu.find('.menu__option--' + option).removeClass('menu__option--active');
+                },
+
+                onPanelZoomToggleClick: function(e) {
+                    ViewPort.switchModes();
+                },
+
+                onPageClick: function(e) {
+                    $('.pane--pages').removeClass('pane--hidden');
+                }
+            }
             var ViewPort = {
 
                 $element: $('.viewport'),
@@ -302,7 +400,7 @@
                 init: function() {
                     this.PAGE_MODE = 'PAGE_MODE';
                     this.PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
-                    this.MODE = this.PANEL_ZOOM_MODE;
+                    this.MODE = this.PAGE_MODE;
                     this.PAGE_TURN_THRESHOLD = 0.25;
                     this.cmds = {};
                     this.cmds.PAGE_BACK = 'PAGE_BACK';
@@ -326,9 +424,20 @@
                     //pinch.recognizeWith(pan);
                     singletap.requireFailure(doubletap);
 
-                    this.interactable.on('pan',function(ev) {
-                        ViewPort.$menu.removeClass('viewport__menu--active');
+                    $('body').on('touchend',function() {
+                        ViewPort.$menu.removeClass('viewport__menu--was-shown');
+                        if( ViewPort.$menu.hasClass('viewport__menu--active') ) {
+                            ViewPort.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
+                        }
                     });
+
+                    $('[data-skip-to-page]').on('click', function(e) {
+                        var $this = $(e.currentTarget);
+                        var page = $this.attr('data-skip-to-page');
+                        $this.closest('.pane').find('[data-close]').trigger('click');
+                        Book.skipToPage(page);
+                    }.bind(this));
+
                     this.interactable.on('panend',function(ev) {
                         var newPage = false;
                         Book.pages.forEach(function(page) {
@@ -350,7 +459,9 @@
                             return Book.pageBackward();
                         }
                         if( cmd === ViewPort.cmds.TOGGLE_MAIN_MENU ) {
-                            ViewPort.$menu.toggleClass('viewport__menu--active');
+                            if( ! ViewPort.$menu.hasClass('viewport__menu--was-shown') ) {
+                                ViewPort.$menu.addClass('viewport__menu--active');
+                            }
                         }
                     });
                     this.interactable.on("swipeleft", function(ev) {
@@ -388,9 +499,11 @@
                     this.MODE = mode;
                     if( mode === ViewPort.PAGE_MODE ) {
                         Book.setForPageMode();
+                        Menu.deactivateOption('panel-zoom');
                         this.message('Page mode activated.');
                     } else {
                         Book.setForPanelZoomMode();
+                        Menu.activateOption('panel-zoom');
                         this.message('Panel Zoom mode activated.');
                     }
                 },
@@ -586,6 +699,24 @@
                         this.snapPagesToCurrent();
                     }
                     this.currentPage.onPageEnterBackward();
+                },
+
+                skipToPage: function(pageNum) {
+                    var page = this.pages[pageNum-1];
+                    this.currentPage.setCurrentPanel(false);
+                    this.currentPage.centerInViewPort(true);
+                    this.currentPage.setCurrentPanel(false);
+                    ViewPort.setLetterBoxing(0,0);
+                    this.setCurrentPage(page);
+                    this.pages.forEach(function(page) {
+                        page.setLeftPosition(pageNum-1);
+                        page.$container.css('opacity',1);
+                    }.bind(this));
+                    if( ViewPort.MODE === ViewPort.PAGE_MODE ) {
+                        this.setForPageMode();
+                    } else {
+                        this.setForPanelZoomMode();
+                    }
                 }
 
             };
