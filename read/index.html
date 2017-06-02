@@ -62,7 +62,7 @@
             position: absolute;
             height: 100%;
             width: 100%;
-            z-index: 5;
+            z-index: 7;
         }
         .viewport__menu {
             position: absolute;
@@ -75,6 +75,31 @@
         }
         .viewport__menu--active {
             bottom: 0;
+        }
+        .viewport__message {
+            position: absolute;
+            left: 0;
+            bottom: 23vh;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            z-index: 5;
+            opacity: 1;
+            transition: opacity 350ms ease, bottom 1000ms ease;
+        }
+        .viewport__message--hide {
+            bottom: 20vh;
+            opacity: 0;
+        }
+        .message__text {
+            position: relative;
+            max-width: 25vh;
+            margin: 0 auto;
+            padding: 10px;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            background-color: rgba(0,0,0,0.75);
         }
         .letterbox {
             position: absolute;
@@ -154,6 +179,9 @@
             <div class="letterbox__horizontal letterbox__horizontal--bottom"></div>
             <div class="letterbox__vertical letterbox__vertical--left"></div>
             <div class="letterbox__vertical letterbox__vertical--right"></div>
+        </div>
+        <div class="viewport__message viewport__message--hide message">
+            <div class="message__text">Panel Zoom mode activated.</div>
         </div>
         <ul class="viewport__menu menu">
             <li class="menu__option">
@@ -360,8 +388,10 @@
                     this.MODE = mode;
                     if( mode === ViewPort.PAGE_MODE ) {
                         Book.setForPageMode();
+                        this.message('Page mode activated.');
                     } else {
                         Book.setForPanelZoomMode();
+                        this.message('Panel Zoom mode activated.');
                     }
                 },
 
@@ -415,6 +445,16 @@
 
                 getHeight: function() {
                     return this.$element.outerHeight();
+                },
+
+                message: function(text) {
+                    /*var $messageContainer = $('.viewport__message');
+                    var $message = $('.message__text');
+                    $message.text(text);
+                    $messageContainer.removeClass('viewport__message--hide');
+                    setTimeout(function() {
+                        $messageContainer.addClass('viewport__message--hide');
+                    },3000);*/
                 }
             };
 
@@ -663,6 +703,15 @@
                         return true;
                     }
                     return false
+                }
+
+                findPanelWithPos(x,y) {
+                    var panel = false;
+                    if(this.panels.length) {
+                        this.panels.forEach(function(panel) {
+                            //var convertedX = this.
+                        }.bind(this));
+                    }
                 }
 
                 snapTo(amount) {
