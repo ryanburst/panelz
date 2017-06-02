@@ -479,13 +479,13 @@
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.currentPage ) {
                         this.currentPage.$container.animate({
                             opacity: 0
-                        },{ duration: 250, easing: 'easeOutSine' });
+                        },{ duration: 550, easing: 'easeOutSine' });
                     }
                     this.currentPage = page;
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE ) {
                         this.currentPage.$container.css('left',0).animate({
                             opacity: 1
-                        },{ duration: 250, easing: 'easeOutSine' });
+                        },{ duration: 550, easing: 'easeOutSine' });
                     }
                 },
 
