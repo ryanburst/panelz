@@ -1164,7 +1164,7 @@
                             this.currentPage.centerInViewPort(true);
                             this.currentPage.setCurrentPanel(false);
                             ViewPort.setLetterBoxing(0,0);
-                            if( ViewPort.settings.get('showPageOnExit') ) {
+                            if( ViewPort.settings.get('showPageOnEnter') ) {
                                 return true;
                             }
 
@@ -1210,6 +1210,7 @@
                     this.panels = [];
                     this.PANEL_ANIMATION_SPEED = ViewPort.settings.get('panelTransitions');
                     this.SHOW_PAGE_ON_ENTER = ViewPort.settings.get('showPageOnEnter');
+                    this.SHOW_PAGE_ON_EXIT = ViewPort.settings.get('showPageOnExit');
                     this.TURN_THRESHHOLD = 30;
                     this.currentPanel = false;
                     this.previousPanel = false;
@@ -1225,6 +1226,9 @@
                     }.bind(this));
                     ViewPort.settings.on('change:showPageOnEnter',function(data) {
                         this.SHOW_PAGE_ON_ENTER = data.value
+                    }.bind(this));
+                    ViewPort.settings.on('change:showPageOnExit',function(data) {
+                        this.SHOW_PAGE_ON_EXIT = data.value
                     }.bind(this));
                 }
 
@@ -1283,7 +1287,7 @@
                 onPageEnterBackward() {
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
                         this.previousPanel = this.getLastPanel();
-                        if( ! this.SHOW_PAGE_ON_ENTER) {
+                        if( ! this.SHOW_PAGE_ON_EXIT) {
                             this.zoomToPanel(this.previousPanel);
                         }
                     }
