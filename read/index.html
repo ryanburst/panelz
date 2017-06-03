@@ -14,6 +14,12 @@
             margin: 0;
             font-family: Arial;
         }
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
         .viewport {
             position: relative;
             background-color: black;
@@ -116,16 +122,13 @@
             border-right: none;
         }
         .menu__option--active {
-            color: #    ;
+            color: #55a1e6;
         }
         .menu__icon {
             font-size: 28px;
         }
-        .panes {
-
-        }
         .pane {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             display: flex;
@@ -144,26 +147,75 @@
         .pane__container {
             position: relative;
             height: 90vh;
-            max-height: 90vh;
             width: 90vw;
-            max-width: 90vw;
-            overflow-y: auto;
             color: white;
-            background-color: #5c5c5d;
+        }
+        .pane--full .pane__container {
+            height: 100vh;
+            width: 100vw;
         }
         .pane__header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             padding: 15px;
             font-size: 24px;
-            border-bottom: 1px solid #55a1e6;
+            border-bottom: 3px solid #55a1e6;
+            background-color: #404042;
         }
         .pane__close {
             padding-left: 10px;
             cursor: pointer;
         }
         .pane__content {
+            height: 100%;
             padding: 15px;
+            padding-top: 75px;
+            background-color: #404042;
+            overflow-y: auto;
+        }
+        .pane__heading {
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-bottom: 2px solid #5c5c5d;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        .pane__menu {
+            padding: 0;
+            margin-top: 0;
+            margin-bottom: 20px;
+            list-style: none;
+        }
+        .page__menu:last-of-type {
+            margin-bottom: 0;
+        }
+        .pane__item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border-bottom: 1px solid #5c5c5d;
+        }
+        .pane__item:last-child {
+            border-bottom: 0;
+        }
+        .pane__item p {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .pane__item p:last-of-type {
+            margin-bottom: 0;
+        }
+        .pane__option {
+            font-size: 24px;
         }
         .page-list {
             padding: 0;
@@ -175,7 +227,7 @@
             flex-wrap: wrap;
         }
         .page-list__page {
-            width: 48%;
+            width: 40%;
             margin-bottom: 15px;
             font-size: 18px;
             text-align: center;
@@ -195,6 +247,44 @@
             position: relative;
             top: 0;
             left: 0;
+        }
+        .checkbox {
+            position: relative;
+            width: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .checkbox__label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,.4);
+            background: linear-gradient(top, #222 0%, #45484d 100%);
+            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
+        }
+        .checkbox__label:after {
+            content: '';
+            width: 16px;
+            height: 8px;
+            position: absolute;
+            top: 1px;
+            left: 4px;
+            border: 3px solid #fcfff4;
+            border-top: none;
+            border-right: none;
+            background: transparent;
+            opacity: 0;
+            transform: rotate(-45deg);
+        }
+        .checkbox input[type=checkbox] {
+            visibility: hidden;
+        }
+        .checkbox input[type=checkbox]:checked + .checkbox__label:after {
+            opacity: 1;
         }
     </style>
 </head>
@@ -255,6 +345,75 @@
                             <li class="page-list__page" data-skip-to-page="3">
                                 <img src="/panelz/read/images/tmnt-01-04.png" class="page-list__image" />
                                 <span class="page-list__number">3</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="panes__pane pane pane--settings pane--full pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Settings</span>
+                        <span class="pane__close" data-close>
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <div class="pane__content">
+                        <div class="pane__heading">General</div>
+                        <ul class="pane__menu">
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Left-Handed Mode</p>
+                                    <p class="pane__helper-text">Switches the page advancement panel to the left-hand side.</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="1" id="leftHanded" name="check" />
+                                  <label for="leftHanded" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="pane__heading">Panel Zoom</div>
+                        <ul class="pane__menu">
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Start in Panel Zoom Mode</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="1" id="startPanelZoom" name="startPanelZoom" />
+                                  <label for="startPanelZoom" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Animate Transitions</p>
+                                    <p class="pane__helper-text">Animate panel-to-panel transitions in Panel Zoom mode</p>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Letterboxing</p>
+                                    <p class="pane__helper-text">Use bars to mask content outside of the current panel</p>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Show page on enter</p>
+                                    <p class="pane__helper-text">Show full page on transitioning to a new page</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="1" id="showPageOnEnter" name="showPageOnEnter" checked />
+                                  <label for="showPageOnEnter" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Show page on exit</p>
+                                    <p class="pane__helper-text">Show full page before transitioning to a new page</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="1" id="showPageOnExit" name="showPageOnExit" checked />
+                                  <label for="showPageOnExit" class="checkbox__label"></label>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -367,6 +526,7 @@
                 init: function() {
                     this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
                     this.$menu.on('click','.menu__option--pages',this.onPageClick.bind(this));
+                    this.$menu.on('click','.menu__option--settings',this.onSettingsClick.bind(this));
                 },
 
                 activateOption: function(option) {
@@ -383,6 +543,10 @@
 
                 onPageClick: function(e) {
                     $('.pane--pages').removeClass('pane--hidden');
+                },
+
+                onSettingsClick: function(e) {
+                    $('.pane--settings').removeClass('pane--hidden');
                 }
             }
             var ViewPort = {
@@ -424,7 +588,7 @@
                     //pinch.recognizeWith(pan);
                     singletap.requireFailure(doubletap);
 
-                    $('body').on('touchend',function() {
+                    $('body').on('touchend click',function() {
                         ViewPort.$menu.removeClass('viewport__menu--was-shown');
                         if( ViewPort.$menu.hasClass('viewport__menu--active') ) {
                             ViewPort.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
