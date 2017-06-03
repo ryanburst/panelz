@@ -143,7 +143,7 @@
         }
         .pane--modal {
             background-color: rgba(0,0,0,.3);
-            z-index: 16;
+            z-index: 17;
         }
         .pane--hidden {
             opacity: 0;
@@ -176,6 +176,7 @@
             font-size: 24px;
             border-bottom: 3px solid #55a1e6;
             background-color: #404042;
+            z-index: 16;
         }
         .pane__close {
             padding-left: 10px;
@@ -423,8 +424,8 @@
                                     <p class="pane__helper-text">Animate panel-to-panel transitions in Panel Zoom mode</p>
                                 </div>
                             </li>
-                            <li class="pane__item">
-                                <div class="pane__text" data-open-pane="letterboxing">
+                            <li class="pane__item" data-open-pane="letterboxing">
+                                <div class="pane__text">
                                     <p class="pane__option">Letterboxing</p>
                                     <p class="pane__helper-text">Use bars to mask content outside of the current panel</p>
                                 </div>
