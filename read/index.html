@@ -193,7 +193,7 @@
         .pane--modal .pane__content {
             padding-top: 60px;
         }
-        .pane--modal .pane__content p {
+        .pane--modal .pane__content > p {
             margin-top: 15px;
             margin-bottom: 15px;
         }
@@ -558,7 +558,7 @@
                                     <p class="pane__option">No animation</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="no" id="no-animation" name="panelTransitions" />
+                                  <input type="radio" value="0" id="no-animation" name="panelTransitions" />
                                   <label for="no-animation" class="radio__label"></label>
                                 </div>
                             </li>
@@ -567,7 +567,7 @@
                                     <p class="pane__option">Fast animations</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="fast" id="fast-animation" name="panelTransitions" />
+                                  <input type="radio" value="250" id="fast-animation" name="panelTransitions" />
                                   <label for="fast-animation" class="radio__label"></label>
                                 </div>
                             </li>
@@ -576,7 +576,7 @@
                                     <p class="pane__option">Slow animations</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="slow" id="slow-animation" name="panelTransitions" />
+                                  <input type="radio" value="650" id="slow-animation" name="panelTransitions" />
                                   <label for="slow-animation" class="radio__label"></label>
                                 </div>
                             </li>
@@ -612,7 +612,6 @@
         $(document).ready(function() {
             var PanelsApp = {
                 init: function() {
-                    this.settings = new Settings();
                     ViewPort.init();
                     Menu.init();
                     Book.init({
@@ -714,7 +713,8 @@
                     $('.pane__item').on('click',function(e) {
                         if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
                             var $input = $(this).find(':radio, :checkbox');
-                            $input.prop('checked',!$input.prop('checked')).trigger('change');
+                            var checked = $input.is(':radio') ? true : !$input.prop('checked');
+                            $input.prop('checked',checked).trigger('change');
                             $input.closest('.pane--modal').find('[data-close]').trigger('click');
                         }
                     });
@@ -732,8 +732,10 @@
                     ViewPort.switchModes();
                 }
             }
-            class Settings {
+            class Settings extends EventClass {
                 constructor() {
+                    super();
+
                     this.DEFAULTS = {
                         leftHandMode: false,
                         startInPanelZoom: false,
@@ -743,7 +745,9 @@
                         showPageOnExit: true
                     };
 
-                    this.config = $.extend({},this.DEFAULTS,this.getUserSettings());
+                    this.config = this.DEFAULTS;
+
+                    this.loadConfig($.extend({},this.DEFAULTS,this.getUserSettings()));
                     this.setFields();
                     this.setEventListeners();
                 }
@@ -751,6 +755,12 @@
                 setEventListeners() {
                     $('[name="'+this.keys().join('"],[name="')+'"]').on('change',this.onFieldChange.bind(this));
                     $('[data-reset-settings]').on('click',this.reset.bind(this));
+                }
+
+                loadConfig(config) {
+                    this.keys().forEach(function(setting) {
+                        this.set(setting,config[setting]);
+                    }.bind(this));
                 }
 
                 setFields() {
@@ -777,12 +787,13 @@
                         val = $field.is(':checked');
                     }
 
+                    val = isNaN(parseFloat(val)) ? val : parseInt(val);
+
                     this.set(name,val);
                 }
 
                 reset() {
-                    this.config = this.DEFAULTS;
-                    this.setUserSettings();
+                    this.loadConfig(this.DEFAULTS);
                     this.setFields();
                 }
 
@@ -791,8 +802,15 @@
                 }
 
                 set(setting,val) {
+                    var oldVal = this.get(setting);
                     this.config[setting] = val;
                     this.setUserSettings();
+                    this.trigger('change:' + setting,{
+                        setting: setting,
+                        value: val,
+                        oldValue: oldVal,
+                        settings: this.config
+                    });
                 }
 
                 keys() {
@@ -824,10 +842,14 @@
                 $verticalLetterBox: $('.letterbox__vertical'),
 
                 init: function() {
+                    this.settings = new Settings();
+
                     this.PAGE_MODE = 'PAGE_MODE';
                     this.PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
-                    this.MODE = this.PAGE_MODE;
+                    this.MODE = this.settings.get('startInPanelZoom') ? this.PANEL_ZOOM_MODE : this.PAGE_MODE;
                     this.PAGE_TURN_THRESHOLD = 0.25;
+                    this.LETTERBOX_STYLE = this.settings.get('letterboxing');
+                    this.LEFT_HAND_MODE = this.settings.get('leftHandMode');
                     this.cmds = {};
                     this.cmds.PAGE_BACK = 'PAGE_BACK';
                     this.cmds.PAGE_FORWARD = 'PAGE_FORWARD';
@@ -900,6 +922,16 @@
                             Book.pageBackward();
                         }
                     });
+
+                    this.settings.on('change:letterboxing',function(data){
+                        this.LETTERBOX_STYLE = data.value;
+                        this.setLetterBoxStyle();
+                    }.bind(this));
+
+                    this.settings.on('change:leftHandMode',function(data){
+                        this.LEFT_HAND_MODE = data.value;
+                        this.setTapThresholds();
+                    }.bind(this));
                 },
 
                 canRecognizePan: function(rec, input) {
@@ -944,10 +976,17 @@
                 },
 
                 setTapThresholds: function() {
-                    this.PAGE_FORWARD_MIN = this.getWidth() - (this.getWidth() * this.PAGE_TURN_THRESHOLD);
-                    this.PAGE_FORWARD_MAX = this.getWidth();
-                    this.PAGE_BACK_MIN = 0;
-                    this.PAGE_BACK_MAX = this.getWidth() * this.PAGE_TURN_THRESHOLD;
+                    if(this.LEFT_HAND_MODE) {
+                        this.PAGE_BACK_MIN = this.getWidth() - (this.getWidth() * this.PAGE_TURN_THRESHOLD);
+                        this.PAGE_BACK_MAX = this.getWidth();
+                        this.PAGE_FORWARD_MIN = 0;
+                        this.PAGE_FORWARD_MAX = this.getWidth() * this.PAGE_TURN_THRESHOLD;
+                    } else {
+                        this.PAGE_FORWARD_MIN = this.getWidth() - (this.getWidth() * this.PAGE_TURN_THRESHOLD);
+                        this.PAGE_FORWARD_MAX = this.getWidth();
+                        this.PAGE_BACK_MIN = 0;
+                        this.PAGE_BACK_MAX = this.getWidth() * this.PAGE_TURN_THRESHOLD;
+                    }
                 },
 
                 findTapZone: function(x,y) {
@@ -963,19 +1002,30 @@
                 setLetterBoxing: function(height,width) {
                     var horizSize = height > 0 ? height / 2 : 0;
                     var vertSize = width > 0 ? width / 2 : 0;
-
+                    var speed = this.settings.get('panelTransitions');
                     this.$horizontalLetterBox.animate({
                         height: horizSize
                     },{
-                        duration: 250,
+                        duration: speed,
                         easing: 'easeOutSine'
                     });
                     this.$verticalLetterBox.animate({
                         height: vertSize
                     },{
-                        duration: 250,
+                        duration: speed,
                         easing: 'easeOutSine'
                     });
+                },
+
+                setLetterBoxStyle: function() {
+                    var opacity = (this.LETTERBOX_STYLE === 'no'
+                        ? 0
+                        :(this.LETTERBOX_STYLE === 'opaque'
+                            ? 0.75
+                            : 1));
+
+                    this.$horizontalLetterBox.css('opacity',opacity);
+                    this.$verticalLetterBox.css('opacity',opacity);
                 },
 
                 getWidth: function() {
@@ -1082,7 +1132,9 @@
                             this.currentPage.centerInViewPort(true);
                             this.currentPage.setCurrentPanel(false);
                             ViewPort.setLetterBoxing(0,0);
-                            return true;
+                            if( ViewPort.settings.get('showPageOnExit') ) {
+                                return true;
+                            }
                         }
                     }
 
@@ -1112,7 +1164,10 @@
                             this.currentPage.centerInViewPort(true);
                             this.currentPage.setCurrentPanel(false);
                             ViewPort.setLetterBoxing(0,0);
-                            return true;
+                            if( ViewPort.settings.get('showPageOnExit') ) {
+                                return true;
+                            }
+
                         }
                     }
 
@@ -1153,6 +1208,8 @@
                     this.isFirst = config.isFirst;
                     this.isLast = config.isLast;
                     this.panels = [];
+                    this.PANEL_ANIMATION_SPEED = ViewPort.settings.get('panelTransitions');
+                    this.SHOW_PAGE_ON_ENTER = ViewPort.settings.get('showPageOnEnter');
                     this.TURN_THRESHHOLD = 30;
                     this.currentPanel = false;
                     this.previousPanel = false;
@@ -1161,6 +1218,13 @@
                     this.loadSrc(config.src);
                     config.panels.forEach( function(panel) {
                         this.panels.push(new Panel(panel));
+                    }.bind(this));
+
+                    ViewPort.settings.on('change:panelTransitions',function(data) {
+                        this.PANEL_ANIMATION_SPEED = data.value
+                    }.bind(this));
+                    ViewPort.settings.on('change:showPageOnEnter',function(data) {
+                        this.SHOW_PAGE_ON_ENTER = data.value
                     }.bind(this));
                 }
 
@@ -1196,6 +1260,8 @@
                         console.log(env);
                     });
 
+
+
                     if( this.isFirst ) {
                         Book.setCurrentPage(this);
                     }
@@ -1204,6 +1270,9 @@
                 onPageEnterForward() {
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
                         this.nextPanel = this.getFirstPanel();
+                        if( ! this.SHOW_PAGE_ON_ENTER) {
+                            this.zoomToPanel(this.nextPanel);
+                        }
                     }
                 }
 
@@ -1214,6 +1283,9 @@
                 onPageEnterBackward() {
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
                         this.previousPanel = this.getLastPanel();
+                        if( ! this.SHOW_PAGE_ON_ENTER) {
+                            this.zoomToPanel(this.previousPanel);
+                        }
                     }
                 }
 
@@ -1241,7 +1313,7 @@
                         width: width,
                         height: height
                     },{
-                        duration: (animate ? 250 : 0),
+                        duration: (animate ? this.PANEL_ANIMATION_SPEED : 0),
                         easing: 'easeOutSine'
                     });
                 }
@@ -1350,14 +1422,14 @@
 
                     var top = panel.getTopPos() * pageHeight / this.getOriginalHeight();
                     var left = panel.getLeftPos() * pageWidth / this.getOriginalWidth();
-
+                    console.log(this.PANEL_ANIMATION_SPEED);
                     this.$element.animate({
                         top: -top + (ViewPort.getHeight() - height) / 2,
                         left: -left + ((ViewPort.getWidth() - width) / 2),
                         width: pageWidth,
                         height: pageHeight
                     },{
-                        duration: 250,
+                        duration: this.PANEL_ANIMATION_SPEED,
                         easing: 'easeOutSine'
                     });
 
