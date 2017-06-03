@@ -193,6 +193,10 @@
         .pane--modal .pane__content {
             padding-top: 60px;
         }
+        .pane--modal .pane__content p {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
         .pane__heading {
             padding-bottom: 10px;
             padding-left: 10px;
@@ -443,8 +447,14 @@
                                     <p class="pane__helper-text">Switches the page advancement panel to the left-hand side.</p>
                                 </div>
                                 <div class="checkbox">
-                                  <input type="checkbox" value="1" id="leftHanded" name="check" />
+                                  <input type="checkbox" value="true" id="leftHanded" name="leftHandMode" />
                                   <label for="leftHanded" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-open-pane="reset">
+                                <div class="pane__text">
+                                    <p class="pane__option">Reset</p>
+                                    <p class="pane__helper-text">Resets all app settings to their defaults</p>
                                 </div>
                             </li>
                         </ul>
@@ -455,8 +465,8 @@
                                     <p class="pane__option">Start in Panel Zoom Mode</p>
                                 </div>
                                 <div class="checkbox">
-                                  <input type="checkbox" value="1" id="startPanelZoom" name="startPanelZoom" />
-                                  <label for="startPanelZoom" class="checkbox__label"></label>
+                                  <input type="checkbox" value="true" id="startInPanelZoom" name="startInPanelZoom" />
+                                  <label for="startInPanelZoom" class="checkbox__label"></label>
                                 </div>
                             </li>
                             <li class="pane__item" data-open-pane="animations">
@@ -477,7 +487,7 @@
                                     <p class="pane__helper-text">Show full page on transitioning to a new page</p>
                                 </div>
                                 <div class="checkbox">
-                                  <input type="checkbox" value="1" id="showPageOnEnter" name="showPageOnEnter" checked />
+                                  <input type="checkbox" value="true" id="showPageOnEnter" name="showPageOnEnter" />
                                   <label for="showPageOnEnter" class="checkbox__label"></label>
                                 </div>
                             </li>
@@ -487,7 +497,7 @@
                                     <p class="pane__helper-text">Show full page before transitioning to a new page</p>
                                 </div>
                                 <div class="checkbox">
-                                  <input type="checkbox" value="1" id="showPageOnExit" name="showPageOnExit" checked />
+                                  <input type="checkbox" value="true" id="showPageOnExit" name="showPageOnExit" />
                                   <label for="showPageOnExit" class="checkbox__label"></label>
                                 </div>
                             </li>
@@ -516,7 +526,7 @@
                                     <p class="pane__option">Solid letterboxing</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="solid" id="solid-letterboxing" name="letterboxing" checked/>
+                                  <input type="radio" value="solid" id="solid-letterboxing" name="letterboxing"/>
                                   <label for="solid-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
@@ -548,7 +558,7 @@
                                     <p class="pane__option">No animation</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="no" id="no-animation" name="animation" />
+                                  <input type="radio" value="no" id="no-animation" name="panelTransitions" />
                                   <label for="no-animation" class="radio__label"></label>
                                 </div>
                             </li>
@@ -557,7 +567,7 @@
                                     <p class="pane__option">Fast animations</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="fast" id="fast-animation" name="animation" checked/>
+                                  <input type="radio" value="fast" id="fast-animation" name="panelTransitions" />
                                   <label for="fast-animation" class="radio__label"></label>
                                 </div>
                             </li>
@@ -566,13 +576,27 @@
                                     <p class="pane__option">Slow animations</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="slow" id="slow-animation" name="animation" />
+                                  <input type="radio" value="slow" id="slow-animation" name="panelTransitions" />
                                   <label for="slow-animation" class="radio__label"></label>
                                 </div>
                             </li>
                         </ul>
                         <div class="pane__actions">
                             <button class="pane__button" data-close>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panes__pane pane pane--reset pane--modal pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Reset Settings</span>
+                    </div>
+                    <div class="pane__content">
+                        <p>Are you sure you want to reset to the default settings?</p>
+                        <div class="pane__actions">
+                            <button class="pane__button" data-close>Cancel</button>
+                            <button class="pane__button" data-close data-reset-settings>Reset</button>
                         </div>
                     </div>
                 </div>
@@ -588,6 +612,7 @@
         $(document).ready(function() {
             var PanelsApp = {
                 init: function() {
+                    this.settings = new Settings();
                     ViewPort.init();
                     Menu.init();
                     Book.init({
@@ -705,6 +730,85 @@
 
                 onPanelZoomToggleClick: function(e) {
                     ViewPort.switchModes();
+                }
+            }
+            class Settings {
+                constructor() {
+                    this.DEFAULTS = {
+                        leftHandMode: false,
+                        startInPanelZoom: false,
+                        panelTransitions: 'fast',
+                        letterboxing: 'solid',
+                        showPageOnEnter: true,
+                        showPageOnExit: true
+                    };
+
+                    this.config = $.extend({},this.DEFAULTS,this.getUserSettings());
+                    this.setFields();
+                    this.setEventListeners();
+                }
+
+                setEventListeners() {
+                    $('[name="'+this.keys().join('"],[name="')+'"]').on('change',this.onFieldChange.bind(this));
+                    $('[data-reset-settings]').on('click',this.reset.bind(this));
+                }
+
+                setFields() {
+                    this.keys().forEach(function(setting) {
+                        var $fields = $('[name="'+setting+'"]');
+                        var value = this.get(setting);
+                        $fields.each(function() {
+                            var $this = $(this);
+                            if( $this.is(':checkbox') ) {
+                                $this.prop('checked',!!value);
+                            } else if( $this.is(':radio') && $this.val() === value ) {
+                                $this.prop('checked',true);
+                            }
+                        });
+                    }.bind(this));
+                }
+
+                onFieldChange(e) {
+                    var $field = $(e.currentTarget);
+                    var val = $field.val();
+                    var name = $field.attr('name');
+
+                    if( $field.is(':checkbox') ) {
+                        val = $field.is(':checked');
+                    }
+
+                    this.set(name,val);
+                }
+
+                reset() {
+                    this.config = this.DEFAULTS;
+                    this.setUserSettings();
+                    this.setFields();
+                }
+
+                get(setting) {
+                    return this.config[setting];
+                }
+
+                set(setting,val) {
+                    this.config[setting] = val;
+                    this.setUserSettings();
+                }
+
+                keys() {
+                    return Object.keys(this.config);
+                }
+
+                getUserSettings() {
+                    try {
+                        return JSON.parse(localStorage.getItem('panelzUserSettings'));
+                    } catch( Exception ) {
+                        return {};
+                    }
+                }
+
+                setUserSettings() {
+                    localStorage.setItem('panelzUserSettings',JSON.stringify(this.config));
                 }
             }
             var ViewPort = {
