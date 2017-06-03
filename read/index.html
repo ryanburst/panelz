@@ -160,10 +160,11 @@
             width: 100%;
         }
         .pane--modal .pane__container {
-            width: 300px;
+            width: 330px;
             height: auto;
             max-width: 90%;
-            max-height: 90;
+            max-height: 90%;f
+            overflow: auto;
         }
         .pane__header {
             position: absolute;
@@ -189,12 +190,15 @@
             background-color: #404042;
             overflow-y: auto;
         }
+        .pane--modal .pane__content {
+            padding-top: 60px;
+        }
         .pane__heading {
             padding-bottom: 10px;
             padding-left: 10px;
             padding-right: 10px;
             border-bottom: 2px solid #5c5c5d;
-            font-size: 18px;
+            font-size: 16px;
             text-transform: uppercase;
         }
         .pane__menu {
@@ -203,7 +207,7 @@
             margin-bottom: 20px;
             list-style: none;
         }
-        .page__menu:last-of-type {
+        .pane__menu:last-of-type {
             margin-bottom: 0;
         }
         .pane__item {
@@ -221,13 +225,17 @@
         }
         .pane__item p {
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 3px;
         }
         .pane__item p:last-of-type {
             margin-bottom: 0;
         }
         .pane__option {
             font-size: 20px;
+        }
+        .pane__helper-text {
+            font-size: 14px;
+            color: #dbdbdb;
         }
         .pane__actions {
             display: flex;
@@ -239,7 +247,6 @@
         .pane__button {
             flex-grow: 1;
             flex-basis: 0;
-            margin-top: 15px;
             padding-top: 15px;
             padding-bottom: 15px;
             background-color: transparent;
@@ -298,8 +305,6 @@
             height: 20px;
             cursor: pointer;
             border: 1px solid rgba(255,255,255,.4);
-            background: linear-gradient(top, #222 0%, #45484d 100%);
-            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,.4);
         }
         .checkbox__label:after {
             content: '';
@@ -319,6 +324,42 @@
             visibility: hidden;
         }
         .checkbox input[type=checkbox]:checked + .checkbox__label:after {
+            opacity: 1;
+        }
+        .radio {
+            position: relative;
+            width: 22px;
+            height: 22px;
+            margin-left: 20px;
+            flex-shrink: 0;
+            background: #fcfff4;
+            border-radius: 50px;
+        }
+        .radio__label {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            position: absolute;
+            left: 1px;
+            top: 1px;
+            background-color: #404042;
+            border-radius: 50px;
+        }
+        .radio__label:after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            background: #55a1e6;
+            opacity: 0;
+            border-radius: 50px;
+        }
+        .radio input[type=radio] {
+            visibility: hidden;
+        }
+        .radio input[type=radio]:checked + .radio__label:after {
             opacity: 1;
         }
     </style>
@@ -418,7 +459,7 @@
                                   <label for="startPanelZoom" class="checkbox__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item">
+                            <li class="pane__item" data-open-pane="animations">
                                 <div class="pane__text">
                                     <p class="pane__option">Animate Transitions</p>
                                     <p class="pane__helper-text">Animate panel-to-panel transitions in Panel Zoom mode</p>
@@ -460,10 +501,78 @@
                         <span>Letterboxing</span>
                     </div>
                     <div class="pane__content">
-                        Test
+                        <ul class="pane__menu">
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">No letterboxing</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="no" id="no-letterboxing" name="letterboxing" />
+                                  <label for="no-letterboxing" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Solid letterboxing</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="solid" id="solid-letterboxing" name="letterboxing" checked/>
+                                  <label for="solid-letterboxing" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Opaque letterboxing</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="opaque" id="opaque-letterboxing" name="letterboxing" />
+                                  <label for="opaque-letterboxing" class="radio__label"></label>
+                                </div>
+                            </li>
+                        </ul>
                         <div class="pane__actions">
                             <button class="pane__button" data-close>Cancel</button>
-                            <button class="pane__button" data-close>OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panes__pane pane pane--animations pane--modal pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Animate Transitions</span>
+                    </div>
+                    <div class="pane__content">
+                        <ul class="pane__menu">
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">No animation</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="no" id="no-animation" name="animation" />
+                                  <label for="no-animation" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Fast animations</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="fast" id="fast-animation" name="animation" checked/>
+                                  <label for="fast-animation" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Slow animations</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="slow" id="slow-animation" name="animation" />
+                                  <label for="slow-animation" class="radio__label"></label>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="pane__actions">
+                            <button class="pane__button" data-close>Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -576,6 +685,13 @@
                     this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
                     $('[data-open-pane]').on('click',function() {
                         $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
+                    });
+                    $('.pane__item').on('click',function(e) {
+                        if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
+                            var $input = $(this).find(':radio, :checkbox');
+                            $input.prop('checked',!$input.prop('checked')).trigger('change');
+                            $input.closest('.pane--modal').find('[data-close]').trigger('click');
+                        }
                     });
                 },
 
