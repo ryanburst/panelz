@@ -13,6 +13,7 @@
         body {
             margin: 0;
             font-family: Arial;
+            font-size: 16px;
         }
         html {
             box-sizing: border-box;
@@ -132,13 +133,17 @@
             top: 0;
             left: 0;
             display: flex;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             justify-content: center;
             align-items: center;
             opacity: 1;
             z-index: 15;
             transition: opacity 450ms ease, z-index 450ms ease;
+        }
+        .pane--modal {
+            background-color: rgba(0,0,0,.3);
+            z-index: 16;
         }
         .pane--hidden {
             opacity: 0;
@@ -146,13 +151,19 @@
         }
         .pane__container {
             position: relative;
-            height: 90vh;
-            width: 90vw;
+            height: 90%;
+            width: 90%;
             color: white;
         }
         .pane--full .pane__container {
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
+        }
+        .pane--modal .pane__container {
+            width: 300px;
+            height: auto;
+            max-width: 90%;
+            max-height: 90;
         }
         .pane__header {
             position: absolute;
@@ -215,7 +226,30 @@
             margin-bottom: 0;
         }
         .pane__option {
-            font-size: 24px;
+            font-size: 20px;
+        }
+        .pane__actions {
+            display: flex;
+            justify-content: stretch;
+            margin-left: -15px;
+            margin-bottom: -15px;
+            margin-right: -15px;
+        }
+        .pane__button {
+            flex-grow: 1;
+            flex-basis: 0;
+            margin-top: 15px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            background-color: transparent;
+            font-size: 17px;
+            color: white;
+            border: none;
+            border-top: 1px solid #5c5c5d;
+            border-right: 1px solid #5c5c5d;
+        }
+        .pane__button:last-of-type {
+            border-right: none;
         }
         .page-list {
             padding: 0;
@@ -301,13 +335,13 @@
             <div class="message__text">Panel Zoom mode activated.</div>
         </div>
         <ul class="viewport__menu menu">
-            <li class="menu__option menu__option--pages">
+            <li class="menu__option" data-open-pane="pages">
                 <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
             </li>
             <li class="menu__option menu__option--panel-zoom">
                 Panel<br />Zoom
             </li>
-            <li class="menu__option menu__option--settings">
+            <li class="menu__option" data-open-pane="settings">
                 <i class="fa fa-ellipsis-v menu__icon" aria-hidden="true"></i>
             </li>
         </ul>
@@ -390,7 +424,7 @@
                                 </div>
                             </li>
                             <li class="pane__item">
-                                <div class="pane__text">
+                                <div class="pane__text" data-open-pane="letterboxing">
                                     <p class="pane__option">Letterboxing</p>
                                     <p class="pane__helper-text">Use bars to mask content outside of the current panel</p>
                                 </div>
@@ -416,6 +450,20 @@
                                 </div>
                             </li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="panes__pane pane pane--letterboxing pane--modal pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Letterboxing</span>
+                    </div>
+                    <div class="pane__content">
+                        Test
+                        <div class="pane__actions">
+                            <button class="pane__button" data-close>Cancel</button>
+                            <button class="pane__button" data-close>OK</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -525,8 +573,9 @@
 
                 init: function() {
                     this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
-                    this.$menu.on('click','.menu__option--pages',this.onPageClick.bind(this));
-                    this.$menu.on('click','.menu__option--settings',this.onSettingsClick.bind(this));
+                    $('[data-open-pane]').on('click',function() {
+                        $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
+                    });
                 },
 
                 activateOption: function(option) {
@@ -539,14 +588,6 @@
 
                 onPanelZoomToggleClick: function(e) {
                     ViewPort.switchModes();
-                },
-
-                onPageClick: function(e) {
-                    $('.pane--pages').removeClass('pane--hidden');
-                },
-
-                onSettingsClick: function(e) {
-                    $('.pane--settings').removeClass('pane--hidden');
                 }
             }
             var ViewPort = {
