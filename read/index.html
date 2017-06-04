@@ -463,7 +463,7 @@
                         <ul class="pane__menu">
                             <li class="pane__item">
                                 <div class="pane__text">
-                                    <p class="pane__option">Start in Panel Zoom Mode</p>
+                                    <p class="pane__option">Start new books in Panel Zoom Mode</p>
                                 </div>
                                 <div class="checkbox">
                                   <input type="checkbox" value="true" id="startInPanelZoom" name="startInPanelZoom" />
@@ -833,7 +833,7 @@
                     localStorage.setItem('panelz',JSON.stringify(this.localSettings))
                 }
 
-                setLocalSetting(key,val) {
+                remember(key,val) {
                     this.localSettings[key] = val;
                     this.setLocalSettings();
                 }
@@ -847,7 +847,7 @@
                 }
 
                 setUserSettings() {
-                    this.setLocalSetting('settings',this.config);
+                    this.remember('settings',this.config);
                 }
             }
             var ViewPort = {
@@ -867,7 +867,7 @@
 
                     this.PAGE_MODE = 'PAGE_MODE';
                     this.PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
-                    this.MODE = this.settings.get('startInPanelZoom') ? this.PANEL_ZOOM_MODE : this.PAGE_MODE;
+                    this.MODE = this.getInitalMode();
                     this.PAGE_TURN_THRESHOLD = 0.25;
                     this.LETTERBOX_STYLE = this.settings.get('letterboxing');
                     this.LEFT_HAND_MODE = this.settings.get('leftHandMode');
@@ -920,6 +920,7 @@
                         if( ev.tapCount >= 2 ) {
                             return ViewPort.switchModes();
                         }
+                        alert('non double tap');
                         var cmd = ViewPort.findTapZone(ev.center.x,ev.center.y);
                         if( cmd === ViewPort.cmds.PAGE_FORWARD ) {
                             return Book.pageForward();
@@ -955,6 +956,13 @@
                     }.bind(this));
                 },
 
+                getInitalMode: function() {
+                    if( this.settings.getLocalSetting('mode') ) {
+                        return this.settings.getLocalSetting('mode');
+                    }
+                    this.settings.get('startInPanelZoom') ? this.PANEL_ZOOM_MODE : this.PAGE_MODE;
+                },
+
                 canRecognizePan: function(rec, input) {
                     return this.MODE === this.PAGE_MODE;
                 },
@@ -972,6 +980,7 @@
                         ? this.PANEL_ZOOM_MODE
                         : this.PAGE_MODE;
                     this.setMode(mode);
+                    this.settings.remember('mode',mode);
                 },
 
                 setMode: function(mode) {
@@ -1121,7 +1130,7 @@
                         },{ duration: 550, easing: 'easeOutSine' });
                     }
 
-                    ViewPort.settings.setLocalSetting('page',page.index);
+                    ViewPort.settings.remember('page',page.index);
                 },
 
                 setForPageMode: function() {
@@ -1261,7 +1270,6 @@
                     config.panels.forEach( function(panel,index) {
                         this.panels.push(new Panel(this,panel,index));
                     }.bind(this));
-                    console.log(this.panels);
                     ViewPort.settings.on('change:panelTransitions',function(data) {
                         this.PANEL_ANIMATION_SPEED = data.value
                     }.bind(this));
@@ -1474,7 +1482,7 @@
                     this.setCurrentPanel(panel);
                     this.setNextPanel();
                     this.setPreviousPanel();
-                    //ViewPort.settings.setLocalSetting('panel',panel.index);
+                    //ViewPort.settings.remember('panel',panel.index);
                 }
 
                 zoomOut() {
@@ -1482,7 +1490,7 @@
                     this.centerInViewPort(true);
                     this.setCurrentPanel(false);
                     ViewPort.setLetterBoxing(0,0);
-                    ViewPort.settings.setLocalSetting('panel',false);
+                    ViewPort.settings.remember('panel',false);
                 }
 
                 getOriginalWidth() {
