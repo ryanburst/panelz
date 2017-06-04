@@ -1175,6 +1175,7 @@
                         if( this.currentPage.currentPanel !== false && ! this.currentPage.hasNextPanel() ) {
                             console.log('Zoom out');
                             this.currentPage.zoomOut();
+                            this.currentPage.previousPanel = this.currentPage.getLastPanel();
                             if( ViewPort.settings.get('showPageOnExit') ) {
                                 return true;
                             }
@@ -1204,6 +1205,7 @@
                         if( this.currentPage.currentPanel !== false && ! this.currentPage.hasPreviousPanel() ) {
                             console.log('Zoom out');
                             this.currentPage.zoomOut();
+                            this.currentPage.nextPanel = this.currentPage.getFirstPanel()
                             if( ViewPort.settings.get('showPageOnEnter') ) {
                                 return true;
                             }
@@ -1242,6 +1244,7 @@
             class Page extends EventClass {
                 constructor(config) {
                     super();
+                    this.config = config;
                     this.index = config.index;
                     this.isFirst = config.isFirst;
                     this.isLast = config.isLast;
@@ -1255,10 +1258,10 @@
                     this.nextPanel = false;
                     this.lastPanelSeen = false;
                     this.loadSrc(config.src);
-                    config.panels.forEach( function(panel) {
-                        this.panels.push(new Panel(panel));
+                    config.panels.forEach( function(panel,index) {
+                        this.panels.push(new Panel(this,panel,index));
                     }.bind(this));
-
+                    console.log(this.panels);
                     ViewPort.settings.on('change:panelTransitions',function(data) {
                         this.PANEL_ANIMATION_SPEED = data.value
                     }.bind(this));
@@ -1508,11 +1511,13 @@
             }
 
             class Panel {
-                constructor(config) {
+                constructor(page,config,index) {
+                    this.page = page;
+                    this.index = index;
                     this.x = config.x;
                     this.y = config.y;
-                    this.nextPanel = config.nextPanel;
-                    this.previousPanel = config.previousPanel;
+                    this.nextPanel = this.page.config.panels[index+1] ? index + 1 : false;
+                    this.previousPanel = this.page.config.panels[index-1] ? index - 1 : false;
                     this.width = config.width;
                     this.height = config.height;
                 }
