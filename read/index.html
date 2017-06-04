@@ -872,8 +872,9 @@
                     //pinch.recognizeWith(pan);
                     singletap.requireFailure(doubletap);
 
-                    $('body').on('touchend click',function() {
+                    $('body').on('touchend',function() {
                         ViewPort.$menu.removeClass('viewport__menu--was-shown');
+                        console.log(ViewPort.$menu.hasClass('viewport__menu--active'));
                         if( ViewPort.$menu.hasClass('viewport__menu--active') ) {
                             ViewPort.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
                         }
@@ -907,6 +908,7 @@
                             return Book.pageBackward();
                         }
                         if( cmd === ViewPort.cmds.TOGGLE_MAIN_MENU ) {
+                            console.log(ViewPort.$menu);
                             if( ! ViewPort.$menu.hasClass('viewport__menu--was-shown') ) {
                                 ViewPort.$menu.addClass('viewport__menu--active');
                             }
