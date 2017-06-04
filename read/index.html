@@ -1139,9 +1139,7 @@
                         page.setLeftPosition(currentIndex);
                         page.$container.css('opacity',1);
                     }.bind(this));
-                    this.currentPage.centerInViewPort(true);
-                    this.currentPage.setCurrentPanel(false);
-                    ViewPort.setLetterBoxing(0,0);
+                    this.currentPage.zoomOut();
                 },
 
                 setForPanelZoomMode: function() {
@@ -1153,7 +1151,6 @@
 
                     if( this.currentPage.panels.length ) {
                         this.currentPage.onPageEnterForward();
-                        this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
                     }
                 },
 
@@ -1316,6 +1313,7 @@
                 onPageEnterForward() {
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
                         this.nextPanel = this.getFirstPanel();
+                        this.previousPanel = this.getPreviousPanel();
                         if( ! this.SHOW_PAGE_ON_ENTER) {
                             this.zoomToPanel(this.nextPanel);
                         }
@@ -1329,6 +1327,7 @@
                 onPageEnterBackward() {
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
                         this.previousPanel = this.getLastPanel();
+                        this.nextPanel = this.getNextPanel();
                         if( ! this.SHOW_PAGE_ON_EXIT) {
                             this.zoomToPanel(this.previousPanel);
                         }
@@ -1453,6 +1452,9 @@
                 }
 
                 getFirstPanel() {
+                    if( ViewPort.settings.getLocalSetting('panel') ) {
+                        return this.panels[ViewPort.settings.getLocalSetting('panel')];
+                    }
                     return this.panels.length ? this.panels[0] : false;
                 }
 
@@ -1481,7 +1483,7 @@
                     this.setCurrentPanel(panel);
                     this.setNextPanel();
                     this.setPreviousPanel();
-                    //ViewPort.settings.remember('panel',panel.index);
+                    ViewPort.settings.remember('panel',panel.index);
                 }
 
                 zoomOut() {
