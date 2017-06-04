@@ -920,7 +920,6 @@
                         if( ev.tapCount >= 2 ) {
                             return ViewPort.switchModes();
                         }
-                        alert('non double tap');
                         var cmd = ViewPort.findTapZone(ev.center.x,ev.center.y);
                         if( cmd === ViewPort.cmds.PAGE_FORWARD ) {
                             return Book.pageForward();
