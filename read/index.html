@@ -288,6 +288,7 @@
             left: 0;
             pointer-events: none;
             z-index: 2;
+            opacity: 0;
         }
         .page__image {
             position: relative;
@@ -747,6 +748,7 @@
 
                     this.config = this.DEFAULTS;
 
+                    this.localSettings = this.getLocalSettings();
                     this.loadConfig($.extend({},this.DEFAULTS,this.getUserSettings()));
                     this.setFields();
                     this.setEventListeners();
@@ -817,16 +819,35 @@
                     return Object.keys(this.config);
                 }
 
-                getUserSettings() {
+                getLocalSettings() {
                     try {
-                        return JSON.parse(localStorage.getItem('panelzUserSettings'));
+                        var localSettings = JSON.parse(localStorage.getItem('panelz'));
+                        console.log('Local Settings:',localSettings);
+                        return localSettings ? localSettings : {};
                     } catch( Exception ) {
                         return {};
                     }
                 }
 
+                setLocalSettings() {
+                    localStorage.setItem('panelz',JSON.stringify(this.localSettings))
+                }
+
+                setLocalSetting(key,val) {
+                    this.localSettings[key] = val;
+                    this.setLocalSettings();
+                }
+
+                getLocalSetting(key) {
+                    return this.localSettings[key];
+                }
+
+                getUserSettings() {
+                    return this.getLocalSetting('settings') ? this.getLocalSetting('settings') : {};
+                }
+
                 setUserSettings() {
-                    localStorage.setItem('panelzUserSettings',JSON.stringify(this.config));
+                    this.setLocalSetting('settings',this.config);
                 }
             }
             var ViewPort = {
@@ -874,7 +895,6 @@
 
                     $('body').on('touchend',function() {
                         ViewPort.$menu.removeClass('viewport__menu--was-shown');
-                        console.log(ViewPort.$menu.hasClass('viewport__menu--active'));
                         if( ViewPort.$menu.hasClass('viewport__menu--active') ) {
                             ViewPort.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
                         }
@@ -908,7 +928,6 @@
                             return Book.pageBackward();
                         }
                         if( cmd === ViewPort.cmds.TOGGLE_MAIN_MENU ) {
-                            console.log(ViewPort.$menu);
                             if( ! ViewPort.$menu.hasClass('viewport__menu--was-shown') ) {
                                 ViewPort.$menu.addClass('viewport__menu--active');
                             }
@@ -1053,14 +1072,37 @@
 
                 pages: [],
 
+                loaded: 0,
+
                 init: function(config) {
+                    this.config = config;
                     config.pages.forEach(function(page) {
-                        Book.addPage(new Page(page));
-                    });
+                        page = new Page(page);
+                        page.on('load',this.onPageLoaded.bind(this));
+                        this.pages.push(page);
+                    }.bind(this));
                 },
 
-                addPage: function(page) {
-                    this.pages.push(page);
+                onPageLoaded: function(page) {
+                    this.loaded += 1;
+                    if(this.loaded === this.pages.length) {
+                        this.onBookLoaded();
+                    }
+                },
+
+                onBookLoaded: function() {
+                    var lastRead = ViewPort.settings.getLocalSetting('page');
+                    var pageToSet = lastRead ? lastRead : 0;
+                    this.setCurrentPage(this.pages[pageToSet]);
+                    this.currentPage.onPageEnterForward();
+                    this.pages.forEach(function(page, index) {
+                        page.setLeftPosition(pageToSet);
+                        if( ViewPort.MODE === ViewPort.PAGE_MODE || this.currentPage.index === index) {
+                            page.$container.animate({
+                                opacity: 1
+                            },{ duration: 650, easing: 'easeOutSine'});
+                        }
+                    }.bind(this));
                 },
 
                 setCurrentPage: function(page) {
@@ -1078,10 +1120,12 @@
                             opacity: 1
                         },{ duration: 550, easing: 'easeOutSine' });
                     }
+
+                    ViewPort.settings.setLocalSetting('page',page.index);
                 },
 
                 setForPageMode: function() {
-                    console.log('Set For PAge mode');
+                    console.log('Set For Page mode');
                     var currentIndex = this.currentPage.index;
                     this.pages.forEach(function(page) {
                         page.setLeftPosition(currentIndex);
@@ -1093,7 +1137,7 @@
                 },
 
                 setForPanelZoomMode: function() {
-                    console.log('Set for panel zoom mode');
+                    console.log('Set for Panel Zoom mode');
                     this.pages.forEach(function(page) {
                         page.$container.css('left',0).css('opacity',0);
                     }.bind(this));
@@ -1130,10 +1174,7 @@
                         }
                         if( this.currentPage.currentPanel !== false && ! this.currentPage.hasNextPanel() ) {
                             console.log('Zoom out');
-                            this.currentPage.setCurrentPanel(false);
-                            this.currentPage.centerInViewPort(true);
-                            this.currentPage.setCurrentPanel(false);
-                            ViewPort.setLetterBoxing(0,0);
+                            this.currentPage.zoomOut();
                             if( ViewPort.settings.get('showPageOnExit') ) {
                                 return true;
                             }
@@ -1162,10 +1203,7 @@
                         }
                         if( this.currentPage.currentPanel !== false && ! this.currentPage.hasPreviousPanel() ) {
                             console.log('Zoom out');
-                            this.currentPage.setCurrentPanel(false);
-                            this.currentPage.centerInViewPort(true);
-                            this.currentPage.setCurrentPanel(false);
-                            ViewPort.setLetterBoxing(0,0);
+                            this.currentPage.zoomOut();
                             if( ViewPort.settings.get('showPageOnEnter') ) {
                                 return true;
                             }
@@ -1186,10 +1224,7 @@
 
                 skipToPage: function(pageNum) {
                     var page = this.pages[pageNum-1];
-                    this.currentPage.setCurrentPanel(false);
-                    this.currentPage.centerInViewPort(true);
-                    this.currentPage.setCurrentPanel(false);
-                    ViewPort.setLetterBoxing(0,0);
+                    this.currentPage.zoomOut();
                     this.setCurrentPage(page);
                     this.pages.forEach(function(page) {
                         page.setLeftPosition(pageNum-1);
@@ -1204,8 +1239,9 @@
 
             };
 
-            class Page {
+            class Page extends EventClass {
                 constructor(config) {
+                    super();
                     this.index = config.index;
                     this.isFirst = config.isFirst;
                     this.isLast = config.isLast;
@@ -1246,31 +1282,25 @@
                     this.originalWidth = this.$element.width();
                     this.originalHeight = this.$element.height();
                     this.centerInViewPort();
-                    this.setLeftPosition();
 
-                    var page = this;
                     ViewPort.interactable.on("panstart", function(ev) {
-                        page.originalLeft = parseInt( page.$container.css( "left" ), 10 );
-                    });
+                        this.originalLeft = parseInt( this.$container.css( "left" ), 10 );
+                    }.bind(this));
                     ViewPort.interactable.on("pan", function(ev) {
                         // Stop vertical pan flick
                         if(ev.offsetDirection === 8) {
                             return true;
                         }
-                        page.left = page.originalLeft + ev.deltaX
-                        page.$container.css( {
-                            "left": page.left
+                        this.left = this.originalLeft + ev.deltaX
+                        this.$container.css( {
+                            "left": this.left
                         } );
-                    });
+                    }.bind(this));
                     ViewPort.interactable.on("pinch",function(env) {
                         console.log(env);
                     });
 
-
-
-                    if( this.isFirst ) {
-                        Book.setCurrentPage(this);
-                    }
+                    this.trigger('load:page',this);
                 }
 
                 onPageEnterForward() {
@@ -1417,9 +1447,6 @@
                 }
 
                 zoomToPanel(panel) {
-                    console.log('Zoom to: ',panel);
-                    // var width = panel.width >= panel.height ? canvas.width : panel.width * canvas.height / panel.height;
-                    // var height = panel.height > panel.width ? canvas.height : panel.height * canvas.width / panel.width;
                     var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getWidth();
                     var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
 
@@ -1428,7 +1455,7 @@
 
                     var top = panel.getTopPos() * pageHeight / this.getOriginalHeight();
                     var left = panel.getLeftPos() * pageWidth / this.getOriginalWidth();
-                    console.log(this.PANEL_ANIMATION_SPEED);
+
                     this.$element.animate({
                         top: -top + (ViewPort.getHeight() - height) / 2,
                         left: -left + ((ViewPort.getWidth() - width) / 2),
@@ -1444,12 +1471,15 @@
                     this.setCurrentPanel(panel);
                     this.setNextPanel();
                     this.setPreviousPanel();
-                    // // Size up the whole page now that we have the resized panel width/height
-                    // var pageHeight = height * page.getOriginalSize().height / panel.height;
-                    // var pageWidth = width * page.getOriginalSize().width / panel.width;
-                    // console.log(panel.width,page.getOriginalSize().width,width);
-                    // var top = panel.top * pageHeight / page.getOriginalSize().height;
-                    // var left = panel.left * pageWidth / page.getOriginalSize().width;
+                    //ViewPort.settings.setLocalSetting('panel',panel.index);
+                }
+
+                zoomOut() {
+                    this.setCurrentPanel(false);
+                    this.centerInViewPort(true);
+                    this.setCurrentPanel(false);
+                    ViewPort.setLetterBoxing(0,0);
+                    ViewPort.settings.setLocalSetting('panel',false);
                 }
 
                 getOriginalWidth() {
