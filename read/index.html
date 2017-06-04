@@ -1314,7 +1314,7 @@
                     if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
                         this.nextPanel = this.getFirstPanel();
                         this.previousPanel = this.getPreviousPanel();
-                        if( ! this.SHOW_PAGE_ON_ENTER) {
+                        if( ! this.SHOW_PAGE_ON_ENTER || this.nextPanel.index !== 0) {
                             this.zoomToPanel(this.nextPanel);
                         }
                     }
