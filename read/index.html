@@ -21,6 +21,118 @@
         *, *:before, *:after {
             box-sizing: inherit;
         }
+        p {
+            margin-top: 0;
+        }
+        .heading {
+            font-size: 20px;
+        }
+        .heading--lg {
+            font-size: 32px;
+            text-align: center;
+        }
+        .heading--secondary {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .heading--center {
+            text-align: center;
+        }
+        .tutorial {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 16;
+            background-color: #f8f8f8;
+            opacity: 1;
+            transition: opacity 650ms ease, z-index 650ms ease;
+        }
+        .tutorial--hidden {
+            z-index: 0;
+            opacity: 0;
+        }
+        .tutorial__panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding-top: 70px;
+            padding-bottom: 85px;
+            padding-left: 30px;
+            padding-right: 30px;
+            opacity: 1;
+            z-index: 16;
+            transition: opacity 650ms ease, z-index 650ms ease;
+        }
+        .tutorial__panel--hidden {
+            opacity: 0;
+            z-index: 15;
+        }
+        .tutorial__panel--final-tip {
+            background-color: transparent;
+        }
+        .tutorial__image {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .tutorial__image--final-tip {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+        }
+        .tutorial__image img {
+            max-width: 100%;
+        }
+        .tutorial__cta {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px;
+            display: flex;
+            flex-basis: 30%;
+            -webkit-flex-basis: 30%;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .tutorial__progress {
+            flex-grow: 1;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            text-align: center;
+        }
+        .tutorial__progress-step {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-left: 8px;
+            margin-right: 8px;
+            border-radius: 50%;
+            border: 1px solid #43aa59;
+        }
+        .tutorial__progress-step--active {
+            background-color: #43aa59;
+        }
+        .tutorial__button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #55a1e6;
+            background-color: transparent;
+            border: 1px solid #55a1e6;
+        }
+        .tutorial__button--back {
+
+        }
+        .tutorial__button--skip {
+            position: absolute;
+            top: 20px;
+            right: 10px;
+            border-color: transparent;
+        }
         .viewport {
             position: relative;
             background-color: black;
@@ -138,12 +250,12 @@
             justify-content: center;
             align-items: center;
             opacity: 1;
-            z-index: 15;
+            z-index: 20;
             transition: opacity 450ms ease, z-index 450ms ease;
         }
         .pane--modal {
             background-color: rgba(0,0,0,.3);
-            z-index: 17;
+            z-index: 22;
         }
         .pane--hidden {
             opacity: 0;
@@ -177,7 +289,7 @@
             font-size: 24px;
             border-bottom: 3px solid #55a1e6;
             background-color: #404042;
-            z-index: 16;
+            z-index: 21;
         }
         .pane__close {
             padding-left: 10px;
@@ -370,6 +482,69 @@
     </style>
 </head>
 <body>
+    <div class="tutorial tutorial--hidden">
+        <div class="tutorial__panel">
+            <div class="heading heading--lg">Welcome to Panelz</div>
+            <div class="tutorial__content">
+                <div class="heading heading--secondary">Here are some terms you might not know to get you started:</div>
+                <p><strong>Panel Zoom</strong> - This mode will guide you along your comic, panel by panel.</p>
+                <p><strong>Page Mode</strong> - View the full page and all of its panels as you read.</p>
+            </div>
+            <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" style="visibility: hidden">Back</button>
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-next>Next</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <div class="tutorial__content">
+                <div class="tutorial__image">
+                    <img src="/panelz/read/images/tutorial-taps.png" />
+                </div>
+                <p><strong>Tap Left</strong> - Navigates backwards one panel or page.</p>
+                <p><strong>Tap Right</strong> - Navigates forward one panel or page.</p>
+                <p><strong>Tap Center</strong> - Open or close the menu options.</p>
+                <p><strong>Double Tap (anywhere)</strong> - Switch between page and Panel Zoom mode.</p>
+            </div>
+            <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-next>Next</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <div class="tutorial__content">
+                <div class="heading heading--secondary">You can also swipe to navigate!</div>
+                <div class="tutorial__image">
+                    <img src="/panelz/read/images/tutorial-swipes.png" />
+                </div>
+                <p><strong>Swipe Left</strong> - Navigates forward one panel or page.</p>
+                <p><strong>Swipe Right</strong> - Navigates backward one panel or page.</p>
+            </div>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-done>Done</button>
+            </div>
+        </div>
+        <!--<div class="tutorial__panel tutorial__panel--final-tip">
+            <img src="/panelz/read/images/final-tip.png" class="tutorial__final-tip" />
+        </div>-->
+    </div>
     <div class="viewport">
         <div class="viewport__interactable"></div>
         <div class="letterbox">
@@ -452,10 +627,22 @@
                                   <label for="leftHanded" class="checkbox__label"></label>
                                 </div>
                             </li>
+                            <li class="pane__item" data-open-pane="tutorial">
+                                <div class="pane__text">
+                                    <p class="pane__option">Tutorial</p>
+                                    <p class="pane__helper-text">Toggles the tutorial screens on or off</p>
+                                </div>
+                            </li>
                             <li class="pane__item" data-open-pane="reset">
                                 <div class="pane__text">
                                     <p class="pane__option">Reset</p>
                                     <p class="pane__helper-text">Resets all app settings to their defaults</p>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-open-pane="clearData">
+                                <div class="pane__text">
+                                    <p class="pane__option">Clear Data</p>
+                                    <p class="pane__helper-text">Clears all data, including local storage and all user settings</p>
                                 </div>
                             </li>
                         </ul>
@@ -503,6 +690,38 @@
                                 </div>
                             </li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="panes__pane pane pane--tutorial pane--modal pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Tutorial</span>
+                    </div>
+                    <div class="pane__content">
+                        <ul class="pane__menu">
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Show</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="true" id="show-tutorial" name="showTutorial" />
+                                  <label for="show-tutorial" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Hide</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="false" id="hide-tutorial" name="showTutorial" />
+                                  <label for="hide-tutorial" class="radio__label"></label>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="pane__actions">
+                            <button class="pane__button" data-close>Cancel</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -598,6 +817,20 @@
                         <div class="pane__actions">
                             <button class="pane__button" data-close>Cancel</button>
                             <button class="pane__button" data-close data-reset-settings>Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panes__pane pane pane--clearData pane--modal pane--hidden">
+                <div class="pane__container">
+                    <div class="pane__header">
+                        <span>Clear Data</span>
+                    </div>
+                    <div class="pane__content">
+                        <p>Are you sure you want to clear all application data?</p>
+                        <div class="pane__actions">
+                            <button class="pane__button" data-close>Cancel</button>
+                            <button class="pane__button" data-close data-clear-data>Clear</button>
                         </div>
                     </div>
                 </div>
@@ -743,10 +976,11 @@
                         panelTransitions: 'fast',
                         letterboxing: 'solid',
                         showPageOnEnter: true,
-                        showPageOnExit: true
+                        showPageOnExit: true,
+                        showTutorial: true
                     };
 
-                    this.config = this.DEFAULTS;
+                    this.config = {};
 
                     this.localSettings = this.getLocalSettings();
                     this.loadConfig($.extend({},this.DEFAULTS,this.getUserSettings()));
@@ -757,27 +991,39 @@
                 setEventListeners() {
                     $('[name="'+this.keys().join('"],[name="')+'"]').on('change',this.onFieldChange.bind(this));
                     $('[data-reset-settings]').on('click',this.reset.bind(this));
+                    $('[data-clear-data]').on('click',this.clear.bind(this));
                 }
 
                 loadConfig(config) {
-                    this.keys().forEach(function(setting) {
+                    Object.keys(config).forEach(function(setting) {
                         this.set(setting,config[setting]);
                     }.bind(this));
                 }
 
                 setFields() {
-                    this.keys().forEach(function(setting) {
-                        var $fields = $('[name="'+setting+'"]');
-                        var value = this.get(setting);
-                        $fields.each(function() {
-                            var $this = $(this);
-                            if( $this.is(':checkbox') ) {
-                                $this.prop('checked',!!value);
-                            } else if( $this.is(':radio') && $this.val() === value ) {
-                                $this.prop('checked',true);
-                            }
-                        });
+                    this.keys().forEach(this.setField.bind(this));
+                }
+
+                setField(setting) {
+                    var $fields = $('[name="'+setting+'"]');
+                    var value = this.get(setting);
+                    $fields.each(function(index,field) {
+                        var $this = $(field);
+                        var fieldVal = $this.val();
+                        if( $this.is(':checkbox') ) {
+                            $this.prop('checked',!!value);
+                        } else if( $this.is(':radio') && this.normalizeValue(fieldVal) == value ) {
+                            $this.prop('checked',true);
+                        }
                     }.bind(this));
+                }
+
+                normalizeValue(val) {
+                    val = isNaN(parseFloat(val)) ? val : parseInt(val);
+                    val = (val==='false') ? false : val;
+                    val = (val==='true') ? true : val;
+
+                    return val;
                 }
 
                 onFieldChange(e) {
@@ -789,14 +1035,17 @@
                         val = $field.is(':checked');
                     }
 
-                    val = isNaN(parseFloat(val)) ? val : parseInt(val);
-
-                    this.set(name,val);
+                    this.set(name,this.normalizeValue(val));
                 }
 
                 reset() {
                     this.loadConfig(this.DEFAULTS);
                     this.setFields();
+                }
+
+                clear() {
+                    localStorage.removeItem('panelz');
+                    this.reset();
                 }
 
                 get(setting) {
@@ -850,6 +1099,61 @@
                     this.remember('settings',this.config);
                 }
             }
+            class Tutorial extends EventClass {
+                constructor(settings) {
+                    super();
+                    this.settings = settings;
+                    this.addEventListeners();
+
+                    if( this.settings.get('showTutorial') ) {
+                        this.show();
+                    }
+                }
+
+                addEventListeners() {
+                    $('body').on('click','[data-tutorial-next]',this.next.bind(this));
+                    $('body').on('click','[data-tutorial-back]',this.back.bind(this));
+                    $('body').on('click','[data-tutorial-done]',this.done.bind(this));
+
+                    this.settings.on('change:showTutorial',this.toggle.bind(this));
+                }
+
+                next(e) {
+                    var $this = $(e.currentTarget);
+                    var $panel = $this.closest('.tutorial__panel');
+                    $panel.addClass('tutorial__panel--hidden');
+                    $panel.next().removeClass('tutorial__panel--hidden');
+                }
+
+                back(e) {
+                    var $this = $(e.currentTarget);
+                    var $panel = $this.closest('.tutorial__panel');
+                    $panel.addClass('tutorial__panel--hidden');
+                    $panel.prev().removeClass('tutorial__panel--hidden');
+                }
+
+                done() {
+                    this.settings.set('showTutorial',false);
+                    this.settings.setField('showTutorial');
+                }
+
+                toggle(ev) {
+                    if(ev.value === true) {
+                        this.show();
+                    } else {
+                        this.hide();
+                    }
+                }
+
+                show() {
+                    $('.tutorial__panel').addClass('tutorial__panel--hidden').first().removeClass('tutorial__panel--hidden');
+                    $('.tutorial').removeClass('tutorial--hidden');
+                }
+
+                hide() {
+                    $('.tutorial').addClass('tutorial--hidden');
+                }
+            }
             var ViewPort = {
 
                 $element: $('.viewport'),
@@ -864,6 +1168,7 @@
 
                 init: function() {
                     this.settings = new Settings();
+                    this.tutorial = new Tutorial(this.settings);
 
                     this.PAGE_MODE = 'PAGE_MODE';
                     this.PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
@@ -879,6 +1184,10 @@
                     this.setEventListeners();
                     this.setViewPortSize();
                     this.setTapThresholds();
+
+                    if(this.MODE === this.PANEL_ZOOM_MODE) {
+                        Menu.activateOption('panel-zoom');
+                    }
 
                     this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 
@@ -959,7 +1268,7 @@
                     if( this.settings.getLocalSetting('mode') ) {
                         return this.settings.getLocalSetting('mode');
                     }
-                    this.settings.get('startInPanelZoom') ? this.PANEL_ZOOM_MODE : this.PAGE_MODE;
+                    return this.settings.get('startInPanelZoom') ? this.PANEL_ZOOM_MODE : this.PAGE_MODE;
                 },
 
                 canRecognizePan: function(rec, input) {
