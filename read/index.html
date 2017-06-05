@@ -390,6 +390,9 @@
             font-size: 18px;
             text-align: center;
         }
+        .page-list__page--template {
+            display: none;
+        }
         .page-list__image {
             max-width: 100%;
         }
@@ -578,29 +581,9 @@
                     </div>
                     <div class="pane__content">
                         <ul class="page-list">
-                            <li class="page-list__page" data-skip-to-page="1">
-                                <img src="/panelz/read/images/tmnt-01-01.png" class="page-list__image" />
-                                <span class="page-list__number">1</span>
-                            </li>
-                            <li class="page-list__page" data-skip-to-page="2">
-                                <img src="/panelz/read/images/tmnt-01-02.png" class="page-list__image" />
-                                <span class="page-list__number">2</span>
-                            </li>
-                            <li class="page-list__page" data-skip-to-page="3">
-                                <img src="/panelz/read/images/tmnt-01-04.png" class="page-list__image" />
-                                <span class="page-list__number">3</span>
-                            </li>
-                            <li class="page-list__page" data-skip-to-page="1">
-                                <img src="/panelz/read/images/tmnt-01-01.png" class="page-list__image" />
-                                <span class="page-list__number">1</span>
-                            </li>
-                            <li class="page-list__page" data-skip-to-page="2">
-                                <img src="/panelz/read/images/tmnt-01-02.png" class="page-list__image" />
-                                <span class="page-list__number">2</span>
-                            </li>
-                            <li class="page-list__page" data-skip-to-page="3">
-                                <img src="/panelz/read/images/tmnt-01-04.png" class="page-list__image" />
-                                <span class="page-list__number">3</span>
+                            <li class="page-list__page page-list__page--template" data-skip-to-page="">
+                                <img src="" class="page-list__image" />
+                                <span class="page-list__number"></span>
                             </li>
                         </ul>
                     </div>
@@ -866,67 +849,116 @@
                                     {
                                         x: 40,
                                         y: 90,
-                                        nextPanel: 1,
-                                        previousPanel: false,
                                         width: 626,
                                         height: 442
                                     },
                                     {
                                         x: 324,
                                         y: 222,
-                                        nextPanel: 2,
-                                        previousPanel: 0,
                                         width: 626,
                                         height: 442
                                     },
                                     {
                                         x: 0,
                                         y: 0,
-                                        nextPanel: 3,
-                                        previousPanel: 1,
                                         width: 954,
                                         height: 776
                                     },
                                     {
                                         x: 0,
                                         y: 775,
-                                        nextPanel: 4,
-                                        previousPanel: 2,
                                         width: 453,
                                         height: 372
                                     },
                                     {
                                         x: 456,
                                         y: 808,
-                                        nextPanel: 5,
-                                        previousPanel: 3,
                                         width: 495,
                                         height: 344
                                     },
                                     {
                                         x: 16,
                                         y: 1154,
-                                        nextPanel: 6,
-                                        previousPanel: 4,
                                         width: 550,
                                         height: 298
                                     },
                                     {
                                         x: 392,
                                         y: 1154,
-                                        nextPanel: false,
-                                        previousPanel: 5,
                                         width: 556,
                                         height: 298
                                     }
                                 ]
                             },
                             {
-                                src: "/panelz/read/images/tmnt-01-04.png",
+                                src: "/panelz/read/images/tmnt-01-03.png",
                                 index: 2,
                                 isFirst: false,
+                                isLast: false,
+                                panels: [
+                                    {
+                                        x: 0,
+                                        y: 0,
+                                        width: 510,
+                                        height: 340
+                                    },
+                                    {
+                                        x: 278,
+                                        y: 334,
+                                        width: 503,
+                                        height: 335
+                                    },
+                                    {
+                                        x: 20,
+                                        y: 20,
+                                        width: 1878,
+                                        height: 1436
+                                    }
+                                ]
+                            },
+                            {
+                                src: "/panelz/read/images/tmnt-01-04.png",
+                                index: 3,
+                                isFirst: false,
                                 isLast: true,
-                                panels: []
+                                panels: [
+                                    {
+                                        x: 75,
+                                        y: 0,
+                                        width: 713,
+                                        height: 175
+                                    },
+                                    {
+                                        x: 108,
+                                        y: 196,
+                                        width: 713,
+                                        height: 277
+                                    },
+                                    {
+                                        x: 790,
+                                        y: 258,
+                                        width: 161,
+                                        height: 390
+                                    },
+                                    {
+                                        x: 124,
+                                        y: 500,
+                                        width: 735,
+                                        height: 286
+                                    },
+                                    {
+                                        x: 30,
+                                        y: 820,
+                                        width: 480,
+                                        height: 640
+                                    },
+                                    {
+                                        x: 538,
+                                        y: 800,
+                                        width: 410,
+                                        height: 665
+                                    }
+                                ]
                             }
                         ]
                     });
@@ -1044,6 +1076,7 @@
                 }
 
                 clear() {
+                    this.localSettings = {};
                     localStorage.removeItem('panelz');
                     this.reset();
                 }
@@ -1209,7 +1242,7 @@
                         }
                     });
 
-                    $('[data-skip-to-page]').on('click', function(e) {
+                    $('body').on('click', '[data-skip-to-page]', function(e) {
                         var $this = $(e.currentTarget);
                         var page = $this.attr('data-skip-to-page');
                         $this.closest('.pane').find('[data-close]').trigger('click');
@@ -1348,7 +1381,7 @@
                         easing: 'easeOutSine'
                     });
                     this.$verticalLetterBox.animate({
-                        height: vertSize
+                        width: vertSize
                     },{
                         duration: speed,
                         easing: 'easeOutSine'
@@ -1419,6 +1452,17 @@
                                 opacity: 1
                             },{ duration: 650, easing: 'easeOutSine'});
                         }
+                    }.bind(this));
+                    this.buildPageIndex();
+                },
+
+                buildPageIndex: function() {
+                    this.pages.forEach(function(page) {
+                        var $page = $('.page-list__page--template').clone().removeClass('page-list__page--template');
+                        $page.attr('data-skip-to-page',page.index+1);
+                        $page.find('.page-list__image').attr('src',page.config.src);
+                        $page.find('.page-list__number').text(page.index+1);
+                        $('.page-list').append($page);
                     }.bind(this));
                 },
 
@@ -1649,11 +1693,11 @@
 
                 centerInViewPort(animate) {
                     var width = ViewPort.getWidth();
-                    var height = this.getHeight() * ViewPort.getWidth() / this.getWidth();
+                    var height = this.getOriginalHeight() * ViewPort.getWidth() / this.getOriginalWidth();
 
                     if( height > ViewPort.getHeight() ) {
                         height = ViewPort.getHeight();
-                        width = this.getWidth() * ViewPort.getHeight() / this.getHeight();
+                        width = this.getOriginalWidth() * ViewPort.getHeight() / this.getOriginalHeight();
                     }
 
                     var top = (ViewPort.getHeight() - height) / 2;
@@ -1768,8 +1812,18 @@
                 }
 
                 zoomToPanel(panel) {
-                    var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getWidth();
+                    var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
                     var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+
+                    if( width > ViewPort.getWidth() ) {
+                        width = ViewPort.getWidth();
+                        height = panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+                    }
+
+                    if( height > ViewPort.getHeight() ) {
+                        height = ViewPort.getHeight();
+                        width = panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
+                    }
 
                     var pageHeight = height * this.getOriginalHeight() / panel.getHeight();
                     var pageWidth = width * this.getOriginalWidth() / panel.getWidth();
