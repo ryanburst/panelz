@@ -28,6 +28,7 @@
             font-size: 20px;
         }
         .heading--lg {
+            margin-top: 20px;
             font-size: 32px;
             text-align: center;
         }
@@ -57,12 +58,11 @@
             position: absolute;
             top: 0;
             left: 0;
+            display: flex;
+            flex-direction: column;
             width: 100%;
             height: 100%;
-            padding-top: 70px;
-            padding-bottom: 85px;
-            padding-left: 30px;
-            padding-right: 30px;
+            padding: 30px;
             opacity: 1;
             z-index: 16;
             transition: opacity 650ms ease, z-index 650ms ease;
@@ -71,30 +71,19 @@
             opacity: 0;
             z-index: 15;
         }
-        .tutorial__panel--final-tip {
-            background-color: transparent;
+        .tutorial__content {
+            flex-grow: 1;
         }
         .tutorial__image {
             margin-bottom: 10px;
             text-align: center;
         }
-        .tutorial__image--final-tip {
-            position: absolute;
-            bottom: 60px;
-            right: 20px;
-        }
         .tutorial__image img {
             max-width: 100%;
         }
         .tutorial__cta {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 30px;
             display: flex;
-            flex-basis: 30%;
-            -webkit-flex-basis: 30%;
+            width: 100%;
             align-items: center;
             justify-content: flex-end;
         }
@@ -124,13 +113,7 @@
             background-color: transparent;
             border: 1px solid #55a1e6;
         }
-        .tutorial__button--back {
-
-        }
         .tutorial__button--skip {
-            position: absolute;
-            top: 20px;
-            right: 10px;
             border-color: transparent;
         }
         .viewport {
@@ -487,13 +470,15 @@
 <body>
     <div class="tutorial tutorial--hidden">
         <div class="tutorial__panel">
-            <div class="heading heading--lg">Welcome to Panelz</div>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
+            </div>
             <div class="tutorial__content">
+                <div class="heading heading--lg">Welcome to Panelz</div>
                 <div class="heading heading--secondary">Here are some terms you might not know to get you started:</div>
                 <p><strong>Panel Zoom</strong> - This mode will guide you along your comic, panel by panel.</p>
                 <p><strong>Page Mode</strong> - View the full page and all of its panels as you read.</p>
             </div>
-            <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" style="visibility: hidden">Back</button>
                 <ul class="tutorial__progress">
@@ -505,6 +490,9 @@
             </div>
         </div>
         <div class="tutorial__panel tutorial__panel--hidden">
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
+            </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
                     <img src="/panelz/read/images/tutorial-taps.png" />
@@ -514,7 +502,6 @@
                 <p><strong>Tap Center</strong> - Open or close the menu options.</p>
                 <p><strong>Double Tap (anywhere)</strong> - Switch between page and Panel Zoom mode.</p>
             </div>
-            <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
                 <ul class="tutorial__progress">
