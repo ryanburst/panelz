@@ -1123,6 +1123,11 @@
                 constructor(settings) {
                     super();
                     this.settings = settings;
+
+                    this.interactable = new Hammer.Manager($('.tutorial')[0]);
+                    var swipe = new Hammer.Swipe();
+                    this.interactable.add([swipe]);
+
                     this.addEventListeners();
 
                     if( this.settings.get('showTutorial') ) {
@@ -1136,20 +1141,26 @@
                     $('body').on('click','[data-tutorial-done]',this.done.bind(this));
 
                     this.settings.on('change:showTutorial',this.toggle.bind(this));
+
+                    this.interactable.on('swipeleft',this.next.bind(this));
+                    this.interactable.on('swiperight',this.back.bind(this));
                 }
 
                 next(e) {
-                    var $this = $(e.currentTarget);
-                    var $panel = $this.closest('.tutorial__panel');
-                    $panel.addClass('tutorial__panel--hidden');
-                    $panel.next().removeClass('tutorial__panel--hidden');
+                    var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
+                    if( $panel.next().length ) {
+                        $panel.addClass('tutorial__panel--hidden');
+                        $panel.next().removeClass('tutorial__panel--hidden');
+                    }
+
                 }
 
                 back(e) {
-                    var $this = $(e.currentTarget);
-                    var $panel = $this.closest('.tutorial__panel');
-                    $panel.addClass('tutorial__panel--hidden');
-                    $panel.prev().removeClass('tutorial__panel--hidden');
+                    var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
+                    if( $panel.prev().length ) {
+                        $panel.addClass('tutorial__panel--hidden');
+                        $panel.prev().removeClass('tutorial__panel--hidden');
+                    }
                 }
 
                 done() {
