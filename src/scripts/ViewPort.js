@@ -1,15 +1,5 @@
 var ViewPort = {
 
-    $element: $('.viewport'),
-
-    $container: $(window),
-
-    $menu: $('.viewport__menu'),
-
-    $horizontalLetterBox: $('.letterbox__horizontal'),
-
-    $verticalLetterBox: $('.letterbox__vertical'),
-
     init: function() {
         this.$element = $('.viewport');
         this.$container = $(window);

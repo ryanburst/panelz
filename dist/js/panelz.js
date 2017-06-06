@@ -388,7 +388,7 @@ var EventClass = function () {
 
 var Menu = {
     init: function init() {
-        this.$menu = $('.menu');
+        this.$menu = $('.viewport__menu');
         this.$menu.on('click', '.menu__option--panel-zoom', this.onPanelZoomToggleClick.bind(this));
         $('body').on('click', '[data-open-pane]', function () {
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
@@ -1010,16 +1010,6 @@ var Tutorial = function (_EventClass3) {
 
 var ViewPort = {
 
-    $element: $('.viewport'),
-
-    $container: $(window),
-
-    $menu: $('.viewport__menu'),
-
-    $horizontalLetterBox: $('.letterbox__horizontal'),
-
-    $verticalLetterBox: $('.letterbox__vertical'),
-
     init: function init() {
         this.$element = $('.viewport');
         this.$container = $(window);
@@ -1271,6 +1261,7 @@ var Panelz = function (_EventClass4) {
         var _this4 = _possibleConstructorReturn(this, (Panelz.__proto__ || Object.getPrototypeOf(Panelz)).call(this));
 
         $(config.container).append(PanelzMarkup);
+        Menu.init();
         ViewPort.init();
         Menu.init();
         Book.init(config);

@@ -1,6 +1,6 @@
 var Menu = {
     init: function() {
-        this.$menu = $('.menu');
+        this.$menu = $('.viewport__menu');
         this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
         $('body').on('click','[data-open-pane]',function() {
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
