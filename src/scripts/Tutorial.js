@@ -44,6 +44,7 @@ class Tutorial extends EventClass {
     done() {
         this.settings.set('showTutorial',false);
         this.settings.setField('showTutorial');
+        this.trigger('done');
     }
 
     toggle(ev) {

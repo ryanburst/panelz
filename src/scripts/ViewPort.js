@@ -49,6 +49,8 @@ var ViewPort = {
             }
         });
 
+        this.tutorial.on('done',this.onTutorialDone.bind(this));
+
         $('body').on('click', '[data-skip-to-page]', function(e) {
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
@@ -114,6 +116,14 @@ var ViewPort = {
         $(window).on('resize orientationchange',this.onResize.bind(this));
     },
 
+    onTutorialDone: function() {
+        this.$menu.addClass('viewport__menu--active');
+        this.message('The tutorial is always available in the settings menu at the bottom right.')
+        setTimeout(function() {
+            this.$menu.removeClass('viewport__menu--active');
+        }.bind(this),5000);
+    },
+
     getInitalMode: function() {
         if( this.settings.getLocalSetting('mode') ) {
             return this.settings.getLocalSetting('mode');
@@ -146,11 +156,11 @@ var ViewPort = {
         if( mode === ViewPort.PAGE_MODE ) {
             Book.setForPageMode();
             Menu.deactivateOption('panel-zoom');
-            this.message('Page mode activated.');
+            //this.message('Page mode activated.');
         } else {
             Book.setForPanelZoomMode();
             Menu.activateOption('panel-zoom');
-            this.message('Panel Zoom mode activated.');
+            //this.message('Panel Zoom mode activated.');
         }
     },
 
@@ -226,13 +236,13 @@ var ViewPort = {
     },
 
     message: function(text) {
-        /*var $messageContainer = $('.viewport__message');
+        var $messageContainer = $('.viewport__message');
         var $message = $('.message__text');
         $message.text(text);
         $messageContainer.removeClass('viewport__message--hide');
         setTimeout(function() {
             $messageContainer.addClass('viewport__message--hide');
-        },3000);*/
+        },5000);
     },
 
     onResize: function(e) {

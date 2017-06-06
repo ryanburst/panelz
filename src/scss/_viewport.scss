@@ -23,7 +23,7 @@
     &__message {
         position: absolute;
         left: 0;
-        bottom: 23vh;
+        bottom: 85px;
         display: flex;
         justify-content: center;
         width: 100%;
@@ -31,7 +31,7 @@
         opacity: 1;
         transition: opacity 350ms ease, bottom 1000ms ease;
         &--hide {
-            bottom: 20vh;
+            bottom: 50px;
             opacity: 0;
         }
     }
