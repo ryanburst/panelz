@@ -5,27 +5,25 @@ var autoprefixer = require('gulp-autoprefixer');
 var babel = require('gulp-babel');
 var concat = require('gulp-concat');
 
-// Variables
-var input = './src/scss/**/*.scss';
-var output = './read/css';
-var sassOptions = {
-  errLogToConsole: true,
-  outputStyle: 'expanded'
-};
-var autoprefixerOptions = {
-  browsers: ['last 2 versions']
-};
 
-gulp.task('default', function () {
+gulp.task('css', function () {
   return gulp
-    .src(input)
-    .pipe(sass(sassOptions).on('error', sass.logError))
-    .pipe(autoprefixer('last 2 versions'))
-    .pipe(gulp.dest(output));
+    .src('./src/scss/**/*.scss')
+    .pipe(sass({
+          errLogToConsole: true,
+          outputStyle: 'expanded'
+        }).on('error', sass.logError))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions']
+    }))
+    .pipe(gulp.dest('./read/css'));
 });
 
 gulp.task('scripts', function () {
-  return gulp.src('./src/scripts/**/*.js')
+  return gulp.src([
+            './src/scripts/**/*.js',
+            '!./src/scripts/vendor/**'
+        ])
         .pipe(concat('panelz.js'))
         .pipe(babel({
             presets: ['es2015']
@@ -34,5 +32,8 @@ gulp.task('scripts', function () {
 });
 
 gulp.task('watch', function () {
-    gulp.watch(input, ['default']);
+    gulp.watch('./src/scss/**/*.scss', ['css']);
+    gulp.watch('./src/scripts/**/*.js', ['scripts']);
 });
+
+gulp.task('default', ['css','scripts']);

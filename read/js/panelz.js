@@ -1,12 +1,210 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// https://github.com/sroucheray/event-class
+var multiChannelSep = /(?:,|\s)+/g;
+var channelSep = /:+/g;
+var channelsSymbol = Symbol('channels');
+
+var EventClass = function () {
+    function EventClass() {
+        _classCallCheck(this, EventClass);
+
+        this[channelsSymbol] = {};
+    }
+
+    _createClass(EventClass, [{
+        key: '_getChannels',
+        value: function _getChannels(channelString) {
+            return channelString.trim().split(multiChannelSep);
+        }
+    }, {
+        key: '_getNameSpaces',
+        value: function _getNameSpaces(channel) {
+            var namespaces = [];
+            var splittedChannels = channel.trim().split(channelSep);
+
+            for (var i = splittedChannels.length; i >= 1; i--) {
+                namespaces.push(splittedChannels.slice(0, i).join(':'));
+            }
+
+            return namespaces;
+        }
+    }, {
+        key: 'trigger',
+        value: function trigger(event, data) {
+            var channels = this._getChannels(event);
+
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = channels[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var channel = _step.value;
+
+                    var namespaces = this._getNameSpaces(channel);
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = namespaces[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var namespace = _step2.value;
+
+                            if (!this[channelsSymbol][namespace]) {
+                                continue;
+                            }
+
+                            var _iteratorNormalCompletion3 = true;
+                            var _didIteratorError3 = false;
+                            var _iteratorError3 = undefined;
+
+                            try {
+                                for (var _iterator3 = this[channelsSymbol][namespace][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                    var callback = _step3.value;
+
+                                    callback.call(this, data);
+                                }
+                            } catch (err) {
+                                _didIteratorError3 = true;
+                                _iteratorError3 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                        _iterator3.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError3) {
+                                        throw _iteratorError3;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'on',
+        value: function on(event, callback) {
+            var channels = this._getChannels(event);
+
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = channels[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var channel = _step4.value;
+
+                    if (!this[channelsSymbol][channel]) {
+                        this[channelsSymbol][channel] = [];
+                    }
+
+                    this[channelsSymbol][channel].push(callback);
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'off',
+        value: function off(event, callback) {
+            var channels = this._getChannels(event);
+
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = channels[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var channel = _step5.value;
+
+                    if (!this[channelsSymbol][channel]) {
+                        return;
+                    }
+
+                    var index = this[channelsSymbol][channel].indexOf(callback);
+
+                    if (index > -1) {
+                        this[channelsSymbol][channel].splice(index, 1);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'once',
+        value: function once(event, callback) {
+            function offCallback() {
+                this.off(event, callback);
+                this.off(event, offCallback);
+            }
+
+            this.on(event, callback);
+            this.on(event, offCallback);
+        }
+    }]);
+
+    return EventClass;
+}();
 
 $(document).ready(function () {
     var PanelsApp = {
@@ -186,26 +384,26 @@ $(document).ready(function () {
         }
 
         _createClass(Settings, [{
-            key: "setEventListeners",
+            key: 'setEventListeners',
             value: function setEventListeners() {
                 $('[name="' + this.keys().join('"],[name="') + '"]').on('change', this.onFieldChange.bind(this));
                 $('[data-reset-settings]').on('click', this.reset.bind(this));
                 $('[data-clear-data]').on('click', this.clear.bind(this));
             }
         }, {
-            key: "loadConfig",
+            key: 'loadConfig',
             value: function loadConfig(config) {
                 Object.keys(config).forEach(function (setting) {
                     this.set(setting, config[setting]);
                 }.bind(this));
             }
         }, {
-            key: "setFields",
+            key: 'setFields',
             value: function setFields() {
                 this.keys().forEach(this.setField.bind(this));
             }
         }, {
-            key: "setField",
+            key: 'setField',
             value: function setField(setting) {
                 var $fields = $('[name="' + setting + '"]');
                 var value = this.get(setting);
@@ -220,7 +418,7 @@ $(document).ready(function () {
                 }.bind(this));
             }
         }, {
-            key: "normalizeValue",
+            key: 'normalizeValue',
             value: function normalizeValue(val) {
                 val = isNaN(parseFloat(val)) ? val : parseInt(val);
                 val = val === 'false' ? false : val;
@@ -229,7 +427,7 @@ $(document).ready(function () {
                 return val;
             }
         }, {
-            key: "onFieldChange",
+            key: 'onFieldChange',
             value: function onFieldChange(e) {
                 var $field = $(e.currentTarget);
                 var val = $field.val();
@@ -242,25 +440,25 @@ $(document).ready(function () {
                 this.set(name, this.normalizeValue(val));
             }
         }, {
-            key: "reset",
+            key: 'reset',
             value: function reset() {
                 this.loadConfig(this.DEFAULTS);
                 this.setFields();
             }
         }, {
-            key: "clear",
+            key: 'clear',
             value: function clear() {
                 this.localSettings = {};
                 localStorage.removeItem('panelz');
                 this.reset();
             }
         }, {
-            key: "get",
+            key: 'get',
             value: function get(setting) {
                 return this.config[setting];
             }
         }, {
-            key: "set",
+            key: 'set',
             value: function set(setting, val) {
                 var oldVal = this.get(setting);
                 this.config[setting] = val;
@@ -273,12 +471,12 @@ $(document).ready(function () {
                 });
             }
         }, {
-            key: "keys",
+            key: 'keys',
             value: function keys() {
                 return Object.keys(this.config);
             }
         }, {
-            key: "getLocalSettings",
+            key: 'getLocalSettings',
             value: function getLocalSettings() {
                 try {
                     var localSettings = JSON.parse(localStorage.getItem('panelz'));
@@ -289,28 +487,28 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "setLocalSettings",
+            key: 'setLocalSettings',
             value: function setLocalSettings() {
                 localStorage.setItem('panelz', JSON.stringify(this.localSettings));
             }
         }, {
-            key: "remember",
+            key: 'remember',
             value: function remember(key, val) {
                 this.localSettings[key] = val;
                 this.setLocalSettings();
             }
         }, {
-            key: "getLocalSetting",
+            key: 'getLocalSetting',
             value: function getLocalSetting(key) {
                 return this.localSettings[key];
             }
         }, {
-            key: "getUserSettings",
+            key: 'getUserSettings',
             value: function getUserSettings() {
                 return this.getLocalSetting('settings') ? this.getLocalSetting('settings') : {};
             }
         }, {
-            key: "setUserSettings",
+            key: 'setUserSettings',
             value: function setUserSettings() {
                 this.remember('settings', this.config);
             }
@@ -341,7 +539,7 @@ $(document).ready(function () {
         }
 
         _createClass(Tutorial, [{
-            key: "addEventListeners",
+            key: 'addEventListeners',
             value: function addEventListeners() {
                 $('body').on('click', '[data-tutorial-next]', this.next.bind(this));
                 $('body').on('click', '[data-tutorial-back]', this.back.bind(this));
@@ -353,7 +551,7 @@ $(document).ready(function () {
                 this.interactable.on('swiperight', this.back.bind(this));
             }
         }, {
-            key: "next",
+            key: 'next',
             value: function next(e) {
                 var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
                 if ($panel.next().length) {
@@ -362,7 +560,7 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "back",
+            key: 'back',
             value: function back(e) {
                 var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
                 if ($panel.prev().length) {
@@ -371,13 +569,13 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "done",
+            key: 'done',
             value: function done() {
                 this.settings.set('showTutorial', false);
                 this.settings.setField('showTutorial');
             }
         }, {
-            key: "toggle",
+            key: 'toggle',
             value: function toggle(ev) {
                 if (ev.value === true) {
                     this.show();
@@ -386,13 +584,13 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "show",
+            key: 'show',
             value: function show() {
                 $('.tutorial__panel').addClass('tutorial__panel--hidden').first().removeClass('tutorial__panel--hidden');
                 $('.tutorial').removeClass('tutorial--hidden');
             }
         }, {
-            key: "hide",
+            key: 'hide',
             value: function hide() {
                 $('.tutorial').addClass('tutorial--hidden');
             }
@@ -859,12 +1057,12 @@ $(document).ready(function () {
         }
 
         _createClass(Page, [{
-            key: "loadSrc",
+            key: 'loadSrc',
             value: function loadSrc(src) {
                 $('<img src="' + src + '" />').on('load', this.onPageLoaded.bind(this));
             }
         }, {
-            key: "onPageLoaded",
+            key: 'onPageLoaded',
             value: function onPageLoaded(e) {
                 this.$container = $('<div />').addClass('book__page page').appendTo(ViewPort.$element);
                 this.$element = $(e.currentTarget).addClass('page__image').appendTo(this.$container);
@@ -892,7 +1090,7 @@ $(document).ready(function () {
                 this.trigger('load:page', this);
             }
         }, {
-            key: "onPageEnterForward",
+            key: 'onPageEnterForward',
             value: function onPageEnterForward() {
                 if (ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length) {
                     this.nextPanel = this.getFirstPanel();
@@ -903,10 +1101,10 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "onPageLeaveFoward",
+            key: 'onPageLeaveFoward',
             value: function onPageLeaveFoward() {}
         }, {
-            key: "onPageEnterBackward",
+            key: 'onPageEnterBackward',
             value: function onPageEnterBackward() {
                 if (ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length) {
                     this.previousPanel = this.getLastPanel();
@@ -917,10 +1115,10 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "onPageLeaveBackward",
+            key: 'onPageLeaveBackward',
             value: function onPageLeaveBackward() {}
         }, {
-            key: "centerInViewPort",
+            key: 'centerInViewPort',
             value: function centerInViewPort(animate) {
                 var width = ViewPort.getWidth();
                 var height = this.getOriginalHeight() * ViewPort.getWidth() / this.getOriginalWidth();
@@ -946,7 +1144,7 @@ $(document).ready(function () {
                 });
             }
         }, {
-            key: "shouldBeSetAsCurrent",
+            key: 'shouldBeSetAsCurrent',
             value: function shouldBeSetAsCurrent(env) {
                 if (this.isFirst && this.left > 0) {
                     return true;
@@ -963,7 +1161,7 @@ $(document).ready(function () {
                 return false;
             }
         }, {
-            key: "findPanelWithPos",
+            key: 'findPanelWithPos',
             value: function findPanelWithPos(x, y) {
                 var panel = false;
                 if (this.panels.length) {
@@ -973,7 +1171,7 @@ $(document).ready(function () {
                 }
             }
         }, {
-            key: "snapTo",
+            key: 'snapTo',
             value: function snapTo(amount) {
                 this.left = this.left + amount;
                 this.$container.animate({
@@ -984,7 +1182,7 @@ $(document).ready(function () {
                 });
             }
         }, {
-            key: "setLeftPosition",
+            key: 'setLeftPosition',
             value: function setLeftPosition(offset) {
                 if (typeof offset === 'undefined') {
                     offset = 0;
@@ -993,53 +1191,53 @@ $(document).ready(function () {
                 this.$container.css('left', this.left);
             }
         }, {
-            key: "setCurrentPanel",
+            key: 'setCurrentPanel',
             value: function setCurrentPanel(panel) {
                 this.lastPanelSeen = this.currentPanel;
                 this.currentPanel = panel;
             }
         }, {
-            key: "setNextPanel",
+            key: 'setNextPanel',
             value: function setNextPanel() {
                 this.nextPanel = this.currentPanel !== false ? this.currentPanel.nextPanel !== false ? this.panels[this.currentPanel.nextPanel] : false : false;
             }
         }, {
-            key: "setPreviousPanel",
+            key: 'setPreviousPanel',
             value: function setPreviousPanel() {
                 this.previousPanel = this.currentPanel !== false ? this.currentPanel.previousPanel !== false ? this.panels[this.currentPanel.previousPanel] : false : false;
             }
         }, {
-            key: "getLastPanelSeen",
+            key: 'getLastPanelSeen',
             value: function getLastPanelSeen() {
                 return this.lastPanelSeen;
             }
         }, {
-            key: "hasPreviousPanel",
+            key: 'hasPreviousPanel',
             value: function hasPreviousPanel() {
                 return this.previousPanel !== false;
             }
         }, {
-            key: "getPreviousPanel",
+            key: 'getPreviousPanel',
             value: function getPreviousPanel() {
                 return this.previousPanel;
             }
         }, {
-            key: "getLastPanel",
+            key: 'getLastPanel',
             value: function getLastPanel() {
                 return this.panels[this.panels.length - 1];
             }
         }, {
-            key: "hasNextPanel",
+            key: 'hasNextPanel',
             value: function hasNextPanel() {
                 return this.nextPanel !== false;
             }
         }, {
-            key: "getNextPanel",
+            key: 'getNextPanel',
             value: function getNextPanel() {
                 return this.nextPanel;
             }
         }, {
-            key: "getFirstPanel",
+            key: 'getFirstPanel',
             value: function getFirstPanel() {
                 if (ViewPort.settings.getLocalSetting('panel')) {
                     return this.panels[ViewPort.settings.getLocalSetting('panel')];
@@ -1047,7 +1245,7 @@ $(document).ready(function () {
                 return this.panels.length ? this.panels[0] : false;
             }
         }, {
-            key: "zoomToPanel",
+            key: 'zoomToPanel',
             value: function zoomToPanel(panel, animate) {
                 var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
                 var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
@@ -1088,7 +1286,7 @@ $(document).ready(function () {
                 ViewPort.settings.remember('panel', panel.index);
             }
         }, {
-            key: "zoomOut",
+            key: 'zoomOut',
             value: function zoomOut() {
                 this.setCurrentPanel(false);
                 this.centerInViewPort(true);
@@ -1097,32 +1295,32 @@ $(document).ready(function () {
                 ViewPort.settings.remember('panel', false);
             }
         }, {
-            key: "getOriginalWidth",
+            key: 'getOriginalWidth',
             value: function getOriginalWidth() {
                 return this.originalWidth;
             }
         }, {
-            key: "getOriginalHeight",
+            key: 'getOriginalHeight',
             value: function getOriginalHeight() {
                 return this.originalHeight;
             }
         }, {
-            key: "getWidth",
+            key: 'getWidth',
             value: function getWidth() {
                 return this.$element.width();
             }
         }, {
-            key: "getFullWidth",
+            key: 'getFullWidth',
             value: function getFullWidth() {
                 return this.$container.width();
             }
         }, {
-            key: "getHeight",
+            key: 'getHeight',
             value: function getHeight() {
                 return this.$element.height();
             }
         }, {
-            key: "getFullHeight",
+            key: 'getFullHeight',
             value: function getFullHeight() {
                 return this.$container.height();
             }
@@ -1146,22 +1344,22 @@ $(document).ready(function () {
         }
 
         _createClass(Panel, [{
-            key: "getWidth",
+            key: 'getWidth',
             value: function getWidth() {
                 return this.width;
             }
         }, {
-            key: "getHeight",
+            key: 'getHeight',
             value: function getHeight() {
                 return this.height;
             }
         }, {
-            key: "getLeftPos",
+            key: 'getLeftPos',
             value: function getLeftPos() {
                 return this.x;
             }
         }, {
-            key: "getTopPos",
+            key: 'getTopPos',
             value: function getTopPos() {
                 return this.y;
             }
@@ -1172,201 +1370,3 @@ $(document).ready(function () {
 
     PanelsApp.init();
 });
-
-// https://github.com/sroucheray/event-class
-var multiChannelSep = /(?:,|\s)+/g;
-var channelSep = /:+/g;
-var channelsSymbol = Symbol('channels');
-
-var EventClass = function () {
-    function EventClass() {
-        _classCallCheck(this, EventClass);
-
-        this[channelsSymbol] = {};
-    }
-
-    _createClass(EventClass, [{
-        key: "_getChannels",
-        value: function _getChannels(channelString) {
-            return channelString.trim().split(multiChannelSep);
-        }
-    }, {
-        key: "_getNameSpaces",
-        value: function _getNameSpaces(channel) {
-            var namespaces = [];
-            var splittedChannels = channel.trim().split(channelSep);
-
-            for (var i = splittedChannels.length; i >= 1; i--) {
-                namespaces.push(splittedChannels.slice(0, i).join(':'));
-            }
-
-            return namespaces;
-        }
-    }, {
-        key: "trigger",
-        value: function trigger(event, data) {
-            var channels = this._getChannels(event);
-
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = channels[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var channel = _step.value;
-
-                    var namespaces = this._getNameSpaces(channel);
-                    var _iteratorNormalCompletion2 = true;
-                    var _didIteratorError2 = false;
-                    var _iteratorError2 = undefined;
-
-                    try {
-                        for (var _iterator2 = namespaces[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                            var namespace = _step2.value;
-
-                            if (!this[channelsSymbol][namespace]) {
-                                continue;
-                            }
-
-                            var _iteratorNormalCompletion3 = true;
-                            var _didIteratorError3 = false;
-                            var _iteratorError3 = undefined;
-
-                            try {
-                                for (var _iterator3 = this[channelsSymbol][namespace][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                                    var callback = _step3.value;
-
-                                    callback.call(this, data);
-                                }
-                            } catch (err) {
-                                _didIteratorError3 = true;
-                                _iteratorError3 = err;
-                            } finally {
-                                try {
-                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                                        _iterator3.return();
-                                    }
-                                } finally {
-                                    if (_didIteratorError3) {
-                                        throw _iteratorError3;
-                                    }
-                                }
-                            }
-                        }
-                    } catch (err) {
-                        _didIteratorError2 = true;
-                        _iteratorError2 = err;
-                    } finally {
-                        try {
-                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                                _iterator2.return();
-                            }
-                        } finally {
-                            if (_didIteratorError2) {
-                                throw _iteratorError2;
-                            }
-                        }
-                    }
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "on",
-        value: function on(event, callback) {
-            var channels = this._getChannels(event);
-
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = channels[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var channel = _step4.value;
-
-                    if (!this[channelsSymbol][channel]) {
-                        this[channelsSymbol][channel] = [];
-                    }
-
-                    this[channelsSymbol][channel].push(callback);
-                }
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "off",
-        value: function off(event, callback) {
-            var channels = this._getChannels(event);
-
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
-
-            try {
-                for (var _iterator5 = channels[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var channel = _step5.value;
-
-                    if (!this[channelsSymbol][channel]) {
-                        return;
-                    }
-
-                    var index = this[channelsSymbol][channel].indexOf(callback);
-
-                    if (index > -1) {
-                        this[channelsSymbol][channel].splice(index, 1);
-                    }
-                }
-            } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
-                    }
-                } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "once",
-        value: function once(event, callback) {
-            function offCallback() {
-                this.off(event, callback);
-                this.off(event, offCallback);
-            }
-
-            this.on(event, callback);
-            this.on(event, offCallback);
-        }
-    }]);
-
-    return EventClass;
-}();
