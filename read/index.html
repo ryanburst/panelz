@@ -1294,7 +1294,7 @@
                         this.setTapThresholds();
                     }.bind(this));
 
-                    $(window).on('resize',this.onResize.bind(this));
+                    $(window).on('resize orientationchange',this.onResize.bind(this));
                 },
 
                 getInitalMode: function() {
