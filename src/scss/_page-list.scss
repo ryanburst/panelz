@@ -1,0 +1,21 @@
+.page-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    &__page {
+        width: 40%;
+        margin-bottom: 15px;
+        font-size: 18px;
+        text-align: center;
+        &--template {
+            display: none;
+        }
+    }
+    &__image {
+        max-width: 100%;
+    }
+}

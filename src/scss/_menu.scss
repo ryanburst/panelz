@@ -1,0 +1,30 @@
+.menu {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    align-items: stretch;
+    list-style: none;
+    &__option {
+        display: flex;
+        flex-grow: 1;
+        padding: 0;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: #fafafa;
+        font-size: 16px;
+        border-right: 1px solid #fafafa;
+        cursor: pointer;
+        &:last-child {
+            border-right: none;
+        }
+        &--active {
+            color: #55a1e6;
+        }
+    }
+    &__icon {
+        font-size: 28px;
+    }
+}

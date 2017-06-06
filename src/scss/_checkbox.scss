@@ -1,0 +1,36 @@
+.checkbox {
+    position: relative;
+    width: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    flex-shrink: 0;
+    &__label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        border: 1px solid rgba(255,255,255,.4);
+        &:after {
+            content: '';
+            width: 16px;
+            height: 8px;
+            position: absolute;
+            top: 1px;
+            left: 4px;
+            border: 3px solid #fcfff4;
+            border-top: none;
+            border-right: none;
+            background: transparent;
+            opacity: 0;
+            transform: rotate(-45deg);
+        }
+    }
+    input[type=checkbox] {
+        visibility: hidden;
+    }
+    input[type=checkbox]:checked + .checkbox__label:after {
+        opacity: 1;
+    }
+}

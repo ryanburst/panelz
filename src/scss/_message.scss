@@ -1,0 +1,11 @@
+.message {
+    &__text {
+        position: relative;
+        max-width: 25vw;
+        margin: 0 auto;
+        padding: 10px;
+        color: white;
+        text-align: center;
+        background-color: rgba(0,0,0,0.75);
+    }
+}

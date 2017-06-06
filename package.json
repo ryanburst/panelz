@@ -1,0 +1,22 @@
+{
+  "name": "panelz",
+  "description": "",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryanburst/panelz.git"
+  },
+  "keywords": [],
+  "author": "Ryan Burst",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanburst/panelz/issues"
+  },
+  "homepage": "https://github.com/ryanburst/panelz",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-watch": "^4.3.11"
+  }
+}
