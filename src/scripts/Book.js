@@ -34,6 +34,7 @@ var Book = {
             }
         }.bind(this));
         this.buildPageIndex();
+        ViewPort.onBookLoaded();
     },
 
     buildPageIndex: function() {

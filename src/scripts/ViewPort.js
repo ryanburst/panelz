@@ -61,7 +61,9 @@ var ViewPort = {
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
         });
+    },
 
+    onBookLoaded: function() {
         this.interactable.on('panend',function(ev) {
             var newPage = false;
             Book.pages.forEach(function(page) {
