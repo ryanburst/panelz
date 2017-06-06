@@ -1293,6 +1293,8 @@
                         this.LEFT_HAND_MODE = data.value;
                         this.setTapThresholds();
                     }.bind(this));
+
+                    $(window).on('resize',this.onResize.bind(this));
                 },
 
                 getInitalMode: function() {
@@ -1368,20 +1370,21 @@
                     return this.cmds.TOGGLE_MAIN_MENU;
                 },
 
-                setLetterBoxing: function(height,width) {
+                setLetterBoxing: function(height,width,animate) {
                     var horizSize = height > 0 ? height / 2 : 0;
                     var vertSize = width > 0 ? width / 2 : 0;
                     var speed = this.settings.get('panelTransitions');
+                    animate = typeof animate === 'undefined' ? true : animate;
                     this.$horizontalLetterBox.animate({
                         height: horizSize
                     },{
-                        duration: speed,
+                        duration: animate ? speed : 0,
                         easing: 'easeOutSine'
                     });
                     this.$verticalLetterBox.animate({
                         width: vertSize
                     },{
-                        duration: speed,
+                        duration: animate ? speed : 0,
                         easing: 'easeOutSine'
                     });
                 },
@@ -1413,6 +1416,18 @@
                     setTimeout(function() {
                         $messageContainer.addClass('viewport__message--hide');
                     },3000);*/
+                },
+
+                onResize: function(e) {
+                    this.setViewPortSize();
+                    this.setTapThresholds();
+                    Book.pages.forEach(function(page) {
+                        page.centerInViewPort(false);
+                        page.setLeftPosition(Book.currentPage.index);
+                        if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && page.currentPanel ) {
+                            page.zoomToPanel(page.currentPanel,false);
+                        }
+                    }.bind(this));
                 }
             };
 
@@ -1809,7 +1824,7 @@
                     return this.panels.length ? this.panels[0] : false;
                 }
 
-                zoomToPanel(panel) {
+                zoomToPanel(panel,animate) {
                     var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
                     var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
 
@@ -1829,17 +1844,19 @@
                     var top = panel.getTopPos() * pageHeight / this.getOriginalHeight();
                     var left = panel.getLeftPos() * pageWidth / this.getOriginalWidth();
 
+                    animate = typeof animate === 'undefined' ? true : animate;
+
                     this.$element.animate({
                         top: -top + (ViewPort.getHeight() - height) / 2,
                         left: -left + ((ViewPort.getWidth() - width) / 2),
                         width: pageWidth,
                         height: pageHeight
                     },{
-                        duration: this.PANEL_ANIMATION_SPEED,
+                        duration: animate ? this.PANEL_ANIMATION_SPEED : 0,
                         easing: 'easeOutSine'
                     });
 
-                    ViewPort.setLetterBoxing(ViewPort.getHeight()-height,ViewPort.getWidth()-width);
+                    ViewPort.setLetterBoxing(ViewPort.getHeight()-height,ViewPort.getWidth()-width,animate);
 
                     this.setCurrentPanel(panel);
                     this.setNextPanel();
