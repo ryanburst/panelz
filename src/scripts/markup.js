@@ -1,16 +1,4 @@
-<!doctype html>
-<html class="no-js" lang="">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Panels</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <script src="https://use.fontawesome.com/c2451ef033.js"></script>
-    <link href="/panelz/read/css/panelz.css" rel="stylesheet">
-</head>
-<body>
+var PanelzMarkup = `
     <div class="tutorial tutorial--hidden">
         <div class="tutorial__panel">
             <div class="tutorial__cta">
@@ -38,7 +26,7 @@
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <img src="/panelz/read/images/tutorial-taps.png" />
+                    <img src="/panelz/dist/images/tutorial-taps.png" />
                 </div>
                 <p><strong>Tap Left</strong> - Navigates backwards one panel or page.</p>
                 <p><strong>Tap Right</strong> - Navigates forward one panel or page.</p>
@@ -59,7 +47,7 @@
             <div class="tutorial__content">
                 <div class="heading heading--secondary">You can also swipe to navigate!</div>
                 <div class="tutorial__image">
-                    <img src="/panelz/read/images/tutorial-swipes.png" />
+                    <img src="/panelz/dist/images/tutorial-swipes.png" />
                 </div>
                 <p><strong>Swipe Left</strong> - Navigates forward one panel or page.</p>
                 <p><strong>Swipe Right</strong> - Navigates backward one panel or page.</p>
@@ -74,9 +62,6 @@
                 <button class="tutorial__button" data-tutorial-done>Done</button>
             </div>
         </div>
-        <!--<div class="tutorial__panel tutorial__panel--final-tip">
-            <img src="/panelz/read/images/final-tip.png" class="tutorial__final-tip" />
-        </div>-->
     </div>
     <div class="viewport">
         <div class="viewport__interactable"></div>
@@ -350,144 +335,4 @@
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="/panelz/read/js/hammer.min.js"></script>
-    <script src="/panelz/read/js/panelz.js"></script>
-    <script>
-        $(document).ready(function() {
-            var panelz = new Panelz({
-                pages: [
-                    {
-                        src: "/panelz/read/images/tmnt-01-01.png",
-                        index: 0,
-                        isFirst: true,
-                        isLast: false,
-                        panels: []
-                    },
-                    {
-                        src: "/panelz/read/images/tmnt-01-02.png",
-                        index: 1,
-                        isFirst: false,
-                        isLast: false,
-                        panels: [
-                            {
-                                x: 40,
-                                y: 90,
-                                width: 626,
-                                height: 442
-                            },
-                            {
-                                x: 324,
-                                y: 222,
-                                width: 626,
-                                height: 442
-                            },
-                            {
-                                x: 0,
-                                y: 0,
-                                width: 954,
-                                height: 776
-                            },
-                            {
-                                x: 0,
-                                y: 775,
-                                width: 453,
-                                height: 372
-                            },
-                            {
-                                x: 456,
-                                y: 808,
-                                width: 495,
-                                height: 344
-                            },
-                            {
-                                x: 16,
-                                y: 1154,
-                                width: 550,
-                                height: 298
-                            },
-                            {
-                                x: 392,
-                                y: 1154,
-                                width: 556,
-                                height: 298
-                            }
-                        ]
-                    },
-                    {
-                        src: "/panelz/read/images/tmnt-01-03.png",
-                        index: 2,
-                        isFirst: false,
-                        isLast: false,
-                        panels: [
-                            {
-                                x: 0,
-                                y: 0,
-                                width: 510,
-                                height: 340
-                            },
-                            {
-                                x: 278,
-                                y: 334,
-                                width: 503,
-                                height: 335
-                            },
-                            {
-                                x: 20,
-                                y: 20,
-                                width: 1878,
-                                height: 1436
-                            }
-                        ]
-                    },
-                    {
-                        src: "/panelz/read/images/tmnt-01-04.png",
-                        index: 3,
-                        isFirst: false,
-                        isLast: true,
-                        panels: [
-                            {
-                                x: 75,
-                                y: 0,
-                                width: 713,
-                                height: 175
-                            },
-                            {
-                                x: 108,
-                                y: 196,
-                                width: 713,
-                                height: 277
-                            },
-                            {
-                                x: 790,
-                                y: 258,
-                                width: 161,
-                                height: 390
-                            },
-                            {
-                                x: 124,
-                                y: 500,
-                                width: 735,
-                                height: 286
-                            },
-                            {
-                                x: 30,
-                                y: 820,
-                                width: 480,
-                                height: 640
-                            },
-                            {
-                                x: 538,
-                                y: 800,
-                                width: 410,
-                                height: 665
-                            }
-                        ]
-                    }
-                ]
-            });
-        });
-    </script>
-</body>
-</html>
+`;

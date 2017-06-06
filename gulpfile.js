@@ -4,6 +4,7 @@ var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var babel = require('gulp-babel');
 var concat = require('gulp-concat');
+var imagemin = require('gulp-imagemin');
 
 
 gulp.task('css', function () {
@@ -16,7 +17,7 @@ gulp.task('css', function () {
     .pipe(autoprefixer({
       browsers: ['last 2 versions']
     }))
-    .pipe(gulp.dest('./read/css'));
+    .pipe(gulp.dest('./dist/css'));
 });
 
 gulp.task('scripts', function () {
@@ -28,12 +29,20 @@ gulp.task('scripts', function () {
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(gulp.dest('./read/js'));
+        .pipe(gulp.dest('./dist/js'));
+});
+
+gulp.task('images', function () {
+  return gulp
+    .src('./src/images/**')
+    .pipe(imagemin())
+    .pipe(gulp.dest('./dist/images'))
 });
 
 gulp.task('watch', function () {
     gulp.watch('./src/scss/**/*.scss', ['css']);
     gulp.watch('./src/scripts/**/*.js', ['scripts']);
+    gulp.watch('./src/images/**/**', ['images']);
 });
 
-gulp.task('default', ['css','scripts']);
+gulp.task('default', ['css','scripts','images']);

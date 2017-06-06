@@ -11,6 +11,12 @@ var ViewPort = {
     $verticalLetterBox: $('.letterbox__vertical'),
 
     init: function() {
+        this.$element = $('.viewport');
+        this.$container = $(window);
+        this.$menu = $('.viewport__menu');
+        this.$horizontalLetterBox = $('.letterbox__horizontal');
+        this.$verticalLetterBox = $('.letterbox__vertical');
+
         this.settings = new Settings();
         this.tutorial = new Tutorial(this.settings);
 
@@ -60,7 +66,7 @@ var ViewPort = {
             Book.skipToPage(page);
         }.bind(this));
 
-        $('[data-close]').on('click',function() {
+        $('body').on('click','[data-close]',function() {
             var $this = $(this);
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;

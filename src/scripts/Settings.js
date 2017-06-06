@@ -22,8 +22,8 @@ class Settings extends EventClass {
 
     setEventListeners() {
         $('[name="'+this.keys().join('"],[name="')+'"]').on('change',this.onFieldChange.bind(this));
-        $('[data-reset-settings]').on('click',this.reset.bind(this));
-        $('[data-clear-data]').on('click',this.clear.bind(this));
+        $('body').on('click','[data-reset-settings]',this.reset.bind(this));
+        $('body').on('click','[data-clear-data]',this.clear.bind(this));
     }
 
     loadConfig(config) {

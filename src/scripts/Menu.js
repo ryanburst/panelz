@@ -1,12 +1,11 @@
 var Menu = {
-    $menu: $('.menu'),
-
     init: function() {
+        this.$menu = $('.menu');
         this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
-        $('[data-open-pane]').on('click',function() {
+        $('body').on('click','[data-open-pane]',function() {
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
         });
-        $('.pane__item').on('click',function(e) {
+        $('body').on('click','.pane__item',function(e) {
             if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
                 var $input = $(this).find(':radio, :checkbox');
                 var checked = $input.is(':radio') ? true : !$input.prop('checked');
