@@ -1,31 +1,22 @@
 var ViewPort = {
 
-    init: function() {
+    init: function(config) {
+        this.app = config.app;
         this.$element = $('.viewport');
         this.$container = $(window);
         this.$menu = $('.viewport__menu');
         this.$horizontalLetterBox = $('.letterbox__horizontal');
         this.$verticalLetterBox = $('.letterbox__vertical');
 
-        this.settings = new Settings();
-        this.tutorial = new Tutorial(this.settings);
-
-        this.PAGE_MODE = 'PAGE_MODE';
-        this.PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
-        this.MODE = this.getInitalMode();
         this.PAGE_TURN_THRESHOLD = 0.25;
-        this.LETTERBOX_STYLE = this.settings.get('letterboxing');
-        this.LEFT_HAND_MODE = this.settings.get('leftHandMode');
-        this.cmds = {};
-        this.cmds.PAGE_BACK = 'PAGE_BACK';
-        this.cmds.PAGE_FORWARD = 'PAGE_FORWARD';
-        this.cmds.TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
+        this.LETTERBOX_STYLE = this.app.settings.get('letterboxing');
+        this.LEFT_HAND_MODE = this.app.settings.get('leftHandMode');
 
         this.setEventListeners();
         this.setViewPortSize();
         this.setTapThresholds();
 
-        if(this.MODE === this.PANEL_ZOOM_MODE) {
+        if(this.app.mode === PANEL_ZOOM_MODE) {
             Menu.activateOption('panel-zoom');
         }
 
@@ -43,19 +34,19 @@ var ViewPort = {
         singletap.requireFailure(doubletap);
 
         $('body').on('touchend',function() {
-            ViewPort.$menu.removeClass('viewport__menu--was-shown');
-            if( ViewPort.$menu.hasClass('viewport__menu--active') ) {
-                ViewPort.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
+            this.$menu.removeClass('viewport__menu--was-shown');
+            if( this.$menu.hasClass('viewport__menu--active') ) {
+                this.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
             }
-        });
+        }.bind(this));
 
-        this.tutorial.on('done',this.onTutorialDone.bind(this));
+        this.app.tutorial.on('done',this.onTutorialDone.bind(this));
 
         $('body').on('click', '[data-skip-to-page]', function(e) {
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
             $this.closest('.pane').find('[data-close]').trigger('click');
-            Book.skipToPage(page);
+            this.app.book.skipToPage(page);
         }.bind(this));
 
         $('body').on('click','[data-close]',function() {
@@ -63,55 +54,59 @@ var ViewPort = {
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
         });
+
+        this.app.book.on('load',this.onBookLoaded.bind(this));
     },
 
     onBookLoaded: function() {
         this.interactable.on('panend',function(ev) {
             var newPage = false;
-            Book.pages.forEach(function(page) {
+            this.app.book.pages.forEach(function(page) {
                 if(page.shouldBeSetAsCurrent(ev)) {
-                    Book.setCurrentPage(page);
+                    this.app.book.setCurrentPage(page);
                 }
-            });
-            Book.snapPagesToCurrent();
-        });
+            }.bind(this));
+            this.app.book.snapPagesToCurrent();
+        }.bind(this));
         this.interactable.on("tap", function(ev) {
             if( ev.tapCount >= 2 ) {
-                return ViewPort.switchModes();
+                return this.app.switchModes();
             }
-            var cmd = ViewPort.findTapZone(ev.center.x,ev.center.y);
-            if( cmd === ViewPort.cmds.PAGE_FORWARD ) {
-                return Book.pageForward();
+            var cmd = this.findTapZone(ev.center.x,ev.center.y);
+            if( cmd === PAGE_FORWARD ) {
+                return this.app.book.pageForward();
             }
-            if( cmd === ViewPort.cmds.PAGE_BACK ) {
-                return Book.pageBackward();
+            if( cmd === PAGE_BACK ) {
+                return this.app.book.pageBackward();
             }
-            if( cmd === ViewPort.cmds.TOGGLE_MAIN_MENU ) {
-                if( ! ViewPort.$menu.hasClass('viewport__menu--was-shown') ) {
-                    ViewPort.$menu.addClass('viewport__menu--active');
+            if( cmd === TOGGLE_MAIN_MENU ) {
+                if( ! this.$menu.hasClass('viewport__menu--was-shown') ) {
+                    this.$menu.addClass('viewport__menu--active');
                 }
             }
-        });
+        }.bind(this));
         this.interactable.on("swipeleft", function(ev) {
-            if( this.MODE === this.PANEL_ZOOM_MODE ) {
-                Book.pageForward();
+            if( this.app.mode === PANEL_ZOOM_MODE ) {
+                this.app.book.pageForward();
             }
-        });
+        }.bind(this));
         this.interactable.on("swiperight", function(ev) {
-            if( this.MODE === this.PANEL_ZOOM_MODE ) {
-                Book.pageBackward();
+            if( this.app.mode === PANEL_ZOOM_MODE ) {
+                this.app.book.pageBackward();
             }
-        });
+        }.bind(this));
 
-        this.settings.on('change:letterboxing',function(data){
+        this.app.settings.on('change:letterboxing',function(data){
             this.LETTERBOX_STYLE = data.value;
             this.setLetterBoxStyle();
         }.bind(this));
 
-        this.settings.on('change:leftHandMode',function(data){
+        this.app.settings.on('change:leftHandMode',function(data){
             this.LEFT_HAND_MODE = data.value;
             this.setTapThresholds();
         }.bind(this));
+
+        this.app.on('change:mode',this.onModeChange.bind(this));
 
         $(window).on('resize orientationchange',this.onResize.bind(this));
     },
@@ -124,41 +119,23 @@ var ViewPort = {
         }.bind(this),5000);
     },
 
-    getInitalMode: function() {
-        if( this.settings.getLocalSetting('mode') ) {
-            return this.settings.getLocalSetting('mode');
-        }
-        return this.settings.get('startInPanelZoom') ? this.PANEL_ZOOM_MODE : this.PAGE_MODE;
-    },
-
     canRecognizePan: function(rec, input) {
-        return this.MODE === this.PAGE_MODE;
+        return this.app.mode === PAGE_MODE;
     },
 
     canRecognizeSwipe: function(rec, input) {
-        return this.MODE === this.PANEL_ZOOM_MODE;
+        return this.app.mode === PANEL_ZOOM_MODE;
     },
 
     setContainer: function($container) {
         this.$container = $container;
     },
 
-    switchModes: function() {
-        var mode = (this.MODE === this.PAGE_MODE)
-            ? this.PANEL_ZOOM_MODE
-            : this.PAGE_MODE;
-        this.setMode(mode);
-        this.settings.remember('mode',mode);
-    },
-
-    setMode: function(mode) {
-        this.MODE = mode;
-        if( mode === ViewPort.PAGE_MODE ) {
-            Book.setForPageMode();
+    onModeChange: function(mode) {
+        if( mode === PAGE_MODE ) {
             Menu.deactivateOption('panel-zoom');
             //this.message('Page mode activated.');
         } else {
-            Book.setForPanelZoomMode();
             Menu.activateOption('panel-zoom');
             //this.message('Panel Zoom mode activated.');
         }
@@ -189,18 +166,18 @@ var ViewPort = {
 
     findTapZone: function(x,y) {
         if( x >= this.PAGE_BACK_MIN && x <= this.PAGE_BACK_MAX) {
-            return this.cmds.PAGE_BACK;
+            return PAGE_BACK;
         }
         if( x >= this.PAGE_FORWARD_MIN && x <= this.PAGE_FORWARD_MAX) {
-            return this.cmds.PAGE_FORWARD;
+            return PAGE_FORWARD;
         }
-        return this.cmds.TOGGLE_MAIN_MENU;
+        return TOGGLE_MAIN_MENU;
     },
 
     setLetterBoxing: function(height,width,animate) {
         var horizSize = height > 0 ? height / 2 : 0;
         var vertSize = width > 0 ? width / 2 : 0;
-        var speed = this.settings.get('panelTransitions');
+        var speed = this.app.settings.get('panelTransitions');
         animate = typeof animate === 'undefined' ? true : animate;
         this.$horizontalLetterBox.animate({
             height: horizSize
@@ -248,12 +225,6 @@ var ViewPort = {
     onResize: function(e) {
         this.setViewPortSize();
         this.setTapThresholds();
-        Book.pages.forEach(function(page) {
-            page.centerInViewPort(false);
-            page.setLeftPosition(Book.currentPage.index);
-            if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && page.currentPanel ) {
-                page.zoomToPanel(page.currentPanel,false);
-            }
-        }.bind(this));
+        this.app.trigger('resize',e);
     }
 };

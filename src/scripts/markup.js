@@ -1,4 +1,4 @@
-var PanelzMarkup = `
+const PANELZ_MARKUP = `
     <div class="tutorial tutorial--hidden">
         <div class="tutorial__panel">
             <div class="tutorial__cta">

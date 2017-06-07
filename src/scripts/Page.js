@@ -2,13 +2,14 @@ class Page extends EventClass {
     constructor(config) {
         super();
         this.config = config;
+        this.app = config.app;
         this.index = config.index;
         this.isFirst = config.isFirst;
         this.isLast = config.isLast;
         this.panels = [];
-        this.PANEL_ANIMATION_SPEED = ViewPort.settings.get('panelTransitions');
-        this.SHOW_PAGE_ON_ENTER = ViewPort.settings.get('showPageOnEnter');
-        this.SHOW_PAGE_ON_EXIT = ViewPort.settings.get('showPageOnExit');
+        this.PANEL_ANIMATION_SPEED = this.app.settings.get('panelTransitions');
+        this.SHOW_PAGE_ON_ENTER = this.app.settings.get('showPageOnEnter');
+        this.SHOW_PAGE_ON_EXIT = this.app.settings.get('showPageOnExit');
         this.TURN_THRESHHOLD = 30;
         this.currentPanel = false;
         this.previousPanel = false;
@@ -18,15 +19,16 @@ class Page extends EventClass {
         config.panels.forEach( function(panel,index) {
             this.panels.push(new Panel(this,panel,index));
         }.bind(this));
-        ViewPort.settings.on('change:panelTransitions',function(data) {
+        this.app.settings.on('change:panelTransitions',function(data) {
             this.PANEL_ANIMATION_SPEED = data.value
         }.bind(this));
-        ViewPort.settings.on('change:showPageOnEnter',function(data) {
+        this.app.settings.on('change:showPageOnEnter',function(data) {
             this.SHOW_PAGE_ON_ENTER = data.value
         }.bind(this));
-        ViewPort.settings.on('change:showPageOnExit',function(data) {
+        this.app.settings.on('change:showPageOnExit',function(data) {
             this.SHOW_PAGE_ON_EXIT = data.value
         }.bind(this));
+        this.app.on('resize',this.setPosition.bind(this));
     }
 
     loadSrc(src) {
@@ -63,7 +65,7 @@ class Page extends EventClass {
     }
 
     onPageEnterForward() {
-        if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
+        if( this.app.mode === PANEL_ZOOM_MODE && this.panels.length ) {
             this.nextPanel = this.getFirstPanel();
             this.previousPanel = this.getPreviousPanel();
             if( ! this.SHOW_PAGE_ON_ENTER || this.nextPanel.index !== 0) {
@@ -72,12 +74,8 @@ class Page extends EventClass {
         }
     }
 
-    onPageLeaveFoward() {
-
-    }
-
     onPageEnterBackward() {
-        if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
+        if( this.app.mode === PANEL_ZOOM_MODE && this.panels.length ) {
             this.previousPanel = this.getLastPanel();
             this.nextPanel = this.getNextPanel();
             if( ! this.SHOW_PAGE_ON_EXIT) {
@@ -86,8 +84,12 @@ class Page extends EventClass {
         }
     }
 
-    onPageLeaveBackward() {
-
+    setPosition() {
+        this.centerInViewPort(false);
+        this.setLeftPosition(this.app.book.currentPage.index);
+        if( this.app.mode === PANEL_ZOOM_MODE && this.currentPanel ) {
+            this.zoomToPanel(this.currentPanel,false);
+        }
     }
 
     centerInViewPort(animate) {
@@ -204,8 +206,8 @@ class Page extends EventClass {
     }
 
     getFirstPanel() {
-        if( ViewPort.settings.getLocalSetting('panel') ) {
-            return this.panels[ViewPort.settings.getLocalSetting('panel')];
+        if( this.app.settings.getLocalSetting('panel') ) {
+            return this.panels[this.app.settings.getLocalSetting('panel')];
         }
         return this.panels.length ? this.panels[0] : false;
     }
@@ -247,7 +249,7 @@ class Page extends EventClass {
         this.setCurrentPanel(panel);
         this.setNextPanel();
         this.setPreviousPanel();
-        ViewPort.settings.remember('panel',panel.index);
+        this.app.settings.remember('panel',panel.index);
     }
 
     zoomOut() {
@@ -255,7 +257,7 @@ class Page extends EventClass {
         this.centerInViewPort(true);
         this.setCurrentPanel(false);
         ViewPort.setLetterBoxing(0,0);
-        ViewPort.settings.remember('panel',false);
+        this.app.settings.remember('panel',false);
     }
 
     getOriginalWidth() {
