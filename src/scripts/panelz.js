@@ -16,7 +16,7 @@ class Panelz extends EventClass {
 
         this.setInitialMode();
 
-        Menu.init();
+        Menu.init(this.config);
         ViewPort.init(this.config);
     }
 

@@ -421,7 +421,8 @@ var Book = function (_EventClass) {
 }(EventClass);
 
 var Menu = {
-    init: function init() {
+    init: function init(config) {
+        this.app = config.app;
         this.$menu = $('.viewport__menu');
         this.$menu.on('click', '.menu__option--panel-zoom', this.onPanelZoomToggleClick.bind(this));
         $('body').on('click', '[data-open-pane]', function (e) {
@@ -448,7 +449,7 @@ var Menu = {
     },
 
     onPanelZoomToggleClick: function onPanelZoomToggleClick(e) {
-        ViewPort.switchModes();
+        this.app.switchModes();
     }
 };
 
@@ -828,7 +829,7 @@ var Panelz = function (_EventClass3) {
 
         _this3.setInitialMode();
 
-        Menu.init();
+        Menu.init(_this3.config);
         ViewPort.init(_this3.config);
         return _this3;
     }

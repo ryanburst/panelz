@@ -1,5 +1,6 @@
 var Menu = {
-    init: function() {
+    init: function(config) {
+        this.app = config.app;
         this.$menu = $('.viewport__menu');
         this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
         $('body').on('click','[data-open-pane]',function(e) {
@@ -26,6 +27,6 @@ var Menu = {
     },
 
     onPanelZoomToggleClick: function(e) {
-        ViewPort.switchModes();
+        this.app.switchModes();
     }
 };
