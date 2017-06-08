@@ -2,13 +2,14 @@ class Page extends EventClass {
     constructor(config) {
         super();
         this.config = config;
+        this.app = config.app;
         this.index = config.index;
         this.isFirst = config.isFirst;
         this.isLast = config.isLast;
         this.panels = [];
-        this.PANEL_ANIMATION_SPEED = ViewPort.settings.get('panelTransitions');
-        this.SHOW_PAGE_ON_ENTER = ViewPort.settings.get('showPageOnEnter');
-        this.SHOW_PAGE_ON_EXIT = ViewPort.settings.get('showPageOnExit');
+        this.PANEL_ANIMATION_SPEED = this.app.settings.get('panelTransitions');
+        this.SHOW_PAGE_ON_ENTER = this.app.settings.get('showPageOnEnter');
+        this.SHOW_PAGE_ON_EXIT = this.app.settings.get('showPageOnExit');
         this.TURN_THRESHHOLD = 30;
         this.currentPanel = false;
         this.previousPanel = false;
@@ -18,15 +19,16 @@ class Page extends EventClass {
         config.panels.forEach( function(panel,index) {
             this.panels.push(new Panel(this,panel,index));
         }.bind(this));
-        ViewPort.settings.on('change:panelTransitions',function(data) {
+        this.app.settings.on('change:panelTransitions',function(data) {
             this.PANEL_ANIMATION_SPEED = data.value
         }.bind(this));
-        ViewPort.settings.on('change:showPageOnEnter',function(data) {
+        this.app.settings.on('change:showPageOnEnter',function(data) {
             this.SHOW_PAGE_ON_ENTER = data.value
         }.bind(this));
-        ViewPort.settings.on('change:showPageOnExit',function(data) {
+        this.app.settings.on('change:showPageOnExit',function(data) {
             this.SHOW_PAGE_ON_EXIT = data.value
         }.bind(this));
+        this.app.on('resize',this.setPosition.bind(this));
     }
 
     loadSrc(src) {
@@ -34,7 +36,7 @@ class Page extends EventClass {
     }
 
     onPageLoaded(e) {
-        this.$container = $('<div />').addClass('book__page page').appendTo(ViewPort.$element);
+        this.$container = this.app.addPageMarkupToViewPort($('<div />').addClass('book__page page'));
         this.$element = $(e.currentTarget)
             .addClass('page__image')
             .appendTo(this.$container);
@@ -42,10 +44,10 @@ class Page extends EventClass {
         this.originalHeight = this.$element.height();
         this.centerInViewPort();
 
-        ViewPort.interactable.on("panstart", function(ev) {
+        this.app.on("user:panstart", function(ev) {
             this.originalLeft = parseInt( this.$container.css( "left" ), 10 );
         }.bind(this));
-        ViewPort.interactable.on("pan", function(ev) {
+        this.app.on("user:pan", function(ev) {
             // Stop vertical pan flick
             if(ev.offsetDirection === 8) {
                 return true;
@@ -55,7 +57,7 @@ class Page extends EventClass {
                 "left": this.left
             } );
         }.bind(this));
-        ViewPort.interactable.on("pinch",function(env) {
+        this.app.on("user:pinch",function(env) {
             console.log(env);
         });
 
@@ -63,7 +65,7 @@ class Page extends EventClass {
     }
 
     onPageEnterForward() {
-        if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
+        if( this.app.mode === PANEL_ZOOM_MODE && this.panels.length ) {
             this.nextPanel = this.getFirstPanel();
             this.previousPanel = this.getPreviousPanel();
             if( ! this.SHOW_PAGE_ON_ENTER || this.nextPanel.index !== 0) {
@@ -72,12 +74,8 @@ class Page extends EventClass {
         }
     }
 
-    onPageLeaveFoward() {
-
-    }
-
     onPageEnterBackward() {
-        if( ViewPort.MODE === ViewPort.PANEL_ZOOM_MODE && this.panels.length ) {
+        if( this.app.mode === PANEL_ZOOM_MODE && this.panels.length ) {
             this.previousPanel = this.getLastPanel();
             this.nextPanel = this.getNextPanel();
             if( ! this.SHOW_PAGE_ON_EXIT) {
@@ -86,23 +84,29 @@ class Page extends EventClass {
         }
     }
 
-    onPageLeaveBackward() {
-
+    setPosition() {
+        this.centerInViewPort(false);
+        this.setLeftPosition(this.app.book.currentPage.index);
+        if( this.app.mode === PANEL_ZOOM_MODE && this.currentPanel ) {
+            this.zoomToPanel(this.currentPanel,false);
+        }
     }
 
     centerInViewPort(animate) {
-        var width = ViewPort.getWidth();
-        var height = this.getOriginalHeight() * ViewPort.getWidth() / this.getOriginalWidth();
+        var viewPortWidth = this.app.getViewPortSize().width;
+        var viewPortHeight = this.app.getViewPortSize().height;
+        var width = viewPortWidth;
+        var height = this.getOriginalHeight() * viewPortWidth / this.getOriginalWidth();
 
-        if( height > ViewPort.getHeight() ) {
-            height = ViewPort.getHeight();
-            width = this.getOriginalWidth() * ViewPort.getHeight() / this.getOriginalHeight();
+        if( height > viewPortHeight ) {
+            height = viewPortHeight;
+            width = this.getOriginalWidth() * viewPortHeight / this.getOriginalHeight();
         }
 
-        var top = (ViewPort.getHeight() - height) / 2;
-        var left = (ViewPort.getWidth() - width) / 2;
+        var top = (viewPortHeight - height) / 2;
+        var left = (viewPortWidth - width) / 2;
 
-        this.$container.width(ViewPort.getWidth()).height(ViewPort.getHeight());
+        this.$container.width(viewPortWidth).height(viewPortHeight);
 
         this.$element.animate({
             top: top,
@@ -154,7 +158,7 @@ class Page extends EventClass {
         if( typeof offset === 'undefined' ) {
             offset = 0;
         }
-        this.left = (this.index-offset) * ViewPort.getWidth();
+        this.left = (this.index-offset) * this.app.getViewPortSize().width;
         this.$container.css('left',this.left);
     }
 
@@ -204,24 +208,27 @@ class Page extends EventClass {
     }
 
     getFirstPanel() {
-        if( ViewPort.settings.getLocalSetting('panel') ) {
-            return this.panels[ViewPort.settings.getLocalSetting('panel')];
+        if( this.app.settings.getLocalSetting('panel') ) {
+            return this.panels[this.app.settings.getLocalSetting('panel')];
         }
         return this.panels.length ? this.panels[0] : false;
     }
 
     zoomToPanel(panel,animate) {
-        var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
-        var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+        var viewPortWidth = this.app.getViewPortSize().width;
+        var viewPortHeight = this.app.getViewPortSize().height;
 
-        if( width > ViewPort.getWidth() ) {
-            width = ViewPort.getWidth();
-            height = panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+        var width = panel.getWidth() >= panel.getHeight() ? viewPortWidth : panel.getWidth() * viewPortHeight / panel.getHeight();
+        var height = panel.getHeight() > panel.getWidth() ? viewPortHeight : panel.getHeight() * viewPortWidth / panel.getWidth();
+
+        if( width > viewPortWidth ) {
+            width = viewPortWidth;
+            height = panel.getHeight() * viewPortWidth / panel.getWidth();
         }
 
-        if( height > ViewPort.getHeight() ) {
-            height = ViewPort.getHeight();
-            width = panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
+        if( height > viewPortHeight ) {
+            height = viewPortHeight;
+            width = panel.getWidth() * viewPortHeight / panel.getHeight();
         }
 
         var pageHeight = height * this.getOriginalHeight() / panel.getHeight();
@@ -233,8 +240,8 @@ class Page extends EventClass {
         animate = typeof animate === 'undefined' ? true : animate;
 
         this.$element.animate({
-            top: -top + (ViewPort.getHeight() - height) / 2,
-            left: -left + ((ViewPort.getWidth() - width) / 2),
+            top: -top + (viewPortHeight - height) / 2,
+            left: -left + ((viewPortWidth - width) / 2),
             width: pageWidth,
             height: pageHeight
         },{
@@ -242,20 +249,20 @@ class Page extends EventClass {
             easing: 'easeOutSine'
         });
 
-        ViewPort.setLetterBoxing(ViewPort.getHeight()-height,ViewPort.getWidth()-width,animate);
+        this.app.setLetterBoxing(viewPortWidth-width,viewPortHeight-height,animate);
 
         this.setCurrentPanel(panel);
         this.setNextPanel();
         this.setPreviousPanel();
-        ViewPort.settings.remember('panel',panel.index);
+        this.app.settings.remember('panel',panel.index);
     }
 
     zoomOut() {
         this.setCurrentPanel(false);
         this.centerInViewPort(true);
         this.setCurrentPanel(false);
-        ViewPort.setLetterBoxing(0,0);
-        ViewPort.settings.remember('panel',false);
+        this.app.setLetterBoxing(0,0);
+        this.app.settings.remember('panel',false);
     }
 
     getOriginalWidth() {

@@ -1,31 +1,39 @@
-var Menu = {
-    init: function() {
+class Menu extends EventClass {
+    constructor(config) {
+        super();
+        this.app = config.app;
         this.$menu = $('.viewport__menu');
+
+        this.setEventListeners();
+
+        if(this.app.mode === PANEL_ZOOM_MODE) {
+            this.activateOption('panel-zoom');
+        }
+
+    }
+
+    setEventListeners() {
         this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
-        $('body').on('click','[data-open-pane]',function(e) {
-            console.log(e);
-            $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
-        });
-        $('body').on('click','.pane__item',function(e) {
-            console.log(e);
-            if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
-                var $input = $(this).find(':radio, :checkbox');
-                var checked = $input.is(':radio') ? true : !$input.prop('checked');
-                $input.prop('checked',checked).trigger('change');
-                $input.closest('.pane--modal').find('[data-close]').trigger('click');
-            }
-        });
-    },
+        this.app.on('change:mode',this.onModeChange.bind(this));
+    }
 
-    activateOption: function(option) {
+    activateOption(option) {
         this.$menu.find('.menu__option--' + option).addClass('menu__option--active');
-    },
+    }
 
-    deactivateOption: function(option) {
+    deactivateOption(option) {
         this.$menu.find('.menu__option--' + option).removeClass('menu__option--active');
-    },
+    }
 
-    onPanelZoomToggleClick: function(e) {
-        ViewPort.switchModes();
+    onPanelZoomToggleClick(e) {
+        this.app.switchModes();
+    }
+
+    onModeChange(mode) {
+        if( mode === PAGE_MODE ) {
+            this.deactivateOption('panel-zoom');
+        } else {
+            this.activateOption('panel-zoom');
+        }
     }
 };
