@@ -59,13 +59,26 @@ class Panelz extends EventClass {
         var mode = (this.mode === PAGE_MODE)
             ? PANEL_ZOOM_MODE
             : PAGE_MODE;
+
         this.setMode(mode);
+
+        if( ! this.book.currentPage.hasPanels() ) {
+            this.viewport.message(this.getReadableModeText());
+        }
+
         this.settings.remember('mode',mode);
     }
 
     setMode(mode) {
         this.mode = mode;
         this.trigger('change:mode',mode);
+    }
+
+    getReadableModeText(mode) {
+        if( ! mode ) {
+            mode = this.mode;
+        }
+        return mode.replace(/_/g,' ').toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     }
 
     setLetterBoxing(width,height,animate) {

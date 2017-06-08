@@ -76,19 +76,19 @@ const PANELZ_MARKUP = `
         </div>
         <ul class="viewport__menu menu">
             <li class="menu__list-item">
-                <a href="#" class="menu__option" data-open-pane="pages">
+                <div href="#" class="menu__option" data-open-pane="pages">
                     <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
-                </a>
+                </div>
             </li>
             <li class="menu__list-item">
-                <a href="#" class="menu__option menu__option--panel-zoom">
+                <div class="menu__option menu__option--panel-zoom">
                     Panel<br />Zoom
-                </a>
+                </div>
             </li>
             <li class="menu__list-item">
-                <a href="#" class="menu__option" data-open-pane="settings">
+                <div class="menu__option" data-open-pane="settings">
                     <i class="fa fa-sliders menu__icon" aria-hidden="true"></i>
-                </a>
+                </div>
             </li>
         </ul>
         <div class="panes">

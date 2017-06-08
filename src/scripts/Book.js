@@ -34,7 +34,20 @@ class Book extends EventClass {
         var lastRead = this.app.settings.getLocalSetting('page');
         var pageToSet = lastRead ? lastRead : 0;
         this.setCurrentPage(this.pages[pageToSet]);
-        this.currentPage.onPageEnterForward();
+
+        // Zoom to panel on start
+        if( this.app.mode === PANEL_ZOOM_MODE && this.currentPage.hasPanels() ) {
+            var panel = false;
+            if( this.app.settings.getLocalSetting('panel') !== false ) {
+                this.currentPage.zoomToPanel(this.currentPage.panels[this.app.settings.getLocalSetting('panel')]);
+            } else if( ! this.currentPage.SHOW_PAGE_ON_ENTER ) {
+                console.log('show first');
+                this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
+            } else {
+                this.currentPage.nextPanel = this.currentPage.getFirstPanel();
+            }
+        }
+
         this.pages.forEach(function(page, index) {
             page.setLeftPosition(pageToSet);
             if( this.app.mode === PAGE_MODE || this.currentPage.index === index) {
@@ -111,7 +124,7 @@ class Book extends EventClass {
         this.currentPage.$container.css('opacity',1);
 
         if( this.currentPage.panels.length ) {
-            this.currentPage.onPageEnterForward();
+            this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
         }
     }
 

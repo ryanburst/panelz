@@ -20,36 +20,36 @@ class ViewPort extends EventClass {
         this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 
         var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
-        var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
+        //var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
         var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
         var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
         var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
 
-        this.interactable.add([pan,singletap,doubletap,swipe,pinch]);
+        this.interactable.add([pan,singletap,doubletap,swipe]);
 
         //pinch.recognizeWith(pan);
         singletap.requireFailure(doubletap);
-        pan.requireFailure(pinch);
+        //pan.requireFailure(pinch);
 
-        this.interactable.get('pinch').set({ enable: true });
+        //this.interactable.get('pinch').set({ enable: true });
 
         $('body').on('touchend',function() {
             this.$menu.removeClass('viewport__menu--was-shown');
             if( this.$menu.hasClass('viewport__menu--active') ) {
-                this.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
+                setTimeout(function() {
+                    this.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
+                }.bind(this),500);
             }
         }.bind(this));
 
         this.app.tutorial.on('done',this.onTutorialDone.bind(this));
         this.app.on('load:book',this.onBookLoaded.bind(this));
 
-        $('body').on('touchend click','[data-open-pane]',function(e) {
-            e.preventDefault();
+        $('body').on('click','[data-open-pane]',function(e) {
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
         });
-        $('body').on('touchend click','.pane__item',function(e) {
+        $('body').on('click','.pane__item',function(e) {
             if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
-                e.preventDefault();
                 var $input = $(this).find(':radio, :checkbox');
                 var checked = $input.is(':radio') ? true : !$input.prop('checked');
                 $input.prop('checked',checked).trigger('change');
@@ -57,16 +57,14 @@ class ViewPort extends EventClass {
             }
         });
 
-        $('body').on('touchend click', '[data-skip-to-page]', function(e) {
-            e.preventDefault();
+        $('body').on('click', '[data-skip-to-page]', function(e) {
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
             $this.closest('.pane').find('[data-close]').trigger('click');
             this.app.trigger('user:skipToPage',page);
         }.bind(this));
 
-        $('body').on('touchend click','[data-close]',function(e) {
-            e.preventDefault();
+        $('body').on('click','[data-close]',function(e) {
             var $this = $(this);
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
@@ -129,10 +127,7 @@ class ViewPort extends EventClass {
 
     onTutorialDone() {
         this.$menu.addClass('viewport__menu--active');
-        this.message('The tutorial is always available in the settings menu at the bottom right.')
-        setTimeout(function() {
-            this.$menu.removeClass('viewport__menu--active');
-        }.bind(this),5000);
+        this.message('The tutorial is always available in the settings menu at the bottom right.',5000)
     }
 
     canRecognizePan(rec, input) {
@@ -218,14 +213,20 @@ class ViewPort extends EventClass {
         return this.$element.outerHeight();
     }
 
-    message(text) {
+    message(text,time) {
         var $messageContainer = $('.viewport__message');
         var $message = $('.message__text');
+
+        time = (typeof time === 'undefined') ? 3000 : time;
+
+        clearTimeout(this.messageTimeout);
+
         $message.text(text);
         $messageContainer.removeClass('viewport__message--hide');
-        setTimeout(function() {
+        this.messageTimeout = setTimeout(function() {
+            clearTimeout(this.messageTimeout);
             $messageContainer.addClass('viewport__message--hide');
-        },5000);
+        },time);
     }
 
     onResize(e) {

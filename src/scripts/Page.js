@@ -68,7 +68,7 @@ class Page extends EventClass {
         if( this.app.mode === PANEL_ZOOM_MODE && this.panels.length ) {
             this.nextPanel = this.getFirstPanel();
             this.previousPanel = this.getPreviousPanel();
-            if( ! this.SHOW_PAGE_ON_ENTER || this.nextPanel.index !== 0) {
+            if( ! this.SHOW_PAGE_ON_ENTER ) {
                 this.zoomToPanel(this.nextPanel);
             }
         }
@@ -162,25 +162,25 @@ class Page extends EventClass {
         this.$container.css('left',this.left);
     }
 
+    hasPanels() {
+        return this.panels.length !== 0;
+    }
+
     setCurrentPanel(panel) {
         this.lastPanelSeen = this.currentPanel;
         this.currentPanel = panel;
-    }
 
-    setNextPanel() {
-        this.nextPanel = this.currentPanel !== false
-            ? (this.currentPanel.nextPanel !== false
-                ? this.panels[this.currentPanel.nextPanel]
+        this.nextPanel = panel !== false
+            ? (panel.nextPanel !== false
+                ? this.panels[panel.nextPanel]
                 : false)
-            : false
-    }
+            : false;
 
-    setPreviousPanel() {
-        this.previousPanel = this.currentPanel !== false
-            ? (this.currentPanel.previousPanel !== false
-                ? this.panels[this.currentPanel.previousPanel]
+        this.previousPanel = panel !== false
+            ? (panel.previousPanel !== false
+                ? this.panels[panel.previousPanel]
                 : false)
-            : false
+            : false;
     }
 
     getLastPanelSeen() {
@@ -208,9 +208,6 @@ class Page extends EventClass {
     }
 
     getFirstPanel() {
-        if( this.app.settings.getLocalSetting('panel') ) {
-            return this.panels[this.app.settings.getLocalSetting('panel')];
-        }
         return this.panels.length ? this.panels[0] : false;
     }
 
@@ -252,15 +249,12 @@ class Page extends EventClass {
         this.app.setLetterBoxing(viewPortWidth-width,viewPortHeight-height,animate);
 
         this.setCurrentPanel(panel);
-        this.setNextPanel();
-        this.setPreviousPanel();
         this.app.settings.remember('panel',panel.index);
     }
 
     zoomOut() {
         this.setCurrentPanel(false);
         this.centerInViewPort(true);
-        this.setCurrentPanel(false);
         this.app.setLetterBoxing(0,0);
         this.app.settings.remember('panel',false);
     }
