@@ -13,7 +13,7 @@ class Menu extends EventClass {
     }
 
     setEventListeners() {
-        this.$menu.on('click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
+        $('body').on('touchend click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
         this.app.on('change:mode',this.onModeChange.bind(this));
     }
 
@@ -26,6 +26,7 @@ class Menu extends EventClass {
     }
 
     onPanelZoomToggleClick(e) {
+        e.preventDefault();
         this.app.switchModes();
     }
 

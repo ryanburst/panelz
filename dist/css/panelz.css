@@ -260,10 +260,8 @@ p {
       -ms-flex-positive: 1;
           flex-grow: 1;
   padding: 0;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  height: 100%;
   border-right: 1px solid #fafafa;
-  cursor: pointer;
 }
 
 .menu__list-item:last-child {
@@ -288,6 +286,7 @@ p {
   color: #fafafa;
   font-size: 16px;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .menu__option--active {

@@ -459,7 +459,7 @@ var Menu = function (_EventClass2) {
     _createClass(Menu, [{
         key: 'setEventListeners',
         value: function setEventListeners() {
-            this.$menu.on('click', '.menu__option--panel-zoom', this.onPanelZoomToggleClick.bind(this));
+            $('body').on('touchend click', '.menu__option--panel-zoom', this.onPanelZoomToggleClick.bind(this));
             this.app.on('change:mode', this.onModeChange.bind(this));
         }
     }, {
@@ -475,6 +475,7 @@ var Menu = function (_EventClass2) {
     }, {
         key: 'onPanelZoomToggleClick',
         value: function onPanelZoomToggleClick(e) {
+            e.preventDefault();
             this.app.switchModes();
         }
     }, {
@@ -852,116 +853,15 @@ var Panel = function () {
     return Panel;
 }();
 
-var PAGE_MODE = 'PAGE_MODE';
-var PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
-var PAGE_BACK = 'PAGE_BACK';
-var PAGE_FORWARD = 'PAGE_FORWARD';
-var TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
-
-var Panelz = function (_EventClass4) {
-    _inherits(Panelz, _EventClass4);
-
-    function Panelz(config) {
-        _classCallCheck(this, Panelz);
-
-        var _this4 = _possibleConstructorReturn(this, (Panelz.__proto__ || Object.getPrototypeOf(Panelz)).call(this));
-
-        _this4.config = config;
-
-        _this4.settings = new Settings();
-        _this4.setInitialMode();
-
-        _this4.tutorial = new Tutorial(_this4.settings);
-        _this4.menu = new Menu(_this4.config);
-        _this4.viewport = new ViewPort(_this4.config);
-        _this4.book = new Book(_this4.config);
-
-        _this4.setEventListeners();
-        return _this4;
-    }
-
-    _createClass(Panelz, [{
-        key: 'setInitialMode',
-        value: function setInitialMode() {
-            if (this.settings.getLocalSetting('mode')) {
-                this.mode = this.settings.getLocalSetting('mode');
-            } else {
-                this.mode = this.settings.get('startInPanelZoom') ? PANEL_ZOOM_MODE : PAGE_MODE;
-            }
-        }
-    }, {
-        key: 'setEventListeners',
-        value: function setEventListeners() {
-            this.book.on('load', this.onBookLoaded.bind(this));
-        }
-    }, {
-        key: 'onBookLoaded',
-        value: function onBookLoaded(book) {
-            this.trigger('load:book', book);
-        }
-    }, {
-        key: 'switchModes',
-        value: function switchModes() {
-            var mode = this.mode === PAGE_MODE ? PANEL_ZOOM_MODE : PAGE_MODE;
-            this.setMode(mode);
-            this.settings.remember('mode', mode);
-        }
-    }, {
-        key: 'setMode',
-        value: function setMode(mode) {
-            this.mode = mode;
-            this.trigger('change:mode', mode);
-        }
-    }, {
-        key: 'setLetterBoxing',
-        value: function setLetterBoxing(width, height, animate) {
-            this.viewport.setLetterBoxing(width, height, animate);
-        }
-    }, {
-        key: 'getViewPortSize',
-        value: function getViewPortSize() {
-            return {
-                width: this.viewport.getWidth(),
-                height: this.viewport.getHeight()
-            };
-        }
-    }, {
-        key: 'addPageMarkupToViewPort',
-        value: function addPageMarkupToViewPort($markup) {
-            return $markup.appendTo(this.viewport.$element);
-        }
-    }, {
-        key: 'config',
-        set: function set(config) {
-            this.$container = $(config.container);
-            config.app = this;
-            this._config = config;
-        },
-        get: function get() {
-            return this._config;
-        }
-    }, {
-        key: '$container',
-        set: function set($container) {
-            this._$container = $container.append(PANELZ_MARKUP);
-        },
-        get: function get() {
-            return _$container;
-        }
-    }]);
-
-    return Panelz;
-}(EventClass);
-
-var Settings = function (_EventClass5) {
-    _inherits(Settings, _EventClass5);
+var Settings = function (_EventClass4) {
+    _inherits(Settings, _EventClass4);
 
     function Settings() {
         _classCallCheck(this, Settings);
 
-        var _this5 = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this));
+        var _this4 = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this));
 
-        _this5.DEFAULTS = {
+        _this4.DEFAULTS = {
             leftHandMode: false,
             startInPanelZoom: false,
             panelTransitions: 250,
@@ -971,13 +871,13 @@ var Settings = function (_EventClass5) {
             showTutorial: true
         };
 
-        _this5.config = {};
+        _this4.config = {};
 
-        _this5.localSettings = _this5.getLocalSettings();
-        _this5.loadConfig($.extend({}, _this5.DEFAULTS, _this5.getUserSettings()));
-        _this5.setFields();
-        _this5.setEventListeners();
-        return _this5;
+        _this4.localSettings = _this4.getLocalSettings();
+        _this4.loadConfig($.extend({}, _this4.DEFAULTS, _this4.getUserSettings()));
+        _this4.setFields();
+        _this4.setEventListeners();
+        return _this4;
     }
 
     _createClass(Settings, [{
@@ -1114,25 +1014,25 @@ var Settings = function (_EventClass5) {
     return Settings;
 }(EventClass);
 
-var Tutorial = function (_EventClass6) {
-    _inherits(Tutorial, _EventClass6);
+var Tutorial = function (_EventClass5) {
+    _inherits(Tutorial, _EventClass5);
 
     function Tutorial(settings) {
         _classCallCheck(this, Tutorial);
 
-        var _this6 = _possibleConstructorReturn(this, (Tutorial.__proto__ || Object.getPrototypeOf(Tutorial)).call(this));
+        var _this5 = _possibleConstructorReturn(this, (Tutorial.__proto__ || Object.getPrototypeOf(Tutorial)).call(this));
 
-        _this6.settings = settings;
+        _this5.settings = settings;
 
-        _this6.interactable = new Hammer.Manager($('.tutorial')[0]);
-        _this6.interactable.add(new Hammer.Swipe());
+        _this5.interactable = new Hammer.Manager($('.tutorial')[0]);
+        _this5.interactable.add(new Hammer.Swipe());
 
-        _this6.addEventListeners();
+        _this5.addEventListeners();
 
-        if (_this6.settings.get('showTutorial')) {
-            _this6.show();
+        if (_this5.settings.get('showTutorial')) {
+            _this5.show();
         }
-        return _this6;
+        return _this5;
     }
 
     _createClass(Tutorial, [{
@@ -1197,61 +1097,62 @@ var Tutorial = function (_EventClass6) {
     return Tutorial;
 }(EventClass);
 
-var ViewPort = function (_EventClass7) {
-    _inherits(ViewPort, _EventClass7);
+var ViewPort = function (_EventClass6) {
+    _inherits(ViewPort, _EventClass6);
 
     function ViewPort(config) {
         _classCallCheck(this, ViewPort);
 
-        var _this7 = _possibleConstructorReturn(this, (ViewPort.__proto__ || Object.getPrototypeOf(ViewPort)).call(this));
+        var _this6 = _possibleConstructorReturn(this, (ViewPort.__proto__ || Object.getPrototypeOf(ViewPort)).call(this));
 
-        _this7.app = config.app;
-        _this7.$element = $('.viewport');
-        _this7.$container = $(window);
-        _this7.$menu = $('.viewport__menu');
-        _this7.$horizontalLetterBox = $('.letterbox__horizontal');
-        _this7.$verticalLetterBox = $('.letterbox__vertical');
+        _this6.app = config.app;
+        _this6.$element = $('.viewport');
+        _this6.$container = $(window);
+        _this6.$menu = $('.viewport__menu');
+        _this6.$horizontalLetterBox = $('.letterbox__horizontal');
+        _this6.$verticalLetterBox = $('.letterbox__vertical');
 
-        _this7.PAGE_TURN_THRESHOLD = 0.25;
-        _this7.LETTERBOX_STYLE = _this7.app.settings.get('letterboxing');
-        _this7.LEFT_HAND_MODE = _this7.app.settings.get('leftHandMode');
+        _this6.PAGE_TURN_THRESHOLD = 0.25;
+        _this6.LETTERBOX_STYLE = _this6.app.settings.get('letterboxing');
+        _this6.LEFT_HAND_MODE = _this6.app.settings.get('leftHandMode');
 
-        _this7.setEventListeners();
-        _this7.setViewPortSize();
-        _this7.setTapThresholds();
+        _this6.setEventListeners();
+        _this6.setViewPortSize();
+        _this6.setTapThresholds();
 
-        _this7.interactable = new Hammer.Manager(_this7.$element.find('.viewport__interactable')[0]);
+        _this6.interactable = new Hammer.Manager(_this6.$element.find('.viewport__interactable')[0]);
 
-        var pan = new Hammer.Pan({ threshold: 20, enable: _this7.canRecognizePan.bind(_this7) });
+        var pan = new Hammer.Pan({ threshold: 20, enable: _this6.canRecognizePan.bind(_this6) });
         var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
         var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
         var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
-        var swipe = new Hammer.Swipe({ enable: _this7.canRecognizeSwipe.bind(_this7) });
+        var swipe = new Hammer.Swipe({ enable: _this6.canRecognizeSwipe.bind(_this6) });
 
-        _this7.interactable.add([pan, singletap, doubletap, swipe, pinch]);
+        _this6.interactable.add([pan, singletap, doubletap, swipe, pinch]);
 
         //pinch.recognizeWith(pan);
         singletap.requireFailure(doubletap);
         pan.requireFailure(pinch);
 
-        _this7.interactable.get('pinch').set({ enable: true });
+        _this6.interactable.get('pinch').set({ enable: true });
 
         $('body').on('touchend', function () {
             this.$menu.removeClass('viewport__menu--was-shown');
             if (this.$menu.hasClass('viewport__menu--active')) {
                 this.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
             }
-        }.bind(_this7));
+        }.bind(_this6));
 
-        _this7.app.tutorial.on('done', _this7.onTutorialDone.bind(_this7));
-        _this7.app.on('load:book', _this7.onBookLoaded.bind(_this7));
+        _this6.app.tutorial.on('done', _this6.onTutorialDone.bind(_this6));
+        _this6.app.on('load:book', _this6.onBookLoaded.bind(_this6));
 
-        $('body').on('click', '[data-open-pane]', function (e) {
+        $('body').on('touchend click', '[data-open-pane]', function (e) {
             e.preventDefault();
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
         });
-        $('body').on('click', '.pane__item', function (e) {
+        $('body').on('touchend click', '.pane__item', function (e) {
             if (!$(e.target).is(':radio, :checkbox, .checkbox__label')) {
+                e.preventDefault();
                 var $input = $(this).find(':radio, :checkbox');
                 var checked = $input.is(':radio') ? true : !$input.prop('checked');
                 $input.prop('checked', checked).trigger('change');
@@ -1259,19 +1160,21 @@ var ViewPort = function (_EventClass7) {
             }
         });
 
-        $('body').on('click', '[data-skip-to-page]', function (e) {
+        $('body').on('touchend click', '[data-skip-to-page]', function (e) {
+            e.preventDefault();
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
             $this.closest('.pane').find('[data-close]').trigger('click');
             this.app.trigger('user:skipToPage', page);
-        }.bind(_this7));
+        }.bind(_this6));
 
-        $('body').on('click', '[data-close]', function () {
+        $('body').on('touchend click', '[data-close]', function (e) {
+            e.preventDefault();
             var $this = $(this);
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
         });
-        return _this7;
+        return _this6;
     }
 
     _createClass(ViewPort, [{
@@ -1454,3 +1357,104 @@ var ViewPort = function (_EventClass7) {
 ;
 
 var PANELZ_MARKUP = '\n    <div class="tutorial tutorial--hidden">\n        <div class="tutorial__panel">\n            <div class="tutorial__cta">\n                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>\n            </div>\n            <div class="tutorial__content">\n                <div class="heading heading--lg">Welcome to Panelz</div>\n                <div class="heading heading--secondary">Here are some terms you might not know to get you started:</div>\n                <p><strong>Panel Zoom</strong> - This mode will guide you along your comic, panel by panel.</p>\n                <p><strong>Page Mode</strong> - View the full page and all of its panels as you read.</p>\n            </div>\n            <div class="tutorial__cta">\n                <button class="tutorial__button tutorial__button--back" style="visibility: hidden">Back</button>\n                <ul class="tutorial__progress">\n                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>\n                    <li class="tutorial__progress-step"></li>\n                    <li class="tutorial__progress-step"></li>\n                </ul>\n                <button class="tutorial__button" data-tutorial-next>Next</button>\n            </div>\n        </div>\n        <div class="tutorial__panel tutorial__panel--hidden">\n            <div class="tutorial__cta">\n                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>\n            </div>\n            <div class="tutorial__content">\n                <div class="tutorial__image">\n                    <img src="/panelz/dist/images/tutorial-taps.png" />\n                </div>\n                <p><strong>Tap Left</strong> - Navigates backwards one panel or page.</p>\n                <p><strong>Tap Right</strong> - Navigates forward one panel or page.</p>\n                <p><strong>Tap Center</strong> - Open or close the menu options.</p>\n                <p><strong>Double Tap (anywhere)</strong> - Switch between page and Panel Zoom mode.</p>\n            </div>\n            <div class="tutorial__cta">\n                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>\n                <ul class="tutorial__progress">\n                    <li class="tutorial__progress-step"></li>\n                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>\n                    <li class="tutorial__progress-step"></li>\n                </ul>\n                <button class="tutorial__button" data-tutorial-next>Next</button>\n            </div>\n        </div>\n        <div class="tutorial__panel tutorial__panel--hidden">\n            <div class="tutorial__content">\n                <div class="heading heading--secondary">You can also swipe to navigate!</div>\n                <div class="tutorial__image">\n                    <img src="/panelz/dist/images/tutorial-swipes.png" />\n                </div>\n                <p><strong>Swipe Left</strong> - Navigates forward one panel or page.</p>\n                <p><strong>Swipe Right</strong> - Navigates backward one panel or page.</p>\n            </div>\n            <div class="tutorial__cta">\n                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>\n                <ul class="tutorial__progress">\n                    <li class="tutorial__progress-step"></li>\n                    <li class="tutorial__progress-step"></li>\n                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>\n                </ul>\n                <button class="tutorial__button" data-tutorial-done>Done</button>\n            </div>\n        </div>\n    </div>\n    <div class="viewport">\n        <div class="viewport__interactable"></div>\n        <div class="letterbox">\n            <div class="letterbox__horizontal letterbox__horizontal--top"></div>\n            <div class="letterbox__horizontal letterbox__horizontal--bottom"></div>\n            <div class="letterbox__vertical letterbox__vertical--left"></div>\n            <div class="letterbox__vertical letterbox__vertical--right"></div>\n        </div>\n        <div class="viewport__message viewport__message--hide message">\n            <div class="message__text">Panel Zoom mode activated.</div>\n        </div>\n        <ul class="viewport__menu menu">\n            <li class="menu__list-item">\n                <a href="#" class="menu__option" data-open-pane="pages">\n                    <i class="fa fa-clone menu__icon" aria-hidden="true"></i>\n                </a>\n            </li>\n            <li class="menu__list-item">\n                <a href="#" class="menu__option menu__option--panel-zoom">\n                    Panel<br />Zoom\n                </a>\n            </li>\n            <li class="menu__list-item">\n                <a href="#" class="menu__option" data-open-pane="settings">\n                    <i class="fa fa-sliders menu__icon" aria-hidden="true"></i>\n                </a>\n            </li>\n        </ul>\n        <div class="panes">\n            <div class="panes__pane pane pane--pages pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Pages</span>\n                        <span class="pane__close" data-close>\n                            <i class="fa fa-times" aria-hidden="true"></i>\n                        </span>\n                    </div>\n                    <div class="pane__content">\n                        <ul class="page-list">\n                            <li class="page-list__page page-list__page--template" data-skip-to-page="">\n                                <img src="" class="page-list__image" />\n                                <span class="page-list__number"></span>\n                            </li>\n                        </ul>\n                    </div>\n                </div>\n            </div>\n            <div class="panes__pane pane pane--settings pane--full pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Settings</span>\n                        <span class="pane__close" data-close>\n                            <i class="fa fa-times" aria-hidden="true"></i>\n                        </span>\n                    </div>\n                    <div class="pane__content">\n                        <div class="pane__heading">General</div>\n                        <ul class="pane__menu">\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Left-Handed Mode</p>\n                                    <p class="pane__helper-text">Switches the page advancement panel to the left-hand side.</p>\n                                </div>\n                                <div class="checkbox">\n                                  <input type="checkbox" value="true" id="leftHanded" name="leftHandMode" />\n                                  <label for="leftHanded" class="checkbox__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item" data-open-pane="tutorial">\n                                <div class="pane__text">\n                                    <p class="pane__option">Tutorial</p>\n                                    <p class="pane__helper-text">Toggles the tutorial screens on or off</p>\n                                </div>\n                            </li>\n                            <li class="pane__item" data-open-pane="reset">\n                                <div class="pane__text">\n                                    <p class="pane__option">Reset</p>\n                                    <p class="pane__helper-text">Resets all app settings to their defaults</p>\n                                </div>\n                            </li>\n                            <li class="pane__item" data-open-pane="clearData">\n                                <div class="pane__text">\n                                    <p class="pane__option">Clear Data</p>\n                                    <p class="pane__helper-text">Clears all data, including local storage and all user settings</p>\n                                </div>\n                            </li>\n                        </ul>\n                        <div class="pane__heading">Panel Zoom</div>\n                        <ul class="pane__menu">\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Start new books in Panel Zoom Mode</p>\n                                </div>\n                                <div class="checkbox">\n                                  <input type="checkbox" value="true" id="startInPanelZoom" name="startInPanelZoom" />\n                                  <label for="startInPanelZoom" class="checkbox__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item" data-open-pane="animations">\n                                <div class="pane__text">\n                                    <p class="pane__option">Animate Transitions</p>\n                                    <p class="pane__helper-text">Animate panel-to-panel transitions in Panel Zoom mode</p>\n                                </div>\n                            </li>\n                            <li class="pane__item" data-open-pane="letterboxing">\n                                <div class="pane__text">\n                                    <p class="pane__option">Letterboxing</p>\n                                    <p class="pane__helper-text">Use bars to mask content outside of the current panel</p>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Show page on enter</p>\n                                    <p class="pane__helper-text">Show full page on transitioning to a new page</p>\n                                </div>\n                                <div class="checkbox">\n                                  <input type="checkbox" value="true" id="showPageOnEnter" name="showPageOnEnter" />\n                                  <label for="showPageOnEnter" class="checkbox__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Show page on exit</p>\n                                    <p class="pane__helper-text">Show full page before transitioning to a new page</p>\n                                </div>\n                                <div class="checkbox">\n                                  <input type="checkbox" value="true" id="showPageOnExit" name="showPageOnExit" />\n                                  <label for="showPageOnExit" class="checkbox__label"></label>\n                                </div>\n                            </li>\n                        </ul>\n                    </div>\n                </div>\n            </div>\n            <div class="panes__pane pane pane--tutorial pane--modal pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Tutorial</span>\n                    </div>\n                    <div class="pane__content">\n                        <ul class="pane__menu">\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Show</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="true" id="show-tutorial" name="showTutorial" />\n                                  <label for="show-tutorial" class="radio__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Hide</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="false" id="hide-tutorial" name="showTutorial" />\n                                  <label for="hide-tutorial" class="radio__label"></label>\n                                </div>\n                            </li>\n                        </ul>\n                        <div class="pane__actions">\n                            <button class="pane__button" data-close>Cancel</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class="panes__pane pane pane--letterboxing pane--modal pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Letterboxing</span>\n                    </div>\n                    <div class="pane__content">\n                        <ul class="pane__menu">\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">No letterboxing</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="no" id="no-letterboxing" name="letterboxing" />\n                                  <label for="no-letterboxing" class="radio__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Solid letterboxing</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="solid" id="solid-letterboxing" name="letterboxing"/>\n                                  <label for="solid-letterboxing" class="radio__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Opaque letterboxing</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="opaque" id="opaque-letterboxing" name="letterboxing" />\n                                  <label for="opaque-letterboxing" class="radio__label"></label>\n                                </div>\n                            </li>\n                        </ul>\n                        <div class="pane__actions">\n                            <button class="pane__button" data-close>Cancel</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class="panes__pane pane pane--animations pane--modal pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Animate Transitions</span>\n                    </div>\n                    <div class="pane__content">\n                        <ul class="pane__menu">\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">No animation</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="0" id="no-animation" name="panelTransitions" />\n                                  <label for="no-animation" class="radio__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Fast animations</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="250" id="fast-animation" name="panelTransitions" />\n                                  <label for="fast-animation" class="radio__label"></label>\n                                </div>\n                            </li>\n                            <li class="pane__item">\n                                <div class="pane__text">\n                                    <p class="pane__option">Slow animations</p>\n                                </div>\n                                <div class="radio">\n                                  <input type="radio" value="650" id="slow-animation" name="panelTransitions" />\n                                  <label for="slow-animation" class="radio__label"></label>\n                                </div>\n                            </li>\n                        </ul>\n                        <div class="pane__actions">\n                            <button class="pane__button" data-close>Cancel</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class="panes__pane pane pane--reset pane--modal pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Reset Settings</span>\n                    </div>\n                    <div class="pane__content">\n                        <p>Are you sure you want to reset to the default settings?</p>\n                        <div class="pane__actions">\n                            <button class="pane__button" data-close>Cancel</button>\n                            <button class="pane__button" data-close data-reset-settings>Reset</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class="panes__pane pane pane--clearData pane--modal pane--hidden">\n                <div class="pane__container">\n                    <div class="pane__header">\n                        <span>Clear Data</span>\n                    </div>\n                    <div class="pane__content">\n                        <p>Are you sure you want to clear all application data?</p>\n                        <div class="pane__actions">\n                            <button class="pane__button" data-close>Cancel</button>\n                            <button class="pane__button" data-close data-clear-data>Clear</button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n';
+
+var PAGE_MODE = 'PAGE_MODE';
+var PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
+var PAGE_BACK = 'PAGE_BACK';
+var PAGE_FORWARD = 'PAGE_FORWARD';
+var TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
+
+var Panelz = function (_EventClass7) {
+    _inherits(Panelz, _EventClass7);
+
+    function Panelz(config) {
+        _classCallCheck(this, Panelz);
+
+        var _this7 = _possibleConstructorReturn(this, (Panelz.__proto__ || Object.getPrototypeOf(Panelz)).call(this));
+
+        _this7.config = config;
+
+        _this7.settings = new Settings();
+        _this7.setInitialMode();
+
+        _this7.tutorial = new Tutorial(_this7.settings);
+        _this7.menu = new Menu(_this7.config);
+        _this7.viewport = new ViewPort(_this7.config);
+        _this7.book = new Book(_this7.config);
+
+        _this7.setEventListeners();
+        return _this7;
+    }
+
+    _createClass(Panelz, [{
+        key: 'setInitialMode',
+        value: function setInitialMode() {
+            if (this.settings.getLocalSetting('mode')) {
+                this.mode = this.settings.getLocalSetting('mode');
+            } else {
+                this.mode = this.settings.get('startInPanelZoom') ? PANEL_ZOOM_MODE : PAGE_MODE;
+            }
+        }
+    }, {
+        key: 'setEventListeners',
+        value: function setEventListeners() {
+            this.book.on('load', this.onBookLoaded.bind(this));
+        }
+    }, {
+        key: 'onBookLoaded',
+        value: function onBookLoaded(book) {
+            this.trigger('load:book', book);
+        }
+    }, {
+        key: 'switchModes',
+        value: function switchModes() {
+            var mode = this.mode === PAGE_MODE ? PANEL_ZOOM_MODE : PAGE_MODE;
+            this.setMode(mode);
+            this.settings.remember('mode', mode);
+        }
+    }, {
+        key: 'setMode',
+        value: function setMode(mode) {
+            this.mode = mode;
+            this.trigger('change:mode', mode);
+        }
+    }, {
+        key: 'setLetterBoxing',
+        value: function setLetterBoxing(width, height, animate) {
+            this.viewport.setLetterBoxing(width, height, animate);
+        }
+    }, {
+        key: 'getViewPortSize',
+        value: function getViewPortSize() {
+            return {
+                width: this.viewport.getWidth(),
+                height: this.viewport.getHeight()
+            };
+        }
+    }, {
+        key: 'addPageMarkupToViewPort',
+        value: function addPageMarkupToViewPort($markup) {
+            return $markup.appendTo(this.viewport.$element);
+        }
+    }, {
+        key: 'config',
+        set: function set(config) {
+            this.$container = $(config.container);
+            config.app = this;
+            this._config = config;
+        },
+        get: function get() {
+            return this._config;
+        }
+    }, {
+        key: '$container',
+        set: function set($container) {
+            this._$container = $container.append(PANELZ_MARKUP);
+        },
+        get: function get() {
+            return _$container;
+        }
+    }]);
+
+    return Panelz;
+}(EventClass);

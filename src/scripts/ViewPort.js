@@ -43,12 +43,13 @@ class ViewPort extends EventClass {
         this.app.tutorial.on('done',this.onTutorialDone.bind(this));
         this.app.on('load:book',this.onBookLoaded.bind(this));
 
-        $('body').on('click','[data-open-pane]',function(e) {
+        $('body').on('touchend click','[data-open-pane]',function(e) {
             e.preventDefault();
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
         });
-        $('body').on('click','.pane__item',function(e) {
+        $('body').on('touchend click','.pane__item',function(e) {
             if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
+                e.preventDefault();
                 var $input = $(this).find(':radio, :checkbox');
                 var checked = $input.is(':radio') ? true : !$input.prop('checked');
                 $input.prop('checked',checked).trigger('change');
@@ -56,14 +57,16 @@ class ViewPort extends EventClass {
             }
         });
 
-        $('body').on('click', '[data-skip-to-page]', function(e) {
+        $('body').on('touchend click', '[data-skip-to-page]', function(e) {
+            e.preventDefault();
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
             $this.closest('.pane').find('[data-close]').trigger('click');
             this.app.trigger('user:skipToPage',page);
         }.bind(this));
 
-        $('body').on('click','[data-close]',function() {
+        $('body').on('touchend click','[data-close]',function(e) {
+            e.preventDefault();
             var $this = $(this);
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
