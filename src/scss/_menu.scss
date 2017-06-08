@@ -15,9 +15,6 @@
         &:last-child {
             border-right: none;
         }
-        &--active {
-            color: #55a1e6;
-        }
     }
     &__option {
         display: flex;
@@ -29,6 +26,9 @@
         color: #fafafa;
         font-size: 16px;
         text-decoration: none;
+        &--active {
+            color: #55a1e6;
+        }
     }
     &__icon {
         font-size: 28px;

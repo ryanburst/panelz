@@ -270,10 +270,6 @@ p {
   border-right: none;
 }
 
-.menu__list-item--active {
-  color: #55a1e6;
-}
-
 .menu__option {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -292,6 +288,10 @@ p {
   color: #fafafa;
   font-size: 16px;
   text-decoration: none;
+}
+
+.menu__option--active {
+  color: #55a1e6;
 }
 
 .menu__icon {
