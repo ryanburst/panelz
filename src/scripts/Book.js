@@ -6,6 +6,7 @@ class Book extends EventClass {
         this.app = config.app;
         this.pages = [];
         this.loaded = 0;
+        this.setEventListeners();
         config.pages.forEach(function(pageConfig) {
             pageConfig.app = this.app;
             var page = new Page(pageConfig);
@@ -15,7 +16,11 @@ class Book extends EventClass {
     }
 
     setEventListeners() {
-        this.app('change:mode',this.onModeChange.bind(this));
+        this.app.on('change:mode',this.onModeChange.bind(this));
+        this.app.on('user:skipToPage',this.skipToPage.bind(this));
+        this.app.on('user:panend',this.onPanEnd.bind(this));
+        this.app.on('user:pageForward',this.pageForward.bind(this));
+        this.app.on('user:pageBackward',this.pageBackward.bind(this));
     }
 
     onPageLoaded(page) {
@@ -39,15 +44,24 @@ class Book extends EventClass {
             }
         }.bind(this));
         this.buildPageIndex();
-        this.trigger('load',this);
+        this.trigger('load:book',this);
     }
 
     onModeChange(mode) {
         if( mode === PAGE_MODE ) {
-            this.book.setForPageMode();
+            this.setForPageMode();
         } else {
-            this.book.setForPanelZoomMode();
+            this.setForPanelZoomMode();
         }
+    }
+
+    onPanEnd(ev) {
+        this.pages.forEach(function(page) {
+            if(page.shouldBeSetAsCurrent(ev)) {
+                this.setCurrentPage(page);
+            }
+        }.bind(this));
+        this.snapPagesToCurrent();
     }
 
     buildPageIndex() {
@@ -136,7 +150,7 @@ class Book extends EventClass {
         if( this.currentPage.isLast ) {
             return false;
         }
-        this.currentPage.onPageLeaveFoward();
+
         this.setCurrentPage(this.getNextPage());
         if( this.app.mode === PAGE_MODE ) {
             this.snapPagesToCurrent();
@@ -166,7 +180,7 @@ class Book extends EventClass {
         if( this.currentPage.isFirst ) {
             return false;
         }
-        this.currentPage.onPageLeaveBackward();
+
         this.setCurrentPage(this.getPreviousPage());
         if( this.app.mode === PAGE_MODE ) {
             this.snapPagesToCurrent();
@@ -175,6 +189,7 @@ class Book extends EventClass {
     }
 
     skipToPage(pageNum) {
+        console.log('Skip to',pageNum);
         var page = this.pages[pageNum-1];
         this.currentPage.zoomOut();
         this.setCurrentPage(page);

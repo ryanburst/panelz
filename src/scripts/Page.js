@@ -36,7 +36,7 @@ class Page extends EventClass {
     }
 
     onPageLoaded(e) {
-        this.$container = $('<div />').addClass('book__page page').appendTo(ViewPort.$element);
+        this.$container = this.app.addPageMarkupToViewPort($('<div />').addClass('book__page page'));
         this.$element = $(e.currentTarget)
             .addClass('page__image')
             .appendTo(this.$container);
@@ -44,10 +44,10 @@ class Page extends EventClass {
         this.originalHeight = this.$element.height();
         this.centerInViewPort();
 
-        ViewPort.interactable.on("panstart", function(ev) {
+        this.app.on("user:panstart", function(ev) {
             this.originalLeft = parseInt( this.$container.css( "left" ), 10 );
         }.bind(this));
-        ViewPort.interactable.on("pan", function(ev) {
+        this.app.on("user:pan", function(ev) {
             // Stop vertical pan flick
             if(ev.offsetDirection === 8) {
                 return true;
@@ -57,7 +57,7 @@ class Page extends EventClass {
                 "left": this.left
             } );
         }.bind(this));
-        ViewPort.interactable.on("pinch",function(env) {
+        this.app.on("user:pinch",function(env) {
             console.log(env);
         });
 
@@ -93,18 +93,20 @@ class Page extends EventClass {
     }
 
     centerInViewPort(animate) {
-        var width = ViewPort.getWidth();
-        var height = this.getOriginalHeight() * ViewPort.getWidth() / this.getOriginalWidth();
+        var viewPortWidth = this.app.getViewPortSize().width;
+        var viewPortHeight = this.app.getViewPortSize().height;
+        var width = viewPortWidth;
+        var height = this.getOriginalHeight() * viewPortWidth / this.getOriginalWidth();
 
-        if( height > ViewPort.getHeight() ) {
-            height = ViewPort.getHeight();
-            width = this.getOriginalWidth() * ViewPort.getHeight() / this.getOriginalHeight();
+        if( height > viewPortHeight ) {
+            height = viewPortHeight;
+            width = this.getOriginalWidth() * viewPortHeight / this.getOriginalHeight();
         }
 
-        var top = (ViewPort.getHeight() - height) / 2;
-        var left = (ViewPort.getWidth() - width) / 2;
+        var top = (viewPortHeight - height) / 2;
+        var left = (viewPortWidth - width) / 2;
 
-        this.$container.width(ViewPort.getWidth()).height(ViewPort.getHeight());
+        this.$container.width(viewPortWidth).height(viewPortHeight);
 
         this.$element.animate({
             top: top,
@@ -156,7 +158,7 @@ class Page extends EventClass {
         if( typeof offset === 'undefined' ) {
             offset = 0;
         }
-        this.left = (this.index-offset) * ViewPort.getWidth();
+        this.left = (this.index-offset) * this.app.getViewPortSize().width;
         this.$container.css('left',this.left);
     }
 
@@ -213,17 +215,20 @@ class Page extends EventClass {
     }
 
     zoomToPanel(panel,animate) {
-        var width = panel.getWidth() >= panel.getHeight() ? ViewPort.getWidth() : panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
-        var height = panel.getHeight() > panel.getWidth() ? ViewPort.getHeight() : panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+        var viewPortWidth = this.app.getViewPortSize().width;
+        var viewPortHeight = this.app.getViewPortSize().height;
 
-        if( width > ViewPort.getWidth() ) {
-            width = ViewPort.getWidth();
-            height = panel.getHeight() * ViewPort.getWidth() / panel.getWidth();
+        var width = panel.getWidth() >= panel.getHeight() ? viewPortWidth : panel.getWidth() * viewPortHeight / panel.getHeight();
+        var height = panel.getHeight() > panel.getWidth() ? viewPortHeight : panel.getHeight() * viewPortWidth / panel.getWidth();
+
+        if( width > viewPortWidth ) {
+            width = viewPortWidth;
+            height = panel.getHeight() * viewPortWidth / panel.getWidth();
         }
 
-        if( height > ViewPort.getHeight() ) {
-            height = ViewPort.getHeight();
-            width = panel.getWidth() * ViewPort.getHeight() / panel.getHeight();
+        if( height > viewPortHeight ) {
+            height = viewPortHeight;
+            width = panel.getWidth() * viewPortHeight / panel.getHeight();
         }
 
         var pageHeight = height * this.getOriginalHeight() / panel.getHeight();
@@ -235,8 +240,8 @@ class Page extends EventClass {
         animate = typeof animate === 'undefined' ? true : animate;
 
         this.$element.animate({
-            top: -top + (ViewPort.getHeight() - height) / 2,
-            left: -left + ((ViewPort.getWidth() - width) / 2),
+            top: -top + (viewPortHeight - height) / 2,
+            left: -left + ((viewPortWidth - width) / 2),
             width: pageWidth,
             height: pageHeight
         },{
@@ -244,7 +249,7 @@ class Page extends EventClass {
             easing: 'easeOutSine'
         });
 
-        ViewPort.setLetterBoxing(ViewPort.getHeight()-height,ViewPort.getWidth()-width,animate);
+        this.app.setLetterBoxing(viewPortWidth-width,viewPortHeight-height,animate);
 
         this.setCurrentPanel(panel);
         this.setNextPanel();
@@ -256,7 +261,7 @@ class Page extends EventClass {
         this.setCurrentPanel(false);
         this.centerInViewPort(true);
         this.setCurrentPanel(false);
-        ViewPort.setLetterBoxing(0,0);
+        this.app.setLetterBoxing(0,0);
         this.app.settings.remember('panel',false);
     }
 

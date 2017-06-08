@@ -75,14 +75,20 @@ const PANELZ_MARKUP = `
             <div class="message__text">Panel Zoom mode activated.</div>
         </div>
         <ul class="viewport__menu menu">
-            <li class="menu__option" data-open-pane="pages">
-                <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
+            <li class="menu__list-item">
+                <a href="#" class="menu__option" data-open-pane="pages">
+                    <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
+                </a>
             </li>
-            <li class="menu__option menu__option--panel-zoom">
-                Panel<br />Zoom
+            <li class="menu__list-item">
+                <a href="#" class="menu__option menu__option--panel-zoom">
+                    Panel<br />Zoom
+                </a>
             </li>
-            <li class="menu__option" data-open-pane="settings">
-                <i class="fa fa-sliders menu__icon" aria-hidden="true"></i>
+            <li class="menu__list-item">
+                <a href="#" class="menu__option" data-open-pane="settings">
+                    <i class="fa fa-sliders menu__icon" aria-hidden="true"></i>
+                </a>
             </li>
         </ul>
         <div class="panes">

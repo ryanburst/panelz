@@ -1,6 +1,7 @@
-var ViewPort = {
+class ViewPort extends EventClass {
 
-    init: function(config) {
+    constructor(config) {
+        super();
         this.app = config.app;
         this.$element = $('.viewport');
         this.$container = $(window);
@@ -16,22 +17,21 @@ var ViewPort = {
         this.setViewPortSize();
         this.setTapThresholds();
 
-        if(this.app.mode === PANEL_ZOOM_MODE) {
-            Menu.activateOption('panel-zoom');
-        }
-
         this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 
         var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
-        var pinch = new Hammer.Pinch({ threshold: 0 });
+        var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
         var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
         var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
         var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
 
-        this.interactable.add([pan,singletap,doubletap,swipe]);
+        this.interactable.add([pan,singletap,doubletap,swipe,pinch]);
 
         //pinch.recognizeWith(pan);
         singletap.requireFailure(doubletap);
+        pan.requireFailure(pinch);
+
+        this.interactable.get('pinch').set({ enable: true });
 
         $('body').on('touchend',function() {
             this.$menu.removeClass('viewport__menu--was-shown');
@@ -41,12 +41,26 @@ var ViewPort = {
         }.bind(this));
 
         this.app.tutorial.on('done',this.onTutorialDone.bind(this));
+        this.app.on('load:book',this.onBookLoaded.bind(this));
+
+        $('body').on('click','[data-open-pane]',function(e) {
+            e.preventDefault();
+            $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
+        });
+        $('body').on('click','.pane__item',function(e) {
+            if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
+                var $input = $(this).find(':radio, :checkbox');
+                var checked = $input.is(':radio') ? true : !$input.prop('checked');
+                $input.prop('checked',checked).trigger('change');
+                $input.closest('.pane--modal').find('[data-close]').trigger('click');
+            }
+        });
 
         $('body').on('click', '[data-skip-to-page]', function(e) {
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
             $this.closest('.pane').find('[data-close]').trigger('click');
-            this.app.book.skipToPage(page);
+            this.app.trigger('user:skipToPage',page);
         }.bind(this));
 
         $('body').on('click','[data-close]',function() {
@@ -54,19 +68,22 @@ var ViewPort = {
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
         });
+    }
 
-        this.app.book.on('load',this.onBookLoaded.bind(this));
-    },
-
-    onBookLoaded: function() {
+    onBookLoaded() {
+        console.log('Book loaded');
+        this.interactable.on('panstart',function(ev) {
+            this.app.trigger('user:panstart',ev);
+        }.bind(this));
+        this.interactable.on('pan',function(ev) {
+            this.app.trigger('user:pan',ev);
+        }.bind(this));
         this.interactable.on('panend',function(ev) {
-            var newPage = false;
-            this.app.book.pages.forEach(function(page) {
-                if(page.shouldBeSetAsCurrent(ev)) {
-                    this.app.book.setCurrentPage(page);
-                }
-            }.bind(this));
-            this.app.book.snapPagesToCurrent();
+            this.app.trigger('user:panend',ev);
+        }.bind(this));
+        this.interactable.on('pinch',function(ev) {
+            console.log(ev);
+            this.app.trigger('user:pinch',ev);
         }.bind(this));
         this.interactable.on("tap", function(ev) {
             if( ev.tapCount >= 2 ) {
@@ -74,12 +91,10 @@ var ViewPort = {
             }
             var cmd = this.findTapZone(ev.center.x,ev.center.y);
             if( cmd === PAGE_FORWARD ) {
-                return this.app.book.pageForward();
-            }
-            if( cmd === PAGE_BACK ) {
-                return this.app.book.pageBackward();
-            }
-            if( cmd === TOGGLE_MAIN_MENU ) {
+                this.app.trigger('user:pageForward');
+            } else if( cmd === PAGE_BACK ) {
+                this.app.trigger('user:pageBackward');
+            } else if( cmd === TOGGLE_MAIN_MENU ) {
                 if( ! this.$menu.hasClass('viewport__menu--was-shown') ) {
                     this.$menu.addClass('viewport__menu--active');
                 }
@@ -87,12 +102,12 @@ var ViewPort = {
         }.bind(this));
         this.interactable.on("swipeleft", function(ev) {
             if( this.app.mode === PANEL_ZOOM_MODE ) {
-                this.app.book.pageForward();
+                this.app.trigger('user:pageForward');
             }
         }.bind(this));
         this.interactable.on("swiperight", function(ev) {
             if( this.app.mode === PANEL_ZOOM_MODE ) {
-                this.app.book.pageBackward();
+                this.app.trigger('user:pageBackward');
             }
         }.bind(this));
 
@@ -106,51 +121,39 @@ var ViewPort = {
             this.setTapThresholds();
         }.bind(this));
 
-        this.app.on('change:mode',this.onModeChange.bind(this));
-
         $(window).on('resize orientationchange',this.onResize.bind(this));
-    },
+    }
 
-    onTutorialDone: function() {
+    onTutorialDone() {
         this.$menu.addClass('viewport__menu--active');
         this.message('The tutorial is always available in the settings menu at the bottom right.')
         setTimeout(function() {
             this.$menu.removeClass('viewport__menu--active');
         }.bind(this),5000);
-    },
+    }
 
-    canRecognizePan: function(rec, input) {
+    canRecognizePan(rec, input) {
         return this.app.mode === PAGE_MODE;
-    },
+    }
 
-    canRecognizeSwipe: function(rec, input) {
+    canRecognizeSwipe(rec, input) {
         return this.app.mode === PANEL_ZOOM_MODE;
-    },
+    }
 
-    setContainer: function($container) {
+    setContainer($container) {
         this.$container = $container;
-    },
+    }
 
-    onModeChange: function(mode) {
-        if( mode === PAGE_MODE ) {
-            Menu.deactivateOption('panel-zoom');
-            //this.message('Page mode activated.');
-        } else {
-            Menu.activateOption('panel-zoom');
-            //this.message('Panel Zoom mode activated.');
-        }
-    },
-
-    setEventListeners: function() {
+    setEventListeners() {
         this.$container.on('resize',this.setViewPortSize.bind(this));
-    },
+    }
 
-    setViewPortSize: function(e) {
+    setViewPortSize(e) {
         this.$element.width(this.$container.outerWidth());
         this.$element.height(this.$container.outerHeight());
-    },
+    }
 
-    setTapThresholds: function() {
+    setTapThresholds() {
         if(this.LEFT_HAND_MODE) {
             this.PAGE_BACK_MIN = this.getWidth() - (this.getWidth() * this.PAGE_TURN_THRESHOLD);
             this.PAGE_BACK_MAX = this.getWidth();
@@ -162,9 +165,9 @@ var ViewPort = {
             this.PAGE_BACK_MIN = 0;
             this.PAGE_BACK_MAX = this.getWidth() * this.PAGE_TURN_THRESHOLD;
         }
-    },
+    }
 
-    findTapZone: function(x,y) {
+    findTapZone(x,y) {
         if( x >= this.PAGE_BACK_MIN && x <= this.PAGE_BACK_MAX) {
             return PAGE_BACK;
         }
@@ -172,9 +175,9 @@ var ViewPort = {
             return PAGE_FORWARD;
         }
         return TOGGLE_MAIN_MENU;
-    },
+    }
 
-    setLetterBoxing: function(height,width,animate) {
+    setLetterBoxing(width,height,animate) {
         var horizSize = height > 0 ? height / 2 : 0;
         var vertSize = width > 0 ? width / 2 : 0;
         var speed = this.app.settings.get('panelTransitions');
@@ -191,9 +194,9 @@ var ViewPort = {
             duration: animate ? speed : 0,
             easing: 'easeOutSine'
         });
-    },
+    }
 
-    setLetterBoxStyle: function() {
+    setLetterBoxStyle() {
         var opacity = (this.LETTERBOX_STYLE === 'no'
             ? 0
             :(this.LETTERBOX_STYLE === 'opaque'
@@ -202,17 +205,17 @@ var ViewPort = {
 
         this.$horizontalLetterBox.css('opacity',opacity);
         this.$verticalLetterBox.css('opacity',opacity);
-    },
+    }
 
-    getWidth: function() {
+    getWidth() {
         return this.$element.outerWidth();
-    },
+    }
 
-    getHeight: function() {
+    getHeight() {
         return this.$element.outerHeight();
-    },
+    }
 
-    message: function(text) {
+    message(text) {
         var $messageContainer = $('.viewport__message');
         var $message = $('.message__text');
         $message.text(text);
@@ -220,9 +223,9 @@ var ViewPort = {
         setTimeout(function() {
             $messageContainer.addClass('viewport__message--hide');
         },5000);
-    },
+    }
 
-    onResize: function(e) {
+    onResize(e) {
         this.setViewPortSize();
         this.setTapThresholds();
         this.app.trigger('resize',e);
