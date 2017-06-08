@@ -60,9 +60,16 @@ class Panelz extends EventClass {
             ? PANEL_ZOOM_MODE
             : PAGE_MODE;
 
+        // Current page has panels, but they're not zoomed into one, and about to switch into page mode.
+        // OR
+        // The page has no panels, which means no zooming at all.
+        // ---
+        // Message the user to make sure they know the page switch was successful
+        var messageUser = ( this.book.currentPage.hasPanels() && ! this.book.currentPage.currentPanel && mode === PAGE_MODE ) || ( ! this.book.currentPage.hasPanels() );
+
         this.setMode(mode);
 
-        if( ! this.book.currentPage.hasPanels() ) {
+        if( messageUser ) {
             this.viewport.message(this.getReadableModeText());
         }
 
