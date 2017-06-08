@@ -78,6 +78,7 @@ const PANELZ_MARKUP = `
             <li class="menu__list-item">
                 <div href="#" class="menu__option" data-open-pane="pages">
                     <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
+                    <span class="menu__label">Pages</span>
                 </div>
             </li>
             <li class="menu__list-item">
@@ -88,6 +89,7 @@ const PANELZ_MARKUP = `
             <li class="menu__list-item">
                 <div class="menu__option" data-open-pane="settings">
                     <i class="fa fa-sliders menu__icon" aria-hidden="true"></i>
+                    <span class="menu__label">Settings</span>
                 </div>
             </li>
         </ul>

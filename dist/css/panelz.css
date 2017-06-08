@@ -276,6 +276,10 @@ p {
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
@@ -291,6 +295,11 @@ p {
 
 .menu__option--active {
   color: #55a1e6;
+}
+
+.menu__label {
+  margin-top: 3px;
+  font-size: 12px;
 }
 
 .menu__icon {

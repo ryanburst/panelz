@@ -18,6 +18,7 @@
         display: flex;
         height: 100%;
         flex-grow: 1;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
@@ -28,6 +29,10 @@
         &--active {
             color: #55a1e6;
         }
+    }
+    &__label {
+        margin-top: 3px;
+        font-size: 12px;
     }
     &__icon {
         font-size: 28px;
