@@ -119,37 +119,6 @@ const PANELZ_MARKUP = `
                         </span>
                     </div>
                     <div class="pane__content">
-                        <div class="pane__heading">General</div>
-                        <ul class="pane__menu">
-                            <li class="pane__item">
-                                <div class="pane__text">
-                                    <p class="pane__option">Left-Handed Mode</p>
-                                    <p class="pane__helper-text">Switches the page advancement panel to the left-hand side.</p>
-                                </div>
-                                <div class="checkbox">
-                                  <input type="checkbox" value="true" id="leftHanded" name="leftHandMode" />
-                                  <label for="leftHanded" class="checkbox__label"></label>
-                                </div>
-                            </li>
-                            <li class="pane__item" data-open-pane="tutorial">
-                                <div class="pane__text">
-                                    <p class="pane__option">Tutorial</p>
-                                    <p class="pane__helper-text">Toggles the tutorial screens on or off</p>
-                                </div>
-                            </li>
-                            <li class="pane__item" data-open-pane="reset">
-                                <div class="pane__text">
-                                    <p class="pane__option">Reset</p>
-                                    <p class="pane__helper-text">Resets all app settings to their defaults</p>
-                                </div>
-                            </li>
-                            <li class="pane__item" data-open-pane="clearData">
-                                <div class="pane__text">
-                                    <p class="pane__option">Clear Data</p>
-                                    <p class="pane__helper-text">Clears all data, including local storage and all user settings</p>
-                                </div>
-                            </li>
-                        </ul>
                         <div class="pane__heading">Panel Zoom</div>
                         <ul class="pane__menu">
                             <li class="pane__item">
@@ -191,6 +160,37 @@ const PANELZ_MARKUP = `
                                 <div class="checkbox">
                                   <input type="checkbox" value="true" id="showPageOnExit" name="showPageOnExit" />
                                   <label for="showPageOnExit" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="pane__heading">General</div>
+                        <ul class="pane__menu">
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Left-Handed Mode</p>
+                                    <p class="pane__helper-text">Tap the left side of your screen to advance pages or panels</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="true" id="leftHanded" name="leftHandMode" />
+                                  <label for="leftHanded" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-open-pane="tutorial">
+                                <div class="pane__text">
+                                    <p class="pane__option">Tutorial</p>
+                                    <p class="pane__helper-text">Toggles the tutorial screens on or off</p>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-open-pane="reset">
+                                <div class="pane__text">
+                                    <p class="pane__option">Reset</p>
+                                    <p class="pane__helper-text">Resets all app settings to their defaults</p>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-open-pane="clearData">
+                                <div class="pane__text">
+                                    <p class="pane__option">Clear Data</p>
+                                    <p class="pane__helper-text">Clears all data, including local storage and all user settings</p>
                                 </div>
                             </li>
                         </ul>

@@ -45,7 +45,7 @@
         padding-left: 10px;
         padding-right: 10px;
         border-bottom: 2px solid #5c5c5d;
-        font-size: 16px;
+        font-size: 14px;
         text-transform: uppercase;
     }
     &__menu {
@@ -61,8 +61,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 20px;
-        padding-bottom: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
         padding-left: 10px;
         padding-right: 10px;
         border-bottom: 1px solid #5c5c5d;
@@ -79,10 +79,10 @@
         margin-bottom: 0;
     }
     &__option {
-        font-size: 20px;
+        font-size: 18px;
     }
     &__helper-text {
-        font-size: 14px;
+        font-size: 12px;
         color: #dbdbdb;
     }
     &__actions {
