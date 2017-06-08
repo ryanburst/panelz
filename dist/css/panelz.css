@@ -259,6 +259,8 @@ p {
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
+  -ms-flex-preferred-size: 33%;
+      flex-basis: 33%;
   padding: 0;
   height: 100%;
   border-right: 1px solid #fafafa;

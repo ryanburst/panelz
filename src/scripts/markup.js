@@ -77,7 +77,7 @@ const PANELZ_MARKUP = `
         <ul class="viewport__menu menu">
             <li class="menu__list-item">
                 <div href="#" class="menu__option" data-open-pane="pages">
-                    <i class="fa fa-clone menu__icon" aria-hidden="true"></i>
+                    <i class="fa fa-clone fa-flip-horizontal menu__icon" aria-hidden="true"></i>
                     <span class="menu__label">Pages</span>
                 </div>
             </li>
