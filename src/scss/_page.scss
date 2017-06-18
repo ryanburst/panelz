@@ -3,6 +3,8 @@
         position: relative;
         top: 0;
         left: 0;
-        transition: transform 50ms ease
+        &--transition {
+            transition: transform 250ms ease
+        }
     }
 }
