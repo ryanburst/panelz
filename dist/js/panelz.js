@@ -1149,7 +1149,7 @@ var ViewPort = function (_EventClass6) {
         var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
         var swipe = new Hammer.Swipe({ enable: _this6.canRecognizeSwipe.bind(_this6) });
 
-        _this6.interactable.add([pan, singletap, doubletap, swipe]);
+        _this6.interactable.add([pan, singletap, doubletap, swipe, pinch]);
 
         singletap.requireFailure(doubletap);
         pan.requireFailure(pinch);

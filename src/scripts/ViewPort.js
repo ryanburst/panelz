@@ -25,7 +25,7 @@ class ViewPort extends EventClass {
         var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
         var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
 
-        this.interactable.add([pan,singletap,doubletap,swipe]);
+        this.interactable.add([pan,singletap,doubletap,swipe,pinch]);
 
         singletap.requireFailure(doubletap);
         pan.requireFailure(pinch);
