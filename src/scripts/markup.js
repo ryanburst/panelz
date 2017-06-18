@@ -26,7 +26,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <img src="/panelz/dist/images/tutorial-taps.png" />
+                    <img src="../dist/images/tutorial-taps.png" />
                 </div>
                 <p><strong>Tap Left</strong> - Navigates backwards one panel or page.</p>
                 <p><strong>Tap Right</strong> - Navigates forward one panel or page.</p>
@@ -47,7 +47,7 @@ const PANELZ_MARKUP = `
             <div class="tutorial__content">
                 <div class="heading heading--secondary">You can also swipe to navigate!</div>
                 <div class="tutorial__image">
-                    <img src="/panelz/dist/images/tutorial-swipes.png" />
+                    <img src="../dist/images/tutorial-swipes.png" />
                 </div>
                 <p><strong>Swipe Left</strong> - Navigates forward one panel or page.</p>
                 <p><strong>Swipe Right</strong> - Navigates backward one panel or page.</p>
