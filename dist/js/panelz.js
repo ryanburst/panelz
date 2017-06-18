@@ -525,6 +525,7 @@ var Page = function (_EventClass3) {
         _this3.isLast = config.isLast;
         _this3.isCurrentPage = false;
         _this3.scale = 1;
+        _this3.lastScale = 1;
         _this3.panels = [];
         _this3.PANEL_ANIMATION_SPEED = _this3.app.settings.get('panelTransitions');
         _this3.SHOW_PAGE_ON_ENTER = _this3.app.settings.get('showPageOnEnter');
@@ -585,12 +586,12 @@ var Page = function (_EventClass3) {
                 if (!this.isCurrentPage) {
                     return;
                 }
-                console.log(e.e);
+                //console.log(e.e);
 
                 if (this.scale < 0) {
                     return;
                 }
-                this.scale = e.e.scale;
+                this.scale = e.e.scale - (1 - this.lastScale);
                 this.$element.css({
                     transform: 'scale(' + this.scale + ')'
                     //width: this.getFullWidth() * e.e.scale,
@@ -598,6 +599,10 @@ var Page = function (_EventClass3) {
                     //height: this.getFullHeight() * e.e.scale,
                     //"margin-top": -this.getTop() * e.e.scale
                 });
+            }.bind(this));
+
+            this.app.on("user:pinchend", function (e) {
+                this.lastScale = this.scale;
             }.bind(this));
 
             this.trigger('load:page', this);

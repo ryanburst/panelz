@@ -9,6 +9,7 @@ class Page extends EventClass {
         this.isLast = config.isLast;
         this.isCurrentPage = false;
         this.scale = 1;
+        this.lastScale = 1;
         this.panels = [];
         this.PANEL_ANIMATION_SPEED = this.app.settings.get('panelTransitions');
         this.SHOW_PAGE_ON_ENTER = this.app.settings.get('showPageOnEnter');
@@ -67,12 +68,12 @@ class Page extends EventClass {
             if( ! this.isCurrentPage ) {
                 return;
             }
-            console.log(e.e);
+            //console.log(e.e);
 
             if( this.scale < 0 ) {
                 return;
             }
-            this.scale = e.e.scale;
+            this.scale = e.e.scale - (1-this.lastScale);
             this.$element.css({
                 transform: 'scale('+this.scale+')'
                 //width: this.getFullWidth() * e.e.scale,
@@ -81,6 +82,11 @@ class Page extends EventClass {
                 //"margin-top": -this.getTop() * e.e.scale
            });
         }.bind(this));
+
+        this.app.on("user:pinchend",function(e) {
+            this.lastScale = this.scale;
+        }.bind(this));
+
 
         this.trigger('load:page',this);
     }
