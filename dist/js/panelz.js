@@ -574,8 +574,13 @@ var Page = function (_EventClass3) {
                 });
             }.bind(this));
             this.app.on("user:pinch", function (env) {
-                console.log(env);
-            });
+                this.$element.css({
+                    width: tihs.getWidth() * e.originalEvent.gesture.scale,
+                    "margin-left": -this.getLeft() * e.originalEvent.gesture.scale,
+                    height: this.getHeight() * e.originalEvent.gesture.scale,
+                    "margin-top": -this.getTop() * e.originalEvent.gesture.scale
+                });
+            }.bind(this));
 
             this.trigger('load:page', this);
         }
@@ -794,6 +799,16 @@ var Page = function (_EventClass3) {
         key: 'getOriginalHeight',
         value: function getOriginalHeight() {
             return this.originalHeight;
+        }
+    }, {
+        key: 'getTop',
+        value: function getTop() {
+            return parseInt(this.$element.css('top'));
+        }
+    }, {
+        key: 'getLeft',
+        value: function getLeft() {
+            return parseInt(this.$element.css('left'));
         }
     }, {
         key: 'getWidth',
@@ -1129,16 +1144,16 @@ var ViewPort = function (_EventClass6) {
         _this6.interactable = new Hammer.Manager(_this6.$element.find('.viewport__interactable')[0]);
 
         var pan = new Hammer.Pan({ threshold: 20, enable: _this6.canRecognizePan.bind(_this6) });
-        //var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
+        var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
         var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
         var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
         var swipe = new Hammer.Swipe({ enable: _this6.canRecognizeSwipe.bind(_this6) });
 
         _this6.interactable.add([pan, singletap, doubletap, swipe]);
 
-        //pinch.recognizeWith(pan);
+        pinch.recognizeWith(pan);
         singletap.requireFailure(doubletap);
-        //pan.requireFailure(pinch);
+        pan.requireFailure(pinch);
 
         //this.interactable.get('pinch').set({ enable: true });
 

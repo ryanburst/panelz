@@ -58,8 +58,13 @@ class Page extends EventClass {
             } );
         }.bind(this));
         this.app.on("user:pinch",function(env) {
-            console.log(env);
-        });
+            this.$element.css({
+                width: tihs.getWidth() * e.originalEvent.gesture.scale,
+                "margin-left": -this.getLeft() * e.originalEvent.gesture.scale,
+                height: this.getHeight() * e.originalEvent.gesture.scale,
+                "margin-top": -this.getTop() * e.originalEvent.gesture.scale
+           });
+        }.bind(this));
 
         this.trigger('load:page',this);
     }
@@ -265,6 +270,14 @@ class Page extends EventClass {
 
     getOriginalHeight() {
         return this.originalHeight;
+    }
+
+    getTop() {
+        return parseInt(this.$element.css('top'));
+    }
+
+    getLeft() {
+        return parseInt(this.$element.css('left'));
     }
 
     getWidth() {
