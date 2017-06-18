@@ -59,7 +59,7 @@ class Page extends EventClass {
         }.bind(this));
         this.app.on("user:pinch",function(env) {
             this.$element.css({
-                width: tihs.getWidth() * e.originalEvent.gesture.scale,
+                width: this.getWidth() * e.originalEvent.gesture.scale,
                 "margin-left": -this.getLeft() * e.originalEvent.gesture.scale,
                 height: this.getHeight() * e.originalEvent.gesture.scale,
                 "margin-top": -this.getTop() * e.originalEvent.gesture.scale
