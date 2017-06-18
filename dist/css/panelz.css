@@ -537,6 +537,10 @@ p {
   position: relative;
   top: 0;
   left: 0;
+  -webkit-transition: -webkit-transform 50ms ease;
+  transition: -webkit-transform 50ms ease;
+  transition: transform 50ms ease;
+  transition: transform 50ms ease, -webkit-transform 50ms ease;
 }
 
 .checkbox {

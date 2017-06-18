@@ -599,15 +599,17 @@ var Page = function (_EventClass3) {
             }.bind(this));
 
             this.app.on("user:pinchend", function (e) {
+                //console.log('pinchend',this.scale,this.scale < 1);
                 if (this.scale < 1) {
                     this.scale = 1;
                 }
                 if (this.scale > 3) {
                     this.scale = 3;
                 }
-                this.$element.animate({
+
+                this.$element.css({
                     transform: 'scale(' + this.scale + ')'
-                }, { duration: 550 });
+                });
                 this.lastScale = this.scale;
             }.bind(this));
 
