@@ -612,10 +612,35 @@ var Page = function (_EventClass3) {
                 if (!this.isCurrentPage) {
                     return;
                 }
-                if (this.scale < 1 || this.scale > 3) {
-                    this.magnify(this.scale < 1 ? 1 : 3, true);
+
+                if (this.scale < 1) {
+                    return this.resetScale();
                 }
+
+                if (this.scale > 3) {
+                    this.magnify(3, true);
+                    this.lastScale = this.scale;
+                    return;
+                }
+
                 this.lastScale = this.scale;
+
+                var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                var minLeft = maxLeft * -1;
+                var currentLeft = parseInt(this.$element.css("margin-left"), 10);
+                if (currentLeft < minLeft || currentLeft > maxLeft) {
+                    this.$element.css({
+                        "margin-left": currentLeft < minLeft ? minLeft : maxLeft
+                    });
+                }
+                var maxTop = (this.getHeight() * this.scale - this.getFullHeight()) / 2;
+                var minTop = maxTop * -1;
+                var currentTop = parseInt(this.$element.css("margin-top"), 10);
+                if (currentTop < minTop || currentTop > maxTop) {
+                    this.$element.css({
+                        "margin-top": currentTop < minTop ? minTop : maxTop
+                    });
+                }
             }.bind(this));
 
             this.trigger('load:page', this);
@@ -724,6 +749,16 @@ var Page = function (_EventClass3) {
             }
         }
     }, {
+        key: 'resetScale',
+        value: function resetScale(animate) {
+            this.magnify(1, animate);
+            this.lastScale = 1;
+            this.$element.css({
+                'margin-left': 0,
+                'margin-top': 0
+            });
+        }
+    }, {
         key: 'snapTo',
         value: function snapTo(amount) {
             this.left = this.left + amount;
@@ -734,8 +769,7 @@ var Page = function (_EventClass3) {
                 easing: 'easeOutSine',
                 complete: function () {
                     if (this.scale !== 1) {
-                        this.magnify(1);
-                        this.lastScale = 1;
+                        this.resetScale();
                     }
                 }.bind(this)
             });
