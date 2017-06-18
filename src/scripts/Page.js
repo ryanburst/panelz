@@ -70,9 +70,6 @@ class Page extends EventClass {
             }
             //console.log(e.e);
 
-            if( this.scale < 0 ) {
-                return;
-            }
             this.scale = e.e.scale - (1-this.lastScale);
             this.$element.css({
                 transform: 'scale('+this.scale+')'
@@ -84,7 +81,17 @@ class Page extends EventClass {
         }.bind(this));
 
         this.app.on("user:pinchend",function(e) {
+            if( this.scale < 1 ) {
+                this.scale = 1;
+            }
+            if( this.scale > 3) {
+                this.scale = 3;
+            }
+            this.$element.css({
+                transform: 'scale('+this.scale+')'
+            });
             this.lastScale = this.scale;
+
         }.bind(this));
 
 
