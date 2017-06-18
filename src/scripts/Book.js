@@ -18,7 +18,7 @@ class Book extends EventClass {
     setEventListeners() {
         this.app.on('change:mode',this.onModeChange.bind(this));
         this.app.on('user:skipToPage',this.skipToPage.bind(this));
-        this.app.on('user:panend',this.onPanEnd.bind(this));
+        //this.app.on('user:panend',this.onPanEnd.bind(this));
         this.app.on('user:pageForward',this.pageForward.bind(this));
         this.app.on('user:pageBackward',this.pageBackward.bind(this));
     }

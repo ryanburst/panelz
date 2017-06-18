@@ -52,44 +52,51 @@ class Page extends EventClass {
         this.centerInViewPort();
 
         this.app.on("user:panstart", function(ev) {
+            this.elementOriginalLeft = parseInt( this.$element.css( "margin-left" ), 10 );
+            this.elementOriginalTop = parseInt( this.$element.css( "margin-top" ), 10 );
             this.originalLeft = parseInt( this.$container.css( "left" ), 10 );
         }.bind(this));
         this.app.on("user:pan", function(ev) {
             // Stop vertical pan flick
             if(ev.offsetDirection === 8) {
-                return true;
+                //return true;
             }
-            this.left = this.originalLeft + ev.deltaX
+            if( this.isCurrentPage && this.scale !== 1 ) {
+                var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
+                var minLeft = maxLeft * -1;
+                var deltaX = this.elementOriginalLeft + ev.deltaX;
+                var left = Math.min(maxLeft,Math.max(deltaX,minLeft));
+                var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
+                var minTop = maxTop * -1;
+                var deltaY = this.elementOriginalTop + ev.deltaY;
+                var top = Math.min(maxTop,Math.max(deltaY,minTop));
+
+
+                this.$element.css( {
+                    "margin-left": left,
+                    "margin-top": top
+                } );
+            }
+            /*this.left = this.originalLeft + ev.deltaX
             this.$container.css( {
                 "left": this.left
-            } );
+            } );*/
         }.bind(this));
+
         this.app.on("user:pinch",function(e) {
             if( ! this.isCurrentPage ) {
                 return;
             }
-            //console.log(e.e);
 
-            this.scale = e.e.scale - (1-this.lastScale);
-            this.$element.css({
-                transform: 'scale('+this.scale+')'
-                //width: this.getFullWidth() * e.e.scale,
-                //"margin-left": -this.getLeft() * e.e.scale,
-                //height: this.getFullHeight() * e.e.scale,
-                //"margin-top": -this.getTop() * e.e.scale
-           });
+            this.magnify(e.scale - (1-this.lastScale));
         }.bind(this));
 
         this.app.on("user:pinchend",function(e) {
-            //console.log('pinchend',this.scale,this.scale < 1);
+            if( ! this.isCurrentPage ) {
+                return;
+            }
             if( this.scale < 1 || this.scale > 3) {
-                this.scale = this.scale < 1 ? 1 : 3;
-                this.$element.addClass('page__image--transition').css({
-                    transform: 'scale('+this.scale+')'
-                });
-                setTimeout(function() {
-                    this.$element.removeClass('page__image--transition');
-                }.bind(this),260);
+                this.magnify((this.scale < 1 ? 1 : 3),true);
             }
             this.lastScale = this.scale;
 
@@ -179,13 +186,35 @@ class Page extends EventClass {
         }
     }
 
+    magnify(amount,animate) {
+        var animateClass = animate ? 'page__image--transition' : '';
+
+        this.scale = amount;
+
+        this.$element.addClass(animateClass).css({
+            transform: 'scale('+this.scale+')'
+        });
+
+        if( animate ) {
+            setTimeout(function() {
+                this.$element.removeClass('page__image--transition');
+            }.bind(this),260);
+        }
+    }
+
     snapTo(amount) {
         this.left = this.left + amount;
         this.$container.animate({
             left: this.left
         },{
             duration: 250,
-            easing: 'easeOutSine'
+            easing: 'easeOutSine',
+            complete: function() {
+                if( this.scale !== 1 ) {
+                    this.magnify(1);
+                    this.lastScale = 1;
+                }
+            }.bind(this)
         });
     }
 

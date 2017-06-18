@@ -233,7 +233,7 @@ var Book = function (_EventClass) {
         value: function setEventListeners() {
             this.app.on('change:mode', this.onModeChange.bind(this));
             this.app.on('user:skipToPage', this.skipToPage.bind(this));
-            this.app.on('user:panend', this.onPanEnd.bind(this));
+            //this.app.on('user:panend',this.onPanEnd.bind(this));
             this.app.on('user:pageForward', this.pageForward.bind(this));
             this.app.on('user:pageBackward', this.pageBackward.bind(this));
         }
@@ -570,44 +570,50 @@ var Page = function (_EventClass3) {
             this.centerInViewPort();
 
             this.app.on("user:panstart", function (ev) {
+                this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
+                this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
                 this.originalLeft = parseInt(this.$container.css("left"), 10);
             }.bind(this));
             this.app.on("user:pan", function (ev) {
                 // Stop vertical pan flick
                 if (ev.offsetDirection === 8) {
-                    return true;
+                    //return true;
                 }
-                this.left = this.originalLeft + ev.deltaX;
-                this.$container.css({
+                if (this.isCurrentPage && this.scale !== 1) {
+                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                    var minLeft = maxLeft * -1;
+                    var deltaX = this.elementOriginalLeft + ev.deltaX;
+                    var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
+                    var maxTop = (this.getHeight() * this.scale - this.getFullHeight()) / 2;
+                    var minTop = maxTop * -1;
+                    var deltaY = this.elementOriginalTop + ev.deltaY;
+                    var top = Math.min(maxTop, Math.max(deltaY, minTop));
+
+                    this.$element.css({
+                        "margin-left": left,
+                        "margin-top": top
+                    });
+                }
+                /*this.left = this.originalLeft + ev.deltaX
+                this.$container.css( {
                     "left": this.left
-                });
+                } );*/
             }.bind(this));
+
             this.app.on("user:pinch", function (e) {
                 if (!this.isCurrentPage) {
                     return;
                 }
-                //console.log(e.e);
 
-                this.scale = e.e.scale - (1 - this.lastScale);
-                this.$element.css({
-                    transform: 'scale(' + this.scale + ')'
-                    //width: this.getFullWidth() * e.e.scale,
-                    //"margin-left": -this.getLeft() * e.e.scale,
-                    //height: this.getFullHeight() * e.e.scale,
-                    //"margin-top": -this.getTop() * e.e.scale
-                });
+                this.magnify(e.scale - (1 - this.lastScale));
             }.bind(this));
 
             this.app.on("user:pinchend", function (e) {
-                //console.log('pinchend',this.scale,this.scale < 1);
+                if (!this.isCurrentPage) {
+                    return;
+                }
                 if (this.scale < 1 || this.scale > 3) {
-                    this.scale = this.scale < 1 ? 1 : 3;
-                    this.$element.addClass('page__image--transition').css({
-                        transform: 'scale(' + this.scale + ')'
-                    });
-                    setTimeout(function () {
-                        this.$element.removeClass('page__image--transition');
-                    }.bind(this), 260);
+                    this.magnify(this.scale < 1 ? 1 : 3, true);
                 }
                 this.lastScale = this.scale;
             }.bind(this));
@@ -701,6 +707,23 @@ var Page = function (_EventClass3) {
             }
         }
     }, {
+        key: 'magnify',
+        value: function magnify(amount, animate) {
+            var animateClass = animate ? 'page__image--transition' : '';
+
+            this.scale = amount;
+
+            this.$element.addClass(animateClass).css({
+                transform: 'scale(' + this.scale + ')'
+            });
+
+            if (animate) {
+                setTimeout(function () {
+                    this.$element.removeClass('page__image--transition');
+                }.bind(this), 260);
+            }
+        }
+    }, {
         key: 'snapTo',
         value: function snapTo(amount) {
             this.left = this.left + amount;
@@ -708,7 +731,13 @@ var Page = function (_EventClass3) {
                 left: this.left
             }, {
                 duration: 250,
-                easing: 'easeOutSine'
+                easing: 'easeOutSine',
+                complete: function () {
+                    if (this.scale !== 1) {
+                        this.magnify(1);
+                        this.lastScale = 1;
+                    }
+                }.bind(this)
             });
         }
     }, {
@@ -1173,18 +1202,20 @@ var ViewPort = function (_EventClass6) {
 
         _this6.interactable = new Hammer.Manager(_this6.$element.find('.viewport__interactable')[0]);
 
-        //var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
+        var pan = new Hammer.Pan({ threshold: 20, enable: _this6.canRecognizePan.bind(_this6) });
         var pinch = new Hammer.Pinch({ threshold: 0, enable: true, domEvents: true });
         //var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
         //var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
         //var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
 
-        _this6.interactable.add([/*pan,singletap,doubletap,swipe,*/pinch]);
+        _this6.interactable.add([pan, /*singletap,doubletap,swipe,*/pinch]);
+        _this6.interactable.get('pinch').set({ enable: true });
+
+        pinch.recognizeWith(pan);
 
         //singletap.requireFailure(doubletap);
         //pan.requireFailure(pinch);
 
-        _this6.interactable.get('pinch').set({ enable: true });
 
         $('body').on('touchend', function () {
             this.$menu.removeClass('viewport__menu--was-shown');
@@ -1239,7 +1270,7 @@ var ViewPort = function (_EventClass6) {
                 this.app.trigger('user:panend', ev);
             }.bind(this));
             this.interactable.on('pinch', function (ev) {
-                this.app.trigger('user:pinch', { e: ev });
+                this.app.trigger('user:pinch', ev);
             }.bind(this));
             this.interactable.on('pinchin', function (ev) {
                 this.app.trigger('user:pinchin', { e: ev });
@@ -1248,7 +1279,7 @@ var ViewPort = function (_EventClass6) {
                 this.app.trigger('user:pinchout', { e: ev });
             }.bind(this));
             this.interactable.on('pinchend', function (ev) {
-                this.app.trigger('user:pinchend', { e: ev });
+                this.app.trigger('user:pinchend', ev);
             }.bind(this));
             this.interactable.on("tap", function (ev) {
                 if (ev.tapCount >= 2) {
