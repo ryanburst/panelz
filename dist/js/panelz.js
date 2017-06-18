@@ -605,9 +605,9 @@ var Page = function (_EventClass3) {
                 if (this.scale > 3) {
                     this.scale = 3;
                 }
-                this.$element.css({
+                this.$element.animate({
                     transform: 'scale(' + this.scale + ')'
-                });
+                }, { duration: 550 });
                 this.lastScale = this.scale;
             }.bind(this));
 
