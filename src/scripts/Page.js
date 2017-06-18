@@ -82,17 +82,14 @@ class Page extends EventClass {
 
         this.app.on("user:pinchend",function(e) {
             //console.log('pinchend',this.scale,this.scale < 1);
-            if( this.scale < 1 ) {
-                this.scale = 1;
+            if( this.scale < 1 || this.scale > 3) {
+                this.scale = this.scale < 1 ? 1 : 3;
                 this.$element.addClass('page__image--transition').css({
                     transform: 'scale('+this.scale+')'
                 });
                 setTimeout(function() {
                     this.$element.removeClass('page__image--transition');
                 }.bind(this),260);
-            }
-            if( this.scale > 3) {
-                this.scale = 3;
             }
             this.lastScale = this.scale;
 
