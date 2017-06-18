@@ -82,7 +82,6 @@ class ViewPort extends EventClass {
             this.app.trigger('user:panend',ev);
         }.bind(this));
         this.interactable.on('pinch',function(ev) {
-            alert('pinch');
             this.app.trigger('user:pinch',ev);
         }.bind(this));
         this.interactable.on("tap", function(ev) {
