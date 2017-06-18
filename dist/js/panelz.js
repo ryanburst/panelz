@@ -221,7 +221,7 @@ var Book = function (_EventClass) {
         _this.setEventListeners();
         config.pages.forEach(function (pageConfig) {
             pageConfig.app = this.app;
-            var page = new Page(pageConfig);
+            var page = new Page(this, pageConfig);
             page.on('load', this.onPageLoaded.bind(this));
             this.pages.push(page);
         }.bind(_this));
@@ -323,6 +323,8 @@ var Book = function (_EventClass) {
                     opacity: 1
                 }, { duration: 550, easing: 'easeOutSine' });
             }
+
+            this.trigger('pageSet', page);
 
             this.app.settings.remember('page', page.index);
         }
@@ -510,16 +512,19 @@ var Menu = function (_EventClass2) {
 var Page = function (_EventClass3) {
     _inherits(Page, _EventClass3);
 
-    function Page(config) {
+    function Page(Book, config) {
         _classCallCheck(this, Page);
 
         var _this3 = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this));
 
         _this3.config = config;
         _this3.app = config.app;
+        _this3.book = Book;
         _this3.index = config.index;
         _this3.isFirst = config.isFirst;
         _this3.isLast = config.isLast;
+        _this3.isCurrentPage = false;
+        _this3.scale = 1;
         _this3.panels = [];
         _this3.PANEL_ANIMATION_SPEED = _this3.app.settings.get('panelTransitions');
         _this3.SHOW_PAGE_ON_ENTER = _this3.app.settings.get('showPageOnEnter');
@@ -543,6 +548,9 @@ var Page = function (_EventClass3) {
             this.SHOW_PAGE_ON_EXIT = data.value;
         }.bind(_this3));
         _this3.app.on('resize', _this3.setPosition.bind(_this3));
+        _this3.book.on('pageSet', function (page) {
+            this.isCurrentPage = page.index === this.index;
+        }.bind(_this3));
         return _this3;
     }
 
@@ -574,11 +582,20 @@ var Page = function (_EventClass3) {
                 });
             }.bind(this));
             this.app.on("user:pinch", function (e) {
-                console.log(e.e);
+                if (!this.isCurrentPage) {
+                    return;
+                }
+                //console.log(this.getWidth(),e.e.scale,this.getWidth() * e.e.scale);
+                //console.log(this.scale,e.e.scale,1-e.e.scale,this.scale-(1-e.e.scale));
+                this.scale = this.scale - (1 - e.e.scale);
+                if (this.scale < 0) {
+                    return;
+                }
                 this.$element.css({
-                    width: this.getWidth() * e.e.scale,
+                    transform: 'scale(' + this.scale + ')'
+                    //width: this.getFullWidth() * e.e.scale,
                     //"margin-left": -this.getLeft() * e.e.scale,
-                    height: this.getHeight() * e.e.scale
+                    //height: this.getFullHeight() * e.e.scale,
                     //"margin-top": -this.getTop() * e.e.scale
                 });
             }.bind(this));

@@ -9,7 +9,7 @@ class Book extends EventClass {
         this.setEventListeners();
         config.pages.forEach(function(pageConfig) {
             pageConfig.app = this.app;
-            var page = new Page(pageConfig);
+            var page = new Page(this,pageConfig);
             page.on('load',this.onPageLoaded.bind(this));
             this.pages.push(page);
         }.bind(this));
@@ -102,6 +102,8 @@ class Book extends EventClass {
                 opacity: 1
             },{ duration: 550, easing: 'easeOutSine' });
         }
+
+        this.trigger('pageSet',page);
 
         this.app.settings.remember('page',page.index);
     }

@@ -1,11 +1,14 @@
 class Page extends EventClass {
-    constructor(config) {
+    constructor(Book,config) {
         super();
         this.config = config;
         this.app = config.app;
+        this.book = Book;
         this.index = config.index;
         this.isFirst = config.isFirst;
         this.isLast = config.isLast;
+        this.isCurrentPage = false;
+        this.scale = 1;
         this.panels = [];
         this.PANEL_ANIMATION_SPEED = this.app.settings.get('panelTransitions');
         this.SHOW_PAGE_ON_ENTER = this.app.settings.get('showPageOnEnter');
@@ -29,6 +32,9 @@ class Page extends EventClass {
             this.SHOW_PAGE_ON_EXIT = data.value
         }.bind(this));
         this.app.on('resize',this.setPosition.bind(this));
+        this.book.on('pageSet',function(page) {
+            this.isCurrentPage = (page.index===this.index);
+        }.bind(this));
     }
 
     loadSrc(src) {
@@ -58,11 +64,20 @@ class Page extends EventClass {
             } );
         }.bind(this));
         this.app.on("user:pinch",function(e) {
-            console.log(e.e);
+            if( ! this.isCurrentPage ) {
+                return;
+            }
+            //console.log(this.getWidth(),e.e.scale,this.getWidth() * e.e.scale);
+            //console.log(this.scale,e.e.scale,1-e.e.scale,this.scale-(1-e.e.scale));
+            this.scale = this.scale - (1-e.e.scale);
+            if( this.scale < 0 ) {
+                return;
+            }
             this.$element.css({
-                width: this.getWidth() * e.e.scale,
+                transform: 'scale('+this.scale+')'
+                //width: this.getFullWidth() * e.e.scale,
                 //"margin-left": -this.getLeft() * e.e.scale,
-                height: this.getHeight() * e.e.scale,
+                //height: this.getFullHeight() * e.e.scale,
                 //"margin-top": -this.getTop() * e.e.scale
            });
         }.bind(this));
