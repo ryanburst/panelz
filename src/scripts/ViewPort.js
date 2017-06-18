@@ -27,11 +27,10 @@ class ViewPort extends EventClass {
 
         this.interactable.add([pan,singletap,doubletap,swipe]);
 
-        pinch.recognizeWith(pan);
         singletap.requireFailure(doubletap);
         pan.requireFailure(pinch);
 
-        //this.interactable.get('pinch').set({ enable: true });
+        this.interactable.get('pinch').set({ enable: true });
 
         $('body').on('touchend',function() {
             this.$menu.removeClass('viewport__menu--was-shown');
@@ -83,7 +82,7 @@ class ViewPort extends EventClass {
             this.app.trigger('user:panend',ev);
         }.bind(this));
         this.interactable.on('pinch',function(ev) {
-            console.log(ev);
+            alert('pinch');
             this.app.trigger('user:pinch',ev);
         }.bind(this));
         this.interactable.on("tap", function(ev) {
