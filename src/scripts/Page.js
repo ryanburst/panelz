@@ -67,14 +67,12 @@ class Page extends EventClass {
             if( ! this.isCurrentPage ) {
                 return;
             }
-            //console.log(this.getWidth(),e.e.scale,this.getWidth() * e.e.scale);
-            //console.log(this.scale,e.e.scale,1-e.e.scale,this.scale-(1-e.e.scale));
-            console.log(e.e.scale,(e.e.scale > 0 ? 1 : -1),(e.e.scale > 0 ? 1 : -1) * 0.01);
+            console.log(e.e);
 
-            if( this.scale + (0.01 * (e.e.scale > 1 ? 1 : -1)) < 0 ) {
+            if( this.scale < 0 ) {
                 return;
             }
-            this.scale += 0.01 * (e.e.scale > 1 ? 1 : -1);
+            this.scale = e.e.scale;
             this.$element.css({
                 transform: 'scale('+this.scale+')'
                 //width: this.getFullWidth() * e.e.scale,

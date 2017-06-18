@@ -84,6 +84,15 @@ class ViewPort extends EventClass {
         this.interactable.on('pinch',function(ev) {
             this.app.trigger('user:pinch',{e:ev});
         }.bind(this));
+        this.interactable.on('pinchin',function(ev) {
+            this.app.trigger('user:pinchin',{e:ev});
+        }.bind(this));
+        this.interactable.on('pinchout',function(ev) {
+            this.app.trigger('user:pinchout',{e:ev});
+        }.bind(this));
+        this.interactable.on('pinchend',function(ev) {
+            this.app.trigger('user:pinchend',{e:ev});
+        }.bind(this));
         this.interactable.on("tap", function(ev) {
             if( ev.tapCount >= 2 ) {
                 return this.app.switchModes();

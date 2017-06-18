@@ -585,14 +585,12 @@ var Page = function (_EventClass3) {
                 if (!this.isCurrentPage) {
                     return;
                 }
-                //console.log(this.getWidth(),e.e.scale,this.getWidth() * e.e.scale);
-                //console.log(this.scale,e.e.scale,1-e.e.scale,this.scale-(1-e.e.scale));
-                console.log(e.e.scale, e.e.scale > 0 ? 1 : -1, (e.e.scale > 0 ? 1 : -1) * 0.01);
+                console.log(e.e);
 
-                if (this.scale + 0.01 * (e.e.scale > 1 ? 1 : -1) < 0) {
+                if (this.scale < 0) {
                     return;
                 }
-                this.scale += 0.01 * (e.e.scale > 1 ? 1 : -1);
+                this.scale = e.e.scale;
                 this.$element.css({
                     transform: 'scale(' + this.scale + ')'
                     //width: this.getFullWidth() * e.e.scale,
@@ -1230,6 +1228,15 @@ var ViewPort = function (_EventClass6) {
             }.bind(this));
             this.interactable.on('pinch', function (ev) {
                 this.app.trigger('user:pinch', { e: ev });
+            }.bind(this));
+            this.interactable.on('pinchin', function (ev) {
+                this.app.trigger('user:pinchin', { e: ev });
+            }.bind(this));
+            this.interactable.on('pinchout', function (ev) {
+                this.app.trigger('user:pinchout', { e: ev });
+            }.bind(this));
+            this.interactable.on('pinchend', function (ev) {
+                this.app.trigger('user:pinchend', { e: ev });
             }.bind(this));
             this.interactable.on("tap", function (ev) {
                 if (ev.tapCount >= 2) {
