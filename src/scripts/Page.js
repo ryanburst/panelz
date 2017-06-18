@@ -57,12 +57,13 @@ class Page extends EventClass {
                 "left": this.left
             } );
         }.bind(this));
-        this.app.on("user:pinch",function(env) {
+        this.app.on("user:pinch",function(e) {
+            console.log(e.e);
             this.$element.css({
-                width: this.getWidth() * e.originalEvent.gesture.scale,
-                "margin-left": -this.getLeft() * e.originalEvent.gesture.scale,
-                height: this.getHeight() * e.originalEvent.gesture.scale,
-                "margin-top": -this.getTop() * e.originalEvent.gesture.scale
+                width: this.getWidth() * e.e.scale,
+                //"margin-left": -this.getLeft() * e.e.scale,
+                height: this.getHeight() * e.e.scale,
+                //"margin-top": -this.getTop() * e.e.scale
            });
         }.bind(this));
 

@@ -20,7 +20,7 @@ class ViewPort extends EventClass {
         this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 
         //var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
-        var pinch = new Hammer.Pinch({ threshold: 0, enable: true });
+        var pinch = new Hammer.Pinch({ threshold: 0, enable: true, domEvents: true });
         //var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
         //var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
         //var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
@@ -82,7 +82,7 @@ class ViewPort extends EventClass {
             this.app.trigger('user:panend',ev);
         }.bind(this));
         this.interactable.on('pinch',function(ev) {
-            this.app.trigger('user:pinch',ev);
+            this.app.trigger('user:pinch',{e:ev});
         }.bind(this));
         this.interactable.on("tap", function(ev) {
             if( ev.tapCount >= 2 ) {
