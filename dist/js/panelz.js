@@ -632,12 +632,12 @@ var Page = function (_EventClass3) {
                 if (this.isCurrentPage && this.scale !== 1) {
                     var elLeft = parseInt(this.$element.css("left"), 10);
                     var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2 + elLeft;
-                    var minLeft = maxLeft * -1;
+                    var minLeft = maxLeft * -1 - elLeft;
                     var deltaX = this.elementOriginalLeft + ev.deltaX;
                     var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
 
                     var rightEdgeBefore = this.rightEdge;
-                    this.rightEdge = left == minLeft ? true : false;
+                    this.rightEdge = left <= minLeft ? true : false;
                     if (rightEdgeBefore !== this.rightEdge && this.rightEdge) {
                         this.book.panFrozen = false;
                         this.book.zoomPanAmount = ev.deltaX;
@@ -669,7 +669,7 @@ var Page = function (_EventClass3) {
                 if (this.isCurrentPage && this.scale !== 1) {
                     var elLeft = parseInt(this.$element.css("left"), 10);
                     var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2 + elLeft;
-                    var minLeft = maxLeft * -1;
+                    var minLeft = maxLeft * -1 - elLeft;
                     var deltaX = this.elementOriginalLeft + ev.deltaX;
                     var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
 
