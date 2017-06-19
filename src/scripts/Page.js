@@ -366,7 +366,7 @@ class Page extends EventClass {
             duration: 250,
             easing: 'easeOutSine',
             complete: function() {
-                if( this.scale !== 1 ) {
+                if( ! this.isCurrentPage && this.scale !== 1 ) {
                     this.resetScale();
                 }
                 // Makes sure the left position is correct
