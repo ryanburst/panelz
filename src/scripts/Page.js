@@ -200,7 +200,6 @@ class Page extends EventClass {
 
             if( this.scale < 1 ) {
                 return this.resetScale();
-                this.book.panFrozen = false;
                 console.log('unfreeze pan');
             }
 
@@ -337,6 +336,7 @@ class Page extends EventClass {
         this.lastScale = 1;
         this.leftEdge = true;
         this.rightEdge = true;
+        this.book.panFrozen = false;
         this.$element.css({
             'margin-left': 0,
             'margin-top': 0

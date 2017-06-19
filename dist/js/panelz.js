@@ -721,7 +721,6 @@ var Page = function (_EventClass3) {
 
                 if (this.scale < 1) {
                     return this.resetScale();
-                    this.book.panFrozen = false;
                     console.log('unfreeze pan');
                 }
 
@@ -863,6 +862,7 @@ var Page = function (_EventClass3) {
             this.lastScale = 1;
             this.leftEdge = true;
             this.rightEdge = true;
+            this.book.panFrozen = false;
             this.$element.css({
                 'margin-left': 0,
                 'margin-top': 0
