@@ -12,8 +12,6 @@ class Page extends EventClass {
         this.lastScale = 1;
         this.leftEdge = true;
         this.rightEdge = true;
-        this.zoomPanLeftAmount = 0;
-        this.zoomPanRightAmount = 0;
         this.panels = [];
         this.PANEL_ANIMATION_SPEED = this.app.settings.get('panelTransitions');
         this.SHOW_PAGE_ON_ENTER = this.app.settings.get('showPageOnEnter');
