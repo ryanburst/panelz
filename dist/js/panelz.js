@@ -686,6 +686,9 @@ var Page = function (_EventClass3) {
                             "margin-left": left
                         });
                     }
+                } else if (this.book.panFrozen) {
+                    // Helps make sure the other pages are set correctly (math isn't quite right)
+                    this.setLeftPosition(this.book.currentPage.index);
                 }
 
                 if (!this.book.panFrozen) {
