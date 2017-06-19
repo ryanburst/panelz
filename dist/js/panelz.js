@@ -349,6 +349,7 @@ var Book = function (_EventClass) {
         value: function setForPanelZoomMode() {
             console.log('Set for Panel Zoom mode');
             this.pages.forEach(function (page) {
+                page.resetScale();
                 page.$container.css('left', 0).css('opacity', 0);
             }.bind(this));
             this.currentPage.$container.css('opacity', 1);
@@ -629,7 +630,8 @@ var Page = function (_EventClass3) {
                     } );
                 }*/
                 if (this.isCurrentPage && this.scale !== 1) {
-                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                    var elLeft = parseInt(this.$element.css("left"), 10);
+                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2 + elLeft;
                     var minLeft = maxLeft * -1;
                     var deltaX = this.elementOriginalLeft + ev.deltaX;
                     var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
@@ -665,7 +667,8 @@ var Page = function (_EventClass3) {
             // panright = leftedge = back
             this.app.on("user:panright", function (ev) {
                 if (this.isCurrentPage && this.scale !== 1) {
-                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                    var elLeft = parseInt(this.$element.css("left"), 10);
+                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2 + elLeft;
                     var minLeft = maxLeft * -1;
                     var deltaX = this.elementOriginalLeft + ev.deltaX;
                     var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
@@ -736,22 +739,22 @@ var Page = function (_EventClass3) {
 
                 this.lastScale = this.scale;
 
-                var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                /*var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2 + (this.elementOriginalLeft / 2);
                 var minLeft = maxLeft * -1;
-                var currentLeft = parseInt(this.$element.css("margin-left"), 10);
-                if (currentLeft < minLeft || currentLeft > maxLeft) {
-                    this.$element.css({
+                var currentLeft = parseInt( this.$element.css( "margin-left" ), 10 );
+                if( currentLeft < minLeft || currentLeft > maxLeft) {
+                    this.$element.css( {
                         "margin-left": currentLeft < minLeft ? minLeft : maxLeft
-                    });
+                    } );
                 }
-                var maxTop = (this.getHeight() * this.scale - this.getFullHeight()) / 2;
+                var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
                 var minTop = maxTop * -1;
-                var currentTop = parseInt(this.$element.css("margin-top"), 10);
-                if (currentTop < minTop || currentTop > maxTop) {
-                    this.$element.css({
+                var currentTop = parseInt( this.$element.css( "margin-top" ), 10 );
+                if( currentTop < minTop || currentTop > maxTop) {
+                    this.$element.css( {
                         "margin-top": currentTop < minTop ? minTop : maxTop
-                    });
-                }
+                    } );
+                }*/
             }.bind(this));
 
             this.trigger('load:page', this);
@@ -889,6 +892,8 @@ var Page = function (_EventClass3) {
                     if (this.scale !== 1) {
                         this.resetScale();
                     }
+                    // Makes sure the left position is correct
+                    this.setLeftPosition(this.book.currentPage.index);
                 }.bind(this)
             });
         }
@@ -980,8 +985,8 @@ var Page = function (_EventClass3) {
             animate = typeof animate === 'undefined' ? true : animate;
 
             this.$element.animate({
-                'margin-top': -top + (viewPortHeight - height) / 2,
-                'margin-left': -left + (viewPortWidth - width) / 2,
+                'top': -top + (viewPortHeight - height) / 2,
+                'left': -left + (viewPortWidth - width) / 2,
                 width: pageWidth,
                 height: pageHeight
             }, {
@@ -1356,13 +1361,12 @@ var ViewPort = function (_EventClass6) {
         _this6.interactable = new Hammer.Manager(_this6.$element.find('.viewport__interactable')[0]);
 
         var pan = new Hammer.Pan({ threshold: 20, enable: _this6.canRecognizePan.bind(_this6) });
-        var pinch = new Hammer.Pinch({ threshold: 0, enable: true, domEvents: true });
+        var pinch = new Hammer.Pinch({ threshold: 0, enable: _this6.canRecognizePinch.bind(_this6), domEvents: true });
         var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
         var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
         var swipe = new Hammer.Swipe({ enable: _this6.canRecognizeSwipe.bind(_this6) });
 
         _this6.interactable.add([pan, singletap, doubletap, swipe, pinch]);
-        _this6.interactable.get('pinch').set({ enable: true });
 
         pinch.recognizeWith(pan);
 
@@ -1483,6 +1487,11 @@ var ViewPort = function (_EventClass6) {
         value: function onTutorialDone() {
             this.$menu.addClass('viewport__menu--active');
             this.message('The tutorial is always available in the settings menu at the bottom right.', 5000);
+        }
+    }, {
+        key: 'canRecognizePinch',
+        value: function canRecognizePinch(rec, input) {
+            return this.app.mode === PAGE_MODE;
         }
     }, {
         key: 'canRecognizePan',

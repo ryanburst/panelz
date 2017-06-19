@@ -126,6 +126,7 @@ class Book extends EventClass {
     setForPanelZoomMode() {
         console.log('Set for Panel Zoom mode');
         this.pages.forEach(function(page) {
+            page.resetScale();
             page.$container.css('left',0).css('opacity',0);
         }.bind(this));
         this.currentPage.$container.css('opacity',1);

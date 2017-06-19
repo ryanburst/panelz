@@ -106,7 +106,8 @@ class Page extends EventClass {
                 } );
             }*/
             if( this.isCurrentPage && this.scale !== 1 ) {
-                var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
+                var elLeft = parseInt( this.$element.css( "left" ), 10 )
+                var maxLeft = (((this.getWidth() * this.scale) - this.getFullWidth()) / 2) + elLeft;
                 var minLeft = maxLeft * -1;
                 var deltaX = this.elementOriginalLeft + ev.deltaX;
                 var left = Math.min(maxLeft,Math.max(deltaX,minLeft));
@@ -142,7 +143,8 @@ class Page extends EventClass {
         // panright = leftedge = back
         this.app.on("user:panright", function(ev) {
             if( this.isCurrentPage && this.scale !== 1 ) {
-                var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
+                var elLeft = parseInt( this.$element.css( "left" ), 10 )
+                var maxLeft = (((this.getWidth() * this.scale) - this.getFullWidth()) / 2) + elLeft;
                 var minLeft = maxLeft * -1;
                 var deltaX = this.elementOriginalLeft + ev.deltaX;
                 var left = Math.min(maxLeft,Math.max(deltaX,minLeft));
@@ -214,7 +216,7 @@ class Page extends EventClass {
 
             this.lastScale = this.scale;
 
-            var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
+            /*var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2 + (this.elementOriginalLeft / 2);
             var minLeft = maxLeft * -1;
             var currentLeft = parseInt( this.$element.css( "margin-left" ), 10 );
             if( currentLeft < minLeft || currentLeft > maxLeft) {
@@ -229,7 +231,7 @@ class Page extends EventClass {
                 this.$element.css( {
                     "margin-top": currentTop < minTop ? minTop : maxTop
                 } );
-            }
+            }*/
 
 
         }.bind(this));
@@ -361,6 +363,8 @@ class Page extends EventClass {
                 if( this.scale !== 1 ) {
                     this.resetScale();
                 }
+                // Makes sure the left position is correct
+                this.setLeftPosition(this.book.currentPage.index);
             }.bind(this)
         });
     }
@@ -449,8 +453,8 @@ class Page extends EventClass {
         animate = typeof animate === 'undefined' ? true : animate;
 
         this.$element.animate({
-            'margin-top': -top + (viewPortHeight - height) / 2,
-            'margin-left': -left + ((viewPortWidth - width) / 2),
+            'top': -top + (viewPortHeight - height) / 2,
+            'left': -left + ((viewPortWidth - width) / 2),
             width: pageWidth,
             height: pageHeight
         },{
