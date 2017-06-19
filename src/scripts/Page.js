@@ -286,7 +286,9 @@ class Page extends EventClass {
             top: top,
             left: left,
             width: width,
-            height: height
+            height: height,
+            'margin-left': 0,
+            'margin-top': 0
         },{
             duration: (animate ? this.PANEL_ANIMATION_SPEED : 0),
             easing: 'easeOutSine'
