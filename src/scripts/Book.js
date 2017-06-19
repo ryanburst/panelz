@@ -6,6 +6,8 @@ class Book extends EventClass {
         this.app = config.app;
         this.pages = [];
         this.loaded = 0;
+        this.panFrozen = false;
+        this.zoomPanAmount = 0;
         this.setEventListeners();
         config.pages.forEach(function(pageConfig) {
             pageConfig.app = this.app;
@@ -18,7 +20,7 @@ class Book extends EventClass {
     setEventListeners() {
         this.app.on('change:mode',this.onModeChange.bind(this));
         this.app.on('user:skipToPage',this.skipToPage.bind(this));
-        //this.app.on('user:panend',this.onPanEnd.bind(this));
+        this.app.on('user:panend',this.onPanEnd.bind(this));
         this.app.on('user:pageForward',this.pageForward.bind(this));
         this.app.on('user:pageBackward',this.pageBackward.bind(this));
     }
@@ -69,6 +71,9 @@ class Book extends EventClass {
     }
 
     onPanEnd(ev) {
+        if( this.panFrozen ) {
+            return;
+        }
         this.pages.forEach(function(page) {
             if(page.shouldBeSetAsCurrent(ev)) {
                 this.setCurrentPage(page);

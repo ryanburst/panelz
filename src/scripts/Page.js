@@ -10,6 +10,10 @@ class Page extends EventClass {
         this.isCurrentPage = false;
         this.scale = 1;
         this.lastScale = 1;
+        this.leftEdge = true;
+        this.rightEdge = true;
+        this.zoomPanLeftAmount = 0;
+        this.zoomPanRightAmount = 0;
         this.panels = [];
         this.PANEL_ANIMATION_SPEED = this.app.settings.get('panelTransitions');
         this.SHOW_PAGE_ON_ENTER = this.app.settings.get('showPageOnEnter');
@@ -55,32 +59,127 @@ class Page extends EventClass {
             this.elementOriginalLeft = parseInt( this.$element.css( "margin-left" ), 10 );
             this.elementOriginalTop = parseInt( this.$element.css( "margin-top" ), 10 );
             this.originalLeft = parseInt( this.$container.css( "left" ), 10 );
+            this.book.zoomPanAmount = 0;
         }.bind(this));
         this.app.on("user:pan", function(ev) {
-            // Stop vertical pan flick
-            if(ev.offsetDirection === 8) {
-                //return true;
+
+            /*var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
+            var minLeft = maxLeft * -1;
+            var deltaX = this.elementOriginalLeft + ev.deltaX;
+            var left = Math.min(maxLeft,Math.max(deltaX,minLeft));
+            var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
+            var minTop = maxTop * -1;
+            var deltaY = this.elementOriginalTop + ev.deltaY;
+            var top = Math.min(maxTop,Math.max(deltaY,minTop));*/
+
+            if( this.isCurrentPage && this.scale !== 1 ) {
+                /*this.$element.css( {
+                    "margin-left": left,
+                    "margin-top": top
+                } );
+
+                var leftEdgeBefore = this.leftEdge;
+                var rightEdgeBefore = this.rightEdge;
+                this.leftEdge = (left==maxLeft) ? true : false;
+                this.rightEdge = (left==minLeft) ? true : false;
+                if(leftEdgeBefore !== this.leftEdge ) {
+                    this.zoomPanRightAmount = this.leftEdge ? deltaX : 0;
+                }
+                if(rightEdgeBefore !== this.rightEdge ) {
+                    console.log('Right Edge change',this.rightEdge);
+                    this.zoomPanLeftAmount = this.rightEdge ? deltaX : 0;
+                }*/
+            } else if(ev.offsetDirection === 8) {
+                return true;
             }
+
+            /**/
+        }.bind(this));
+
+        // panleft = rightedge = forward
+        this.app.on("user:panleft", function(ev) {
+            /*if( this.app.book.currentPage.leftEdge || this.app.book.currentPage.rightEdge ) {
+                this.left = this.originalLeft + ev.deltaX - this.app.book.currentPage.zoomPanLeftAmount;
+                this.$container.css( {
+                    "left": this.left
+                } );
+            }*/
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
                 var minLeft = maxLeft * -1;
                 var deltaX = this.elementOriginalLeft + ev.deltaX;
                 var left = Math.min(maxLeft,Math.max(deltaX,minLeft));
-                var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
-                var minTop = maxTop * -1;
-                var deltaY = this.elementOriginalTop + ev.deltaY;
-                var top = Math.min(maxTop,Math.max(deltaY,minTop));
 
+                var rightEdgeBefore = this.rightEdge;
+                this.rightEdge = (left==minLeft) ? true : false;
+                if(rightEdgeBefore !== this.rightEdge && this.rightEdge ) {
+                    this.book.panFrozen = false;
+                    this.book.zoomPanAmount = deltaX;
+                    console.log('unfreeze pan');
+                }
 
-                this.$element.css( {
-                    "margin-left": left,
-                    "margin-top": top
-                } );
+                if(this.book.panFrozen) {
+                    this.$element.css( {
+                        "margin-left": left
+                    } );
+                }
             }
-            /*this.left = this.originalLeft + ev.deltaX
-            this.$container.css( {
-                "left": this.left
-            } );*/
+
+            if( ! this.book.panFrozen ) {
+                this.left = this.originalLeft + ev.deltaX - this.book.zoomPanAmount;
+                this.$container.css( {
+                    "left": this.left
+                } );
+
+                if( this.isCurrentPage && this.scale !== 1 && this.left < 0 && ! this.rightEdge ) {
+                    this.book.panFrozen = true;
+                    console.log('Freeze pan');
+                }
+            }
+        }.bind(this));
+
+        // panright = leftedge = back
+        this.app.on("user:panright", function(ev) {
+            if( this.isCurrentPage && this.scale !== 1 ) {
+                var maxLeft = ((this.getWidth() * this.scale) - this.getFullWidth()) / 2;
+                var minLeft = maxLeft * -1;
+                var deltaX = this.elementOriginalLeft + ev.deltaX;
+                var left = Math.min(maxLeft,Math.max(deltaX,minLeft));
+
+                var leftEdgeBefore = this.leftEdge;
+                this.leftEdge = (left==maxLeft) ? true : false;
+                if(leftEdgeBefore !== this.leftEdge && this.leftEdge ) {
+                    this.book.panFrozen = false;
+                    this.book.zoomPanAmount = deltaX;
+                    console.log('unfreeze pan');
+                }
+
+                if(this.book.panFrozen) {
+                    this.$element.css( {
+                        "margin-left": left
+                    } );
+                }
+            }
+
+            if( ! this.book.panFrozen ) {
+                this.left = this.originalLeft + ev.deltaX - this.book.zoomPanAmount;
+                this.$container.css( {
+                    "left": this.left
+                } );
+                if( this.isCurrentPage && this.scale !== 1 && this.left >=0 && ! this.leftEdge ) {
+                    console.log('Freeze pan');
+                    this.book.panFrozen = true;
+                }
+            }
+
+
+            /*if( this.app.book.currentPage.leftEdge || this.app.book.currentPage.rightEdge ) {
+                //console.log('edge reached',ev.deltaX,this.zoomPanRightAmount,ev.deltaX-this.zoomPanRightAmount);
+                this.left = this.originalLeft + ev.deltaX - this.app.book.currentPage.zoomPanRightAmount;
+                this.$container.css( {
+                    "left": this.left
+                } );
+            }*/
         }.bind(this));
 
         this.app.on("user:pinch",function(e) {
@@ -96,8 +195,13 @@ class Page extends EventClass {
                 return;
             }
 
+            this.book.panFrozen = true;
+            console.log('freeze pan');
+
             if( this.scale < 1 ) {
                 return this.resetScale();
+                this.book.panFrozen = false;
+                console.log('unfreeze pan');
             }
 
             if( this.scale > 3 ) {
@@ -231,6 +335,8 @@ class Page extends EventClass {
     resetScale(animate) {
         this.magnify(1,animate);
         this.lastScale = 1;
+        this.leftEdge = true;
+        this.rightEdge = true;
         this.$element.css({
             'margin-left': 0,
             'margin-top': 0

@@ -80,6 +80,12 @@ class ViewPort extends EventClass {
         this.interactable.on('pan',function(ev) {
             this.app.trigger('user:pan',ev);
         }.bind(this));
+        this.interactable.on('panleft',function(ev) {
+            this.app.trigger('user:panleft',ev);
+        }.bind(this));
+        this.interactable.on('panright',function(ev) {
+            this.app.trigger('user:panright',ev);
+        }.bind(this));
         this.interactable.on('panend',function(ev) {
             this.app.trigger('user:panend',ev);
         }.bind(this));
