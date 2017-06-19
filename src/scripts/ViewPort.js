@@ -21,16 +21,16 @@ class ViewPort extends EventClass {
 
         var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
         var pinch = new Hammer.Pinch({ threshold: 0, enable: true, domEvents: true });
-        //var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
-        //var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
-        //var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
+        var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
+        var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
+        var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
 
-        this.interactable.add([pan,/*singletap,doubletap,swipe,*/pinch]);
+        this.interactable.add([pan,singletap,doubletap,swipe,pinch]);
         this.interactable.get('pinch').set({ enable: true });
 
         pinch.recognizeWith(pan);
 
-        //singletap.requireFailure(doubletap);
+        singletap.requireFailure(doubletap);
         //pan.requireFailure(pinch);
 
 

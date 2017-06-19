@@ -187,7 +187,9 @@ class Page extends EventClass {
             if( ! this.isCurrentPage ) {
                 return;
             }
-
+            if(this.app.mode !== PAGE_MODE) {
+                this.app.switchModes();
+            }
             this.magnify(e.scale - (1-this.lastScale));
         }.bind(this));
 
@@ -445,8 +447,8 @@ class Page extends EventClass {
         animate = typeof animate === 'undefined' ? true : animate;
 
         this.$element.animate({
-            top: -top + (viewPortHeight - height) / 2,
-            left: -left + ((viewPortWidth - width) / 2),
+            'margin-top': -top + (viewPortHeight - height) / 2,
+            'margin-left': -left + ((viewPortWidth - width) / 2),
             width: pageWidth,
             height: pageHeight
         },{

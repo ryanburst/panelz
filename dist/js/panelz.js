@@ -709,7 +709,9 @@ var Page = function (_EventClass3) {
                 if (!this.isCurrentPage) {
                     return;
                 }
-
+                if (this.app.mode !== PAGE_MODE) {
+                    this.app.switchModes();
+                }
                 this.magnify(e.scale - (1 - this.lastScale));
             }.bind(this));
 
@@ -976,8 +978,8 @@ var Page = function (_EventClass3) {
             animate = typeof animate === 'undefined' ? true : animate;
 
             this.$element.animate({
-                top: -top + (viewPortHeight - height) / 2,
-                left: -left + (viewPortWidth - width) / 2,
+                'margin-top': -top + (viewPortHeight - height) / 2,
+                'margin-left': -left + (viewPortWidth - width) / 2,
                 width: pageWidth,
                 height: pageHeight
             }, {
@@ -1353,16 +1355,16 @@ var ViewPort = function (_EventClass6) {
 
         var pan = new Hammer.Pan({ threshold: 20, enable: _this6.canRecognizePan.bind(_this6) });
         var pinch = new Hammer.Pinch({ threshold: 0, enable: true, domEvents: true });
-        //var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
-        //var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
-        //var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
+        var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
+        var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2 });
+        var swipe = new Hammer.Swipe({ enable: _this6.canRecognizeSwipe.bind(_this6) });
 
-        _this6.interactable.add([pan, /*singletap,doubletap,swipe,*/pinch]);
+        _this6.interactable.add([pan, singletap, doubletap, swipe, pinch]);
         _this6.interactable.get('pinch').set({ enable: true });
 
         pinch.recognizeWith(pan);
 
-        //singletap.requireFailure(doubletap);
+        singletap.requireFailure(doubletap);
         //pan.requireFailure(pinch);
 
 
