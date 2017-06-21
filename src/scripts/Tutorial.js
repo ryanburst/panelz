@@ -30,8 +30,13 @@ class Tutorial extends EventClass {
         if( $panel.next().length ) {
             $panel.addClass('tutorial__panel--hidden');
             var $nextPanel = $panel.next();
-            if( $nextPanel.find('[data-tutorial-image]').length ) {
-                $nextPanel.find('[data-tutorial-image]:checked').trigger('activate');
+            var $imageLoader = $nextPanel.find('[data-tutorial-image]');
+            if( $imageLoader.length ) {
+                if( $imageLoader.is('img') ) {
+                    $imageLoader.attr('src',$imageLoader.attr('data-tutorial-image'));
+                } else {
+                    $nextPanel.find('[data-tutorial-image]:checked').trigger('activate');
+                }
             }
             $nextPanel.removeClass('tutorial__panel--hidden');
         }

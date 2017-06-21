@@ -16,6 +16,7 @@ class ViewPort extends EventClass {
         this.setEventListeners();
         this.setViewPortSize();
         this.setTapThresholds();
+        this.setLetterBoxStyle();
 
         this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 

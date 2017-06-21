@@ -28,7 +28,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <img src="../dist/images/tutorial-taps.gif" />
+                    <img data-tutorial-image="../dist/images/tutorial-taps.gif" />
                 </div>
                 <p><strong>Left Tap</strong> - Navigates backwards one panel or page.</p>
                 <p><strong>Right Tap</strong> - Navigates forward one panel or page.</p>
@@ -52,7 +52,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <img src="../dist/images/tutorial-double-taps.gif" />
+                    <img data-tutorial-image="../dist/images/tutorial-double-taps.gif" />
                 </div>
                 <p><strong>Double tap</strong> - Switch between Page Mode and Panel Zoom Mode.</p>
             </div>
@@ -75,7 +75,7 @@ const PANELZ_MARKUP = `
             <div class="tutorial__content">
                 <div class="heading heading--secondary">You can also swipe to navigate!</div>
                 <div class="tutorial__image">
-                    <img src="../dist/images/tutorial-swipes.gif" />
+                    <img data-tutorial-image="../dist/images/tutorial-swipes.gif" />
                 </div>
             </div>
             <div class="tutorial__cta">
@@ -118,7 +118,7 @@ const PANELZ_MARKUP = `
             <form class="tutorial__content">
                 <div class="heading heading--secondary">Letterboxing</div>
                 <div class="tutorial__image tutorial__image--small">
-                    <img src="../dist/images/tutorial-letterboxing-opaque.gif" />
+                    <img />
                 </div>
                 <ul class="tutorial__menu">
                     <li class="tutorial__menu-item">
@@ -163,7 +163,7 @@ const PANELZ_MARKUP = `
             <form class="tutorial__content">
                 <div class="heading heading--secondary">Panel Transitions</div>
                 <div class="tutorial__image tutorial__image--small">
-                    <img src="../dist/images/tutorial-animations-fast.gif" />
+                    <img />
                 </div>
                 <ul class="tutorial__menu">
                     <li class="tutorial__menu-item">

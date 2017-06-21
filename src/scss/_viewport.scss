@@ -33,6 +33,7 @@
         &--hide {
             bottom: 50px;
             opacity: 0;
+            z-index: 1;
         }
     }
 }
