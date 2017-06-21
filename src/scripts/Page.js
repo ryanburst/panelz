@@ -1,12 +1,12 @@
 class Page extends EventClass {
-    constructor(Book,config) {
+    constructor(Book,config,index) {
         super();
         this.config = config;
         this.app = config.app;
         this.book = Book;
-        this.index = config.index;
-        this.isFirst = config.isFirst;
-        this.isLast = config.isLast;
+        this.index = index;
+        this.isFirst = index===0;
+        this.isLast = index===this.book.config.comic.pages.length-1;
         this.isCurrentPage = false;
         this.scale = 1;
         this.lastScale = 1;
@@ -21,7 +21,7 @@ class Page extends EventClass {
         this.previousPanel = false;
         this.nextPanel = false;
         this.lastPanelSeen = false;
-        this.loadSrc(config.src);
+        this.loadSrc(config.url);
         config.panels.forEach( function(panel,index) {
             this.panels.push(new Panel(this,panel,index));
         }.bind(this));
@@ -414,14 +414,14 @@ class Page extends EventClass {
         this.app.setLetterBoxing(viewPortWidth-width,viewPortHeight-height,animate);
 
         this.setCurrentPanel(panel);
-        this.app.settings.remember('panel',panel.index);
+        this.app.settings.rememberBookSetting('panel',panel.index);
     }
 
     zoomOut() {
         this.setCurrentPanel(false);
         this.centerInViewPort(true);
         this.app.setLetterBoxing(0,0);
-        this.app.settings.remember('panel',false);
+        this.app.settings.rememberBookSetting('panel',false);
     }
 
     getOriginalWidth() {

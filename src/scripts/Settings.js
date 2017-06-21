@@ -1,5 +1,5 @@
 class Settings extends EventClass {
-    constructor() {
+    constructor(app) {
         super();
 
         this.DEFAULTS = {
@@ -12,6 +12,9 @@ class Settings extends EventClass {
             showTutorial: true
         };
 
+        this.storageKey = 'panelz_2.0';
+
+        this.app = app;
         this.config = {};
 
         this.localSettings = this.getLocalSettings();
@@ -68,17 +71,25 @@ class Settings extends EventClass {
         }
 
         this.set(name,this.normalizeValue(val));
+
+        if( $field.closest('.pane__item[data-readable]').length ) {
+            var readableFieldLabel = $field.closest('.pane__item[data-readable]').attr('data-readable');
+            var readableTitle = $field.closest('.pane[data-readable]').attr('data-readable');
+            this.app.message(readableTitle + ' set to ' + readableFieldLabel);
+        }
     }
 
     reset() {
         this.loadConfig(this.DEFAULTS);
         this.setFields();
+        this.app.message('Settings reset');
     }
 
     clear() {
         this.localSettings = {};
-        localStorage.removeItem('panelz');
+        localStorage.removeItem(this.storageKey);
         this.reset();
+        this.app.message('Application data cleared');
     }
 
     get(setting) {
@@ -103,7 +114,7 @@ class Settings extends EventClass {
 
     getLocalSettings() {
         try {
-            var localSettings = JSON.parse(localStorage.getItem('panelz'));
+            var localSettings = JSON.parse(localStorage.getItem(this.storageKey));
             console.log('Local Settings:',localSettings);
             return localSettings ? localSettings : {};
         } catch( Exception ) {
@@ -112,7 +123,7 @@ class Settings extends EventClass {
     }
 
     setLocalSettings() {
-        localStorage.setItem('panelz',JSON.stringify(this.localSettings))
+        localStorage.setItem(this.storageKey,JSON.stringify(this.localSettings))
     }
 
     remember(key,val) {
@@ -122,6 +133,20 @@ class Settings extends EventClass {
 
     getLocalSetting(key) {
         return this.localSettings[key];
+    }
+
+    rememberBookSetting(key,val) {
+        var books = this.getLocalSetting('comics') || {};
+        var bookSettings = books[this.app.getComicId()] || {};
+        bookSettings[key] = val;
+        books[this.app.getComicId()] = bookSettings;
+        this.remember('comics',books);
+    }
+
+    getBookSetting(key) {
+        var books = this.getLocalSetting('comics') || {};
+        var bookSettings = books[this.app.getComicId()] || {};
+        return bookSettings[key];
     }
 
     getUserSettings() {

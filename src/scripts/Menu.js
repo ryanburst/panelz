@@ -6,14 +6,12 @@ class Menu extends EventClass {
 
         this.setEventListeners();
 
-        if(this.app.mode === PANEL_ZOOM_MODE) {
-            this.activateOption('panel-zoom');
-        }
+        this.onModeChange(this.app.mode);
 
     }
 
     setEventListeners() {
-        $('body').on('touchend click','.menu__option--panel-zoom',this.onPanelZoomToggleClick.bind(this));
+        $('body').on('touchend click','.menu__option--mode',this.onModeToggleClick.bind(this));
         this.app.on('change:mode',this.onModeChange.bind(this));
     }
 
@@ -25,16 +23,16 @@ class Menu extends EventClass {
         this.$menu.find('.menu__option--' + option).removeClass('menu__option--active');
     }
 
-    onPanelZoomToggleClick(e) {
+    onModeToggleClick(e) {
         e.preventDefault();
         this.app.switchModes();
     }
 
     onModeChange(mode) {
         if( mode === PAGE_MODE ) {
-            this.deactivateOption('panel-zoom');
+            this.$menu.find('.menu__option--mode').html('Page<br />Mode');
         } else {
-            this.activateOption('panel-zoom');
+            this.$menu.find('.menu__option--mode').html('Panel Zoom<br />Mode');
         }
     }
 };

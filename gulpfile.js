@@ -26,9 +26,9 @@ gulp.task('scripts', function () {
             '!./src/scripts/vendor/**'
         ])
         .pipe(concat('panelz.js'))
-        .pipe(babel({
+        /*.pipe(babel({
             presets: ['es2015']
-        }))
+        }))*/
         .pipe(gulp.dest('./dist/js'));
 });
 

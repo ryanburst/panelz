@@ -9,9 +9,9 @@ class Book extends EventClass {
         this.panFrozen = false;
         this.zoomPanAmount = 0;
         this.setEventListeners();
-        config.pages.forEach(function(pageConfig) {
+        config.comic.pages.forEach(function(pageConfig,index) {
             pageConfig.app = this.app;
-            var page = new Page(this,pageConfig);
+            var page = new Page(this,pageConfig,index);
             page.on('load',this.onPageLoaded.bind(this));
             this.pages.push(page);
         }.bind(this));
@@ -33,15 +33,15 @@ class Book extends EventClass {
     }
 
     onBookLoaded() {
-        var lastRead = this.app.settings.getLocalSetting('page');
+        var lastRead = this.app.settings.getBookSetting('page');
         var pageToSet = lastRead ? lastRead : 0;
         this.setCurrentPage(this.pages[pageToSet]);
 
         // Zoom to panel on start
         if( this.app.mode === PANEL_ZOOM_MODE && this.currentPage.hasPanels() ) {
             var panel = false;
-            if( this.app.settings.getLocalSetting('panel') !== false ) {
-                this.currentPage.zoomToPanel(this.currentPage.panels[this.app.settings.getLocalSetting('panel')]);
+            if( this.app.settings.getBookSetting('panel') !== false ) {
+                this.currentPage.zoomToPanel(this.currentPage.panels[this.app.settings.getBookSetting('panel')]);
             } else if( ! this.currentPage.SHOW_PAGE_ON_ENTER ) {
                 console.log('show first');
                 this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
@@ -110,7 +110,7 @@ class Book extends EventClass {
 
         this.trigger('pageSet',page);
 
-        this.app.settings.remember('page',page.index);
+        this.app.settings.rememberBookSetting('page',page.index);
     }
 
     setForPageMode() {

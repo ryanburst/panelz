@@ -19,138 +19,144 @@
     <script src="../dist/js/panelz.js"></script>
     <script>
         $(document).ready(function() {
-            console.log('Ready');
+            var urlParams;
+            (window.onpopstate = function () {
+                var match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+
+                urlParams = {};
+                while (match = search.exec(query))
+                   urlParams[decode(match[1])] = decode(match[2]);
+            })();
             var panelz = new Panelz({
                 container: '.container',
-                pages: [
-                    {
-                        src: "images/tmnt-01-01.png",
-                        index: 0,
-                        isFirst: true,
-                        isLast: false,
-                        panels: []
-                    },
-                    {
-                        src: "images/tmnt-01-02.png",
-                        index: 1,
-                        isFirst: false,
-                        isLast: false,
-                        panels: [
-                            {
-                                x: 40,
-                                y: 90,
-                                width: 626,
-                                height: 442
-                            },
-                            {
-                                x: 324,
-                                y: 222,
-                                width: 626,
-                                height: 442
-                            },
-                            {
-                                x: 0,
-                                y: 0,
-                                width: 954,
-                                height: 776
-                            },
-                            {
-                                x: 0,
-                                y: 775,
-                                width: 453,
-                                height: 372
-                            },
-                            {
-                                x: 456,
-                                y: 808,
-                                width: 495,
-                                height: 344
-                            },
-                            {
-                                x: 16,
-                                y: 1154,
-                                width: 550,
-                                height: 298
-                            },
-                            {
-                                x: 392,
-                                y: 1154,
-                                width: 556,
-                                height: 298
-                            }
-                        ]
-                    },
-                    {
-                        src: "images/tmnt-01-03.png",
-                        index: 2,
-                        isFirst: false,
-                        isLast: false,
-                        panels: [
-                            {
-                                x: 0,
-                                y: 0,
-                                width: 510,
-                                height: 340
-                            },
-                            {
-                                x: 278,
-                                y: 334,
-                                width: 503,
-                                height: 335
-                            },
-                            {
-                                x: 20,
-                                y: 20,
-                                width: 1878,
-                                height: 1436
-                            }
-                        ]
-                    },
-                    {
-                        src: "images/tmnt-01-04.png",
-                        index: 3,
-                        isFirst: false,
-                        isLast: true,
-                        panels: [
-                            {
-                                x: 75,
-                                y: 0,
-                                width: 713,
-                                height: 175
-                            },
-                            {
-                                x: 108,
-                                y: 196,
-                                width: 713,
-                                height: 277
-                            },
-                            {
-                                x: 790,
-                                y: 258,
-                                width: 161,
-                                height: 390
-                            },
-                            {
-                                x: 124,
-                                y: 500,
-                                width: 735,
-                                height: 286
-                            },
-                            {
-                                x: 30,
-                                y: 820,
-                                width: 480,
-                                height: 640
-                            },
-                            {
-                                x: 538,
-                                y: 800,
-                                width: 410,
-                                height: 665
-                            }
-                        ]
-                    }
-                ]
+                id: urlParams['id'],
+                comic: {
+                    id: 'asdfasdf',
+                    pages: [
+                        {
+                            url: "images/tmnt-01-01.png",
+                            panels: []
+                        },
+                        {
+                            url: "images/tmnt-01-02.png",
+                            panels: [
+                                {
+                                    x: 40,
+                                    y: 90,
+                                    width: 626,
+                                    height: 442
+                                },
+                                {
+                                    x: 324,
+                                    y: 222,
+                                    width: 626,
+                                    height: 442
+                                },
+                                {
+                                    x: 0,
+                                    y: 0,
+                                    width: 954,
+                                    height: 776
+                                },
+                                {
+                                    x: 0,
+                                    y: 775,
+                                    width: 453,
+                                    height: 372
+                                },
+                                {
+                                    x: 456,
+                                    y: 808,
+                                    width: 495,
+                                    height: 344
+                                },
+                                {
+                                    x: 16,
+                                    y: 1154,
+                                    width: 550,
+                                    height: 298
+                                },
+                                {
+                                    x: 392,
+                                    y: 1154,
+                                    width: 556,
+                                    height: 298
+                                }
+                            ]
+                        },
+                        {
+                            url: "images/tmnt-01-03.png",
+                            panels: [
+                                {
+                                    x: 0,
+                                    y: 0,
+                                    width: 510,
+                                    height: 340
+                                },
+                                {
+                                    x: 278,
+                                    y: 334,
+                                    width: 503,
+                                    height: 335
+                                },
+                                {
+                                    x: 20,
+                                    y: 20,
+                                    width: 1878,
+                                    height: 1436
+                                }
+                            ]
+                        },
+                        {
+                            url: "images/tmnt-01-04.png",
+                            panels: [
+                                {
+                                    x: 75,
+                                    y: 0,
+                                    width: 713,
+                                    height: 175
+                                },
+                                {
+                                    x: 108,
+                                    y: 196,
+                                    width: 713,
+                                    height: 277
+                                },
+                                {
+                                    x: 790,
+                                    y: 258,
+                                    width: 161,
+                                    height: 390
+                                },
+                                {
+                                    x: 124,
+                                    y: 500,
+                                    width: 735,
+                                    height: 286
+                                },
+                                {
+                                    x: 30,
+                                    y: 820,
+                                    width: 480,
+                                    height: 640
+                                },
+                                {
+                                    x: 538,
+                                    y: 800,
+                                    width: 410,
+                                    height: 665
+                                }
+                            ]
+                        }
+                    ]
+                },
+                endpoints: {
+                    get: "https://panelz.comicbooklabs.com/api/comic/"
+                }
             });
         });
     </script>

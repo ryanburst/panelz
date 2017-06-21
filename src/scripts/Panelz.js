@@ -8,20 +8,32 @@ const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
 class Panelz extends EventClass {
     constructor(config) {
         super();
-        this.config = config;
 
-        this.settings = new Settings();
-        this.setInitialMode();
+        this.DEFAULTS = {
+            id: false,
+            container: '.panelz-creator-container',
+            comic: {
+                title: false,
+                pages: []
+            },
+            endpoints: {
+                get: '/comic/'
+            }
+        };
 
-        this.tutorial = new Tutorial(this.settings);
-        this.menu = new Menu(this.config);
-        this.viewport = new ViewPort(this.config);
-        this.book = new Book(this.config);
+        this.config = $.extend(true,{},this.DEFAULTS,config);
 
-        this.setEventListeners();
+        this.settings = new Settings(this);
+
+        if(this.config.id) {
+            this.fetchBookData();
+        } else {
+            this.setupBook();
+        }
     }
 
     set config(config) {
+        this.endpoints = config.endpoints;
         this.$container = $(config.container);
         config.app = this;
         this._config = config;
@@ -39,9 +51,43 @@ class Panelz extends EventClass {
         return _$container;
     }
 
+    getEndpoint(endpoint){
+        return this.endpoints[endpoint];
+    }
+
+    fetchBookData() {
+        $.ajax({
+            url: this.getEndpoint('get') + this.config.id,
+            method: 'GET',
+            error: this.onRequestError.bind(this),
+            success: this.onBookDataFetched.bind(this)
+        });
+    }
+
+    onBookDataFetched(comic) {
+        this.config.comic = comic;
+
+        this.setupBook();
+    }
+
+    onRequestError() {
+        console.log('ERROR FETCHING BOOK DATA!',response);
+    }
+
+    setupBook() {
+        this.setInitialMode();
+
+        this.tutorial = new Tutorial(this.settings);
+        this.menu = new Menu(this.config);
+        this.viewport = new ViewPort(this.config);
+        this.book = new Book(this.config);
+
+        this.setEventListeners();
+    }
+
     setInitialMode() {
-        if( this.settings.getLocalSetting('mode') ) {
-            this.mode = this.settings.getLocalSetting('mode');
+        if( this.settings.getBookSetting('mode') ) {
+            this.mode = this.settings.getBookSetting('mode');
         } else {
             this.mode = this.settings.get('startInPanelZoom') ? PANEL_ZOOM_MODE : PAGE_MODE;
         }
@@ -55,25 +101,20 @@ class Panelz extends EventClass {
         this.trigger('load:book',book);
     }
 
+    getComicId() {
+        return this.config.comic.id;
+    }
+
     switchModes() {
         var mode = (this.mode === PAGE_MODE)
             ? PANEL_ZOOM_MODE
             : PAGE_MODE;
 
-        // Current page has panels, but they're not zoomed into one, and about to switch into page mode.
-        // OR
-        // The page has no panels, which means no zooming at all.
-        // ---
-        // Message the user to make sure they know the page switch was successful
-        var messageUser = ( this.book.currentPage.hasPanels() && ! this.book.currentPage.currentPanel && mode === PAGE_MODE ) || ( ! this.book.currentPage.hasPanels() );
-
         this.setMode(mode);
 
-        if( messageUser ) {
-            this.viewport.message(this.getReadableModeText());
-        }
+        this.settings.rememberBookSetting('mode',mode);
 
-        this.settings.remember('mode',mode);
+        this.message(this.getReadableModeText());
     }
 
     setMode(mode) {
@@ -101,5 +142,9 @@ class Panelz extends EventClass {
 
     addPageMarkupToViewPort($markup) {
         return $markup.appendTo(this.viewport.$element);
+    }
+
+    message(message,time) {
+        this.viewport.message(message,time);
     }
 }

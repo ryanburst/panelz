@@ -82,7 +82,7 @@ const PANELZ_MARKUP = `
                 </div>
             </li>
             <li class="menu__list-item">
-                <div class="menu__option menu__option--panel-zoom">
+                <div class="menu__option menu__option--mode">
                     Panel<br />Zoom
                 </div>
             </li>
@@ -199,14 +199,14 @@ const PANELZ_MARKUP = `
                     </div>
                 </div>
             </div>
-            <div class="panes__pane pane pane--tutorial pane--modal pane--hidden">
+            <div class="panes__pane pane pane--tutorial pane--modal pane--hidden" data-readable="Tutorial">
                 <div class="pane__container">
                     <div class="pane__header">
                         <span>Tutorial</span>
                     </div>
                     <div class="pane__content">
                         <ul class="pane__menu">
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="shown">
                                 <div class="pane__text">
                                     <p class="pane__option">Show</p>
                                 </div>
@@ -215,7 +215,7 @@ const PANELZ_MARKUP = `
                                   <label for="show-tutorial" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="hidden">
                                 <div class="pane__text">
                                     <p class="pane__option">Hide</p>
                                 </div>
@@ -231,14 +231,14 @@ const PANELZ_MARKUP = `
                     </div>
                 </div>
             </div>
-            <div class="panes__pane pane pane--letterboxing pane--modal pane--hidden">
+            <div class="panes__pane pane pane--letterboxing pane--modal pane--hidden" data-readable="Letterboxing">
                 <div class="pane__container">
                     <div class="pane__header">
                         <span>Letterboxing</span>
                     </div>
                     <div class="pane__content">
                         <ul class="pane__menu">
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="none">
                                 <div class="pane__text">
                                     <p class="pane__option">No letterboxing</p>
                                 </div>
@@ -247,7 +247,7 @@ const PANELZ_MARKUP = `
                                   <label for="no-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="solid">
                                 <div class="pane__text">
                                     <p class="pane__option">Solid letterboxing</p>
                                 </div>
@@ -256,7 +256,7 @@ const PANELZ_MARKUP = `
                                   <label for="solid-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="opaque">
                                 <div class="pane__text">
                                     <p class="pane__option">Opaque letterboxing</p>
                                 </div>
@@ -272,14 +272,14 @@ const PANELZ_MARKUP = `
                     </div>
                 </div>
             </div>
-            <div class="panes__pane pane pane--animations pane--modal pane--hidden">
+            <div class="panes__pane pane pane--animations pane--modal pane--hidden" data-readable="Animate Transitions">
                 <div class="pane__container">
                     <div class="pane__header">
                         <span>Animate Transitions</span>
                     </div>
                     <div class="pane__content">
                         <ul class="pane__menu">
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="none">
                                 <div class="pane__text">
                                     <p class="pane__option">No animation</p>
                                 </div>
@@ -288,7 +288,7 @@ const PANELZ_MARKUP = `
                                   <label for="no-animation" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="fast">
                                 <div class="pane__text">
                                     <p class="pane__option">Fast animations</p>
                                 </div>
@@ -297,7 +297,7 @@ const PANELZ_MARKUP = `
                                   <label for="fast-animation" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item">
+                            <li class="pane__item" data-readable="slow">
                                 <div class="pane__text">
                                     <p class="pane__option">Slow animations</p>
                                 </div>
