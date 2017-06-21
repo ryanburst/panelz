@@ -92,6 +92,7 @@ class Book extends EventClass {
         this.setEventListeners();
         config.comic.pages.forEach(function(pageConfig,index) {
             pageConfig.app = this.app;
+            pageConfig.panels = pageConfig.panels || [];
             var page = new Page(this,pageConfig,index);
             page.on('load',this.onPageLoaded.bind(this));
             this.pages.push(page);
