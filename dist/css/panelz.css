@@ -24,7 +24,6 @@ p {
 }
 
 .heading--lg {
-  margin-top: 20px;
   margin-bottom: 20px;
   font-size: 32px;
   text-align: center;
@@ -82,9 +81,19 @@ p {
 }
 
 .tutorial__content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
 .tutorial__image {
@@ -94,6 +103,10 @@ p {
 
 .tutorial__image img {
   max-width: 100%;
+}
+
+.tutorial__image--small img {
+  max-width: 80%;
 }
 
 .tutorial__cta {
@@ -109,11 +122,21 @@ p {
           justify-content: flex-end;
 }
 
+.tutorial__center-cta {
+  padding-top: 15px;
+  text-align: center;
+}
+
 .tutorial__progress {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
-  padding: 0;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  padding: 0 15px;
   margin: 0;
   list-style: none;
   text-align: center;
@@ -123,8 +146,6 @@ p {
   display: inline-block;
   width: 10px;
   height: 10px;
-  margin-left: 8px;
-  margin-right: 8px;
   border-radius: 50%;
   border: 1px solid #43aa59;
 }
@@ -141,8 +162,39 @@ p {
   border: 1px solid #55a1e6;
 }
 
-.tutorial__button--skip {
+.tutorial__button--skip, .tutorial__button--link {
   border-color: transparent;
+}
+
+.tutorial__menu {
+  padding: 0;
+  margin-top: 0;
+  list-style: none;
+}
+
+.tutorial__menu-item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+.tutorial__menu-item-text {
+  margin-left: 20px;
+}
+
+.tutorial .radio {
+  margin-left: 0;
 }
 
 .viewport {

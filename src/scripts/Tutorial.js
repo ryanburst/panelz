@@ -17,6 +17,7 @@ class Tutorial extends EventClass {
         $('body').on('click','[data-tutorial-next]',this.next.bind(this));
         $('body').on('click','[data-tutorial-back]',this.back.bind(this));
         $('body').on('click','[data-tutorial-done]',this.done.bind(this));
+        $('body').on('change activate','[data-tutorial-image]',this.swapImage.bind(this));
 
         this.settings.on('change:showTutorial',this.toggle.bind(this));
 
@@ -28,7 +29,11 @@ class Tutorial extends EventClass {
         var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
         if( $panel.next().length ) {
             $panel.addClass('tutorial__panel--hidden');
-            $panel.next().removeClass('tutorial__panel--hidden');
+            var $nextPanel = $panel.next();
+            if( $nextPanel.find('[data-tutorial-image]').length ) {
+                $nextPanel.find('[data-tutorial-image]:checked').trigger('activate');
+            }
+            $nextPanel.removeClass('tutorial__panel--hidden');
         }
 
     }
@@ -43,8 +48,14 @@ class Tutorial extends EventClass {
 
     done() {
         this.settings.set('showTutorial',false);
-        this.settings.setField('showTutorial');
+        this.settings.setFields();
         this.trigger('done');
+    }
+
+    swapImage(e) {
+        var $this = $(e.currentTarget);
+        var imageSrc = $this.attr('data-tutorial-image');
+        $this.closest('.tutorial__content').find('.tutorial__image img').attr('src',imageSrc);
     }
 
     toggle(ev) {

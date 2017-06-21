@@ -6,7 +6,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="heading heading--lg">Welcome to Panelz</div>
-                <div class="heading heading--secondary">Here are some terms you might not know to get you started:</div>
+                <div class="heading heading--secondary">Here are some terms to get you started:</div>
                 <p><strong>Panel Zoom</strong> - This mode will guide you along your comic, panel by panel.</p>
                 <p><strong>Page Mode</strong> - View the full page and all of its panels as you read.</p>
             </div>
@@ -14,6 +14,8 @@ const PANELZ_MARKUP = `
                 <button class="tutorial__button tutorial__button--back" style="visibility: hidden">Back</button>
                 <ul class="tutorial__progress">
                     <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step"></li>
                 </ul>
@@ -26,16 +28,61 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <img src="../dist/images/tutorial-taps.png" />
+                    <img src="../dist/images/tutorial-taps.gif" />
                 </div>
-                <p><strong>Tap Left</strong> - Navigates backwards one panel or page.</p>
-                <p><strong>Tap Right</strong> - Navigates forward one panel or page.</p>
-                <p><strong>Tap Center</strong> - Open or close the menu options.</p>
-                <p><strong>Double Tap (anywhere)</strong> - Switch between page and Panel Zoom mode.</p>
+                <p><strong>Left Tap</strong> - Navigates backwards one panel or page.</p>
+                <p><strong>Right Tap</strong> - Navigates forward one panel or page.</p>
+                <p><strong>Center Tap</strong> - Open or close the menu.</p>
             </div>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
                 <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-next>Next</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
+            </div>
+            <div class="tutorial__content">
+                <div class="tutorial__image">
+                    <img src="../dist/images/tutorial-double-taps.gif" />
+                </div>
+                <p><strong>Double tap</strong> - Switch between Page Mode and Panel Zoom Mode.</p>
+            </div>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-next>Next</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Skip</button>
+            </div>
+            <div class="tutorial__content">
+                <div class="heading heading--secondary">You can also swipe to navigate!</div>
+                <div class="tutorial__image">
+                    <img src="../dist/images/tutorial-swipes.gif" />
+                </div>
+            </div>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step tutorial__progress-step--active"></li>
                     <li class="tutorial__progress-step"></li>
@@ -45,17 +92,112 @@ const PANELZ_MARKUP = `
         </div>
         <div class="tutorial__panel tutorial__panel--hidden">
             <div class="tutorial__content">
-                <div class="heading heading--secondary">You can also swipe to navigate!</div>
-                <div class="tutorial__image">
-                    <img src="../dist/images/tutorial-swipes.png" />
+                <div class="heading heading--secondary">That's it!</div>
+                <p>Do you want to take a moment and customize a few Panel Zoom settings?</p>
+                <div class="tutorial__center-cta">
+                    <p><button class="tutorial__button" data-tutorial-next>Customize Settings</button></p>
+                    <p><button class="tutorial__button tutorial__button--link" data-tutorial-done>No thanks, I'm ready to read!</button></p>
                 </div>
-                <p><strong>Swipe Left</strong> - Navigates forward one panel or page.</p>
-                <p><strong>Swipe Right</strong> - Navigates backward one panel or page.</p>
             </div>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
                 <ul class="tutorial__progress">
                     <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-done style="visibility: hidden">Done</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Cancel</button>
+            </div>
+            <form class="tutorial__content">
+                <div class="heading heading--secondary">Letterboxing</div>
+                <div class="tutorial__image tutorial__image--small">
+                    <img src="../dist/images/tutorial-letterboxing-opaque.gif" />
+                </div>
+                <ul class="tutorial__menu">
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                          <input type="radio" value="no" id="no-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-none.gif"/>
+                          <label for="no-letterboxing-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            No letterboxing
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                          <input type="radio" value="solid" id="solid-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-solid.gif"/>
+                          <label for="solid-letterboxing-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Solid letterboxing
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                          <input type="radio" value="opaque" id="opaque-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-opaque.gif"/>
+                          <label for="opaque-letterboxing-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Opaque letterboxing
+                        </div>
+                    </li>
+                </ul>
+            </form>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button style="visibility: hidden">
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-next>Next</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <form class="tutorial__content">
+                <div class="heading heading--secondary">Panel Transitions</div>
+                <div class="tutorial__image tutorial__image--small">
+                    <img src="../dist/images/tutorial-animations-fast.gif" />
+                </div>
+                <ul class="tutorial__menu">
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                            <input type="radio" value="0" id="no-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-none.gif"/>
+                            <label for="no-animation-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            No animations
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                            <input type="radio" value="250" id="fast-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-fast.gif"/>
+                            <label for="fast-animation-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Fast animations
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                            <input type="radio" value="650" id="slow-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-slow.gif"/>
+                            <label for="slow-animation-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Slow animations
+                        </div>
+                    </li>
+                </ul>
+            </form>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button style="visibility: hidden">
+                <ul class="tutorial__progress">
                     <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step tutorial__progress-step--active"></li>
                 </ul>
@@ -236,7 +378,7 @@ const PANELZ_MARKUP = `
                     <div class="pane__header">
                         <span>Letterboxing</span>
                     </div>
-                    <div class="pane__content">
+                    <form class="pane__content">
                         <ul class="pane__menu">
                             <li class="pane__item" data-readable="none">
                                 <div class="pane__text">
@@ -269,7 +411,7 @@ const PANELZ_MARKUP = `
                         <div class="pane__actions">
                             <button class="pane__button" data-close>Cancel</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <div class="panes__pane pane pane--animations pane--modal pane--hidden" data-readable="Animate Transitions">
@@ -277,7 +419,7 @@ const PANELZ_MARKUP = `
                     <div class="pane__header">
                         <span>Animate Transitions</span>
                     </div>
-                    <div class="pane__content">
+                    <form class="pane__content">
                         <ul class="pane__menu">
                             <li class="pane__item" data-readable="none">
                                 <div class="pane__text">
@@ -310,7 +452,7 @@ const PANELZ_MARKUP = `
                         <div class="pane__actions">
                             <button class="pane__button" data-close>Cancel</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <div class="panes__pane pane pane--reset pane--modal pane--hidden">

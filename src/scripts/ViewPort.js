@@ -48,7 +48,7 @@ class ViewPort extends EventClass {
         $('body').on('click','[data-open-pane]',function(e) {
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
         });
-        $('body').on('click','.pane__item',function(e) {
+        $('body').on('click','.pane__item, .tutorial__menu-item',function(e) {
             if( ! $(e.target).is(':radio, :checkbox, .checkbox__label') ) {
                 var $input = $(this).find(':radio, :checkbox');
                 var checked = $input.is(':radio') ? true : !$input.prop('checked');
@@ -65,6 +65,7 @@ class ViewPort extends EventClass {
         }.bind(this));
 
         $('body').on('click','[data-close]',function(e) {
+            e.preventDefault();
             var $this = $(this);
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
