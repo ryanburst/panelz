@@ -87,7 +87,7 @@ class Book extends EventClass {
         this.pages.forEach(function(page) {
             var $page = $('.page-list__page--template').clone().removeClass('page-list__page--template');
             $page.attr('data-skip-to-page',page.index+1);
-            $page.find('.page-list__image').attr('src',page.config.src);
+            $page.find('.page-list__image').attr('src',page.config.url);
             $page.find('.page-list__number').text(page.index+1);
             $('.page-list').append($page);
         }.bind(this));

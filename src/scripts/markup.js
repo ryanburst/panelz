@@ -28,7 +28,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <video autoplay="autoplay" loop="loop" data-tutorial-image="../dist/images/tutorial-taps.mp4">
+                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="../dist/images/tutorial-taps.mp4">
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -54,7 +54,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <video autoplay="autoplay" loop="loop" data-tutorial-image="../dist/images/tutorial-double-taps.mp4">
+                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="../dist/images/tutorial-double-taps.mp4">
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -79,7 +79,7 @@ const PANELZ_MARKUP = `
             <div class="tutorial__content">
                 <div class="heading heading--secondary">You can also swipe to navigate!</div>
                 <div class="tutorial__image">
-                    <video autoplay="autoplay" loop="loop" data-tutorial-image="../dist/images/tutorial-swipes.mp4">
+                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="../dist/images/tutorial-swipes.mp4">
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -124,7 +124,7 @@ const PANELZ_MARKUP = `
             <form class="tutorial__content">
                 <div class="heading heading--secondary">Letterboxing</div>
                 <div class="tutorial__image tutorial__image--small">
-                    <video autoplay="autoplay" loop="loop">
+                    <video autoplay="autoplay" loop="loop" muted playsinline>
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -171,7 +171,7 @@ const PANELZ_MARKUP = `
             <form class="tutorial__content">
                 <div class="heading heading--secondary">Panel Transitions</div>
                 <div class="tutorial__image tutorial__image--small">
-                    <video autoplay="autoplay" loop="loop">
+                    <video autoplay="autoplay" loop="loop" muted playsinline>
                         <source type="video/mp4" />
                     </video>
                 </div>
