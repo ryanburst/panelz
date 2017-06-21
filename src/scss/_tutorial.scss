@@ -38,7 +38,8 @@
     &__image {
         margin-bottom: 10px;
         text-align: center;
-        img {
+        img,
+        video {
             max-width: 100%;
         }
         &--small img {

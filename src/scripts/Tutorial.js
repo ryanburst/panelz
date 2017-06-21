@@ -32,8 +32,10 @@ class Tutorial extends EventClass {
             var $nextPanel = $panel.next();
             var $imageLoader = $nextPanel.find('[data-tutorial-image]');
             if( $imageLoader.length ) {
-                if( $imageLoader.is('img') ) {
-                    $imageLoader.attr('src',$imageLoader.attr('data-tutorial-image'));
+                if( $imageLoader.is('video') ) {
+                    $imageLoader.find('source').attr('src',$imageLoader.attr('data-tutorial-image'));
+                    $imageLoader[0].load();
+                    $imageLoader[0].play();
                 } else {
                     $nextPanel.find('[data-tutorial-image]:checked').trigger('activate');
                 }
@@ -60,7 +62,10 @@ class Tutorial extends EventClass {
     swapImage(e) {
         var $this = $(e.currentTarget);
         var imageSrc = $this.attr('data-tutorial-image');
-        $this.closest('.tutorial__content').find('.tutorial__image img').attr('src',imageSrc);
+        var $video = $this.closest('.tutorial__content').find('.tutorial__image video');
+        $video.find('source').attr('src',imageSrc);
+        $video[0].load();
+        $video[0].play();
     }
 
     toggle(ev) {

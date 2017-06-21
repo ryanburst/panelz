@@ -101,7 +101,8 @@ p {
   text-align: center;
 }
 
-.tutorial__image img {
+.tutorial__image img,
+.tutorial__image video {
   max-width: 100%;
 }
 
