@@ -125,4 +125,13 @@
     .radio {
         margin-left: 0;
     }
+    .checkbox {
+        margin-left: 0;
+        margin-right: 0;
+        align-self: flex-start;
+        &__label:after {
+            top: 2px;
+            left: 2px;
+        }
+    }
 }

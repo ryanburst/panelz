@@ -216,6 +216,18 @@ p {
   margin-left: 0;
 }
 
+.tutorial .checkbox {
+  margin-left: 0;
+  margin-right: 0;
+  -ms-flex-item-align: start;
+      align-self: flex-start;
+}
+
+.tutorial .checkbox__label:after {
+  top: 2px;
+  left: 2px;
+}
+
 .viewport {
   position: relative;
   background-color: black;
@@ -634,6 +646,7 @@ p {
   width: 20px;
   height: 20px;
   cursor: pointer;
+  background-color: #404042;
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
@@ -648,9 +661,12 @@ p {
   border-top: none;
   border-right: none;
   background: transparent;
-  opacity: 0;
-  -webkit-transform: rotate(-45deg);
-          transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg) scale(0);
+          transform: rotate(-45deg) scale(0);
+  -webkit-transition: -webkit-transform 200ms ease;
+  transition: -webkit-transform 200ms ease;
+  transition: transform 200ms ease;
+  transition: transform 200ms ease, -webkit-transform 200ms ease;
 }
 
 .checkbox input[type=checkbox] {
@@ -658,7 +674,8 @@ p {
 }
 
 .checkbox input[type=checkbox]:checked + .checkbox__label:after {
-  opacity: 1;
+  -webkit-transform: rotate(-45deg) scale(1);
+          transform: rotate(-45deg) scale(1);
 }
 
 .radio {

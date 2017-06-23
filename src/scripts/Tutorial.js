@@ -1,6 +1,8 @@
 class Tutorial extends EventClass {
-    constructor(settings) {
+    constructor(app,settings) {
         super();
+
+        this.app = app;
         this.settings = settings;
 
         this.interactable = new Hammer.Manager($('.tutorial')[0]);
@@ -18,6 +20,7 @@ class Tutorial extends EventClass {
         $('body').on('click','[data-tutorial-back]',this.back.bind(this));
         $('body').on('click','[data-tutorial-done]',this.done.bind(this));
         $('body').on('change activate','[data-tutorial-image]',this.swapImage.bind(this));
+        $('body').on('change','.tutorial [name="startInPanelZoom"]',this.setBeginnerMode.bind(this));
 
         this.settings.on('change:showTutorial',this.toggle.bind(this));
 
@@ -33,13 +36,7 @@ class Tutorial extends EventClass {
             var $imageLoader = $nextPanel.find('[data-tutorial-image]');
             if( $imageLoader.length ) {
                 if( $imageLoader.is('video') ) {
-                    $imageLoader.closest('.tutorial__image').removeClass('tutorial__image--loaded');
-                    $imageLoader.find('source').attr('src',$imageLoader.attr('data-tutorial-image'));
-                    $imageLoader[0].load();
-                    $imageLoader[0].addEventListener('loadeddata', function() {
-                        $imageLoader.closest('.tutorial__image').addClass('tutorial__image--loaded');
-                        $imageLoader[0].play();
-                    }, false);
+                    this.swapImage({currentTarget:$imageLoader[0]});
                 } else {
                     $nextPanel.find('[data-tutorial-image]:checked').trigger('activate');
                 }
@@ -75,6 +72,16 @@ class Tutorial extends EventClass {
             $video[0].play();
         }, false);
 
+    }
+
+    setBeginnerMode(e) {
+        var $checkbox = $(e.currentTarget);
+        var mode = $checkbox.is(':checked')
+            ? PANEL_ZOOM_MODE
+            : PAGE_MODE;
+        if( this.app.book.isLoaded ) {
+            this.app.setMode(mode);
+        }
     }
 
     toggle(ev) {

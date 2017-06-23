@@ -7,8 +7,8 @@ const PANELZ_MARKUP = `
             <div class="tutorial__content">
                 <div class="heading heading--lg">Welcome to Panelz</div>
                 <div class="heading heading--secondary">Here are some terms to get you started:</div>
+                <p><strong>Page Mode</strong> (default) - View the full page and all of its panels as you read.</p>
                 <p><strong>Panel Zoom</strong> - This mode will guide you along your comic, panel by panel.</p>
-                <p><strong>Page Mode</strong> - View the full page and all of its panels as you read.</p>
             </div>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" style="visibility: hidden">Back</button>
@@ -140,15 +140,6 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                          <input type="radio" value="solid" id="solid-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-solid.mp4"/>
-                          <label for="solid-letterboxing-tut" class="radio__label"></label>
-                        </div>
-                        <div class="tutorial__menu-item-text">
-                            Solid letterboxing
-                        </div>
-                    </li>
-                    <li class="tutorial__menu-item">
-                        <div class="radio">
                           <input type="radio" value="opaque" id="opaque-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-opaque.mp4"/>
                           <label for="opaque-letterboxing-tut" class="radio__label"></label>
                         </div>
@@ -156,12 +147,22 @@ const PANELZ_MARKUP = `
                             Opaque letterboxing
                         </div>
                     </li>
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                          <input type="radio" value="solid" id="solid-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-solid.mp4"/>
+                          <label for="solid-letterboxing-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Solid letterboxing (default)
+                        </div>
+                    </li>
                 </ul>
             </form>
             <div class="tutorial__cta">
-                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button style="visibility: hidden">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
                 <ul class="tutorial__progress">
                     <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step"></li>
                 </ul>
                 <button class="tutorial__button" data-tutorial-next>Next</button>
@@ -187,15 +188,6 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                            <input type="radio" value="250" id="fast-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-fast.mp4"/>
-                            <label for="fast-animation-tut" class="radio__label"></label>
-                        </div>
-                        <div class="tutorial__menu-item-text">
-                            Fast animations
-                        </div>
-                    </li>
-                    <li class="tutorial__menu-item">
-                        <div class="radio">
                             <input type="radio" value="650" id="slow-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-slow.mp4"/>
                             <label for="slow-animation-tut" class="radio__label"></label>
                         </div>
@@ -203,11 +195,64 @@ const PANELZ_MARKUP = `
                             Slow animations
                         </div>
                     </li>
+                    <li class="tutorial__menu-item">
+                        <div class="radio">
+                            <input type="radio" value="250" id="fast-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-fast.mp4"/>
+                            <label for="fast-animation-tut" class="radio__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Fast animations (default)
+                        </div>
+                    </li>
+                </ul>
+            </form>
+            <div class="tutorial__cta">
+                <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
+                <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
+                    <li class="tutorial__progress-step tutorial__progress-step--active"></li>
+                    <li class="tutorial__progress-step"></li>
+                </ul>
+                <button class="tutorial__button" data-tutorial-next>Next</button>
+            </div>
+        </div>
+        <div class="tutorial__panel tutorial__panel--hidden">
+            <form class="tutorial__content">
+                <div class="heading heading--secondary">Final Panel Zoom Settings</div>
+                <ul class="tutorial__menu">
+                    <li class="tutorial__menu-item">
+                        <div class="checkbox">
+                            <input type="checkbox" value="true" id="startInPanelZoom-tut" name="startInPanelZoom" />
+                            <label for="startInPanelZoom-tut" class="checkbox__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Start new books in Panel Zoom Mode
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="checkbox">
+                          <input type="checkbox" value="true" id="showPageOnEnter-tut" name="showPageOnEnter" />
+                          <label for="showPageOnEnter-tut" class="checkbox__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Show page on enter
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="checkbox">
+                          <input type="checkbox" value="true" id="showPageOnExit-tut" name="showPageOnExit" />
+                          <label for="showPageOnExit-tut" class="checkbox__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Show page on exit
+                        </div>
+                    </li>
                 </ul>
             </form>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button style="visibility: hidden">
                 <ul class="tutorial__progress">
+                    <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step"></li>
                     <li class="tutorial__progress-step tutorial__progress-step--active"></li>
                 </ul>

@@ -6,6 +6,7 @@ class Book extends EventClass {
         this.app = config.app;
         this.pages = [];
         this.loaded = 0;
+        this.isLoaded = false;
         this.panFrozen = false;
         this.zoomPanAmount = 0;
         this.setEventListeners();
@@ -60,6 +61,7 @@ class Book extends EventClass {
             }
         }.bind(this));
         this.buildPageIndex();
+        this.isLoaded = true;
         this.trigger('load:book',this);
     }
 

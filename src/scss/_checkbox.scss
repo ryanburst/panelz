@@ -11,6 +11,7 @@
         width: 20px;
         height: 20px;
         cursor: pointer;
+        background-color: #404042;
         border: 1px solid rgba(255,255,255,.4);
         &:after {
             content: '';
@@ -23,14 +24,14 @@
             border-top: none;
             border-right: none;
             background: transparent;
-            opacity: 0;
-            transform: rotate(-45deg);
+            transform: rotate(-45deg) scale(0);
+            transition: transform 200ms ease;
         }
     }
     input[type=checkbox] {
         visibility: hidden;
     }
     input[type=checkbox]:checked + .checkbox__label:after {
-        opacity: 1;
+        transform: rotate(-45deg) scale(1);
     }
 }

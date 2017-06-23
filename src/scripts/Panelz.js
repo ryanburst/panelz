@@ -77,7 +77,7 @@ class Panelz extends EventClass {
     setupBook() {
         this.setInitialMode();
 
-        this.tutorial = new Tutorial(this.settings);
+        this.tutorial = new Tutorial(this,this.settings);
         this.menu = new Menu(this.config);
         this.viewport = new ViewPort(this.config);
         this.book = new Book(this.config);
@@ -112,13 +112,12 @@ class Panelz extends EventClass {
 
         this.setMode(mode);
 
-        this.settings.rememberBookSetting('mode',mode);
-
         this.message(this.getReadableModeText());
     }
 
     setMode(mode) {
         this.mode = mode;
+        this.settings.rememberBookSetting('mode',mode);
         this.trigger('change:mode',mode);
     }
 
