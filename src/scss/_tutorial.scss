@@ -36,14 +36,32 @@
         justify-content: center;
     }
     &__image {
+        position: relative;
         margin-bottom: 10px;
         text-align: center;
         img,
         video {
+            position: relative;
             max-width: 100%;
+            background-color: #dbdbdb;
         }
-        &--small img {
+        &:after {
+            content: "Loading...";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: block;
+            transform: translate(-50%);
+        }
+        &--small img,
+        &--small video {
             max-width: 80%;
+        }
+        &--loaded {
+            &:after {
+                display: none;
+            }
+
         }
     }
     &__cta {

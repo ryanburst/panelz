@@ -33,9 +33,13 @@ class Tutorial extends EventClass {
             var $imageLoader = $nextPanel.find('[data-tutorial-image]');
             if( $imageLoader.length ) {
                 if( $imageLoader.is('video') ) {
+                    $imageLoader.closest('.tutorial__image').removeClass('tutorial__image--loaded');
                     $imageLoader.find('source').attr('src',$imageLoader.attr('data-tutorial-image'));
                     $imageLoader[0].load();
-                    $imageLoader[0].play();
+                    $imageLoader[0].addEventListener('loadeddata', function() {
+                        $imageLoader.closest('.tutorial__image').addClass('tutorial__image--loaded');
+                        $imageLoader[0].play();
+                    }, false);
                 } else {
                     $nextPanel.find('[data-tutorial-image]:checked').trigger('activate');
                 }
@@ -63,9 +67,14 @@ class Tutorial extends EventClass {
         var $this = $(e.currentTarget);
         var imageSrc = $this.attr('data-tutorial-image');
         var $video = $this.closest('.tutorial__content').find('.tutorial__image video');
+        $video.closest('.tutorial__image').removeClass('tutorial__image--loaded');
         $video.find('source').attr('src',imageSrc);
         $video[0].load();
-        $video[0].play();
+        $video[0].addEventListener('loadeddata', function() {
+            $video.closest('.tutorial__image').addClass('tutorial__image--loaded');
+            $video[0].play();
+        }, false);
+
     }
 
     toggle(ev) {

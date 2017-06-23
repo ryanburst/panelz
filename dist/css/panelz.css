@@ -97,17 +97,35 @@ p {
 }
 
 .tutorial__image {
+  position: relative;
   margin-bottom: 10px;
   text-align: center;
 }
 
 .tutorial__image img,
 .tutorial__image video {
+  position: relative;
   max-width: 100%;
+  background-color: #dbdbdb;
 }
 
-.tutorial__image--small img {
+.tutorial__image:after {
+  content: "Loading...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  -webkit-transform: translate(-50%);
+          transform: translate(-50%);
+}
+
+.tutorial__image--small img,
+.tutorial__image--small video {
   max-width: 80%;
+}
+
+.tutorial__image--loaded:after {
+  display: none;
 }
 
 .tutorial__cta {
