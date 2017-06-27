@@ -66,11 +66,11 @@ class Book extends EventClass {
 
     setEventListeners() {
         this.app.on('change:mode',this.onModeChange.bind(this));
+        this.app.on('user',this.registerUserEvent.bind(this));
         this.app.on('user:skipToPage',this.skipToPage.bind(this));
         this.app.on('user:panend',this.onPanEnd.bind(this));
         this.app.on('user:pageForward',this.pageForward.bind(this));
         this.app.on('user:pageBackward',this.pageBackward.bind(this));
-        this.app.on('user:doubletap',this.registerTapEvent.bind(this));
     }
 
     onPageLoaded(page) {
@@ -145,7 +145,7 @@ class Book extends EventClass {
         }.bind(this));
     }
 
-    registerTapEvent(e) {
+    registerUserEvent(e) {
         this.e = e;
     }
 
@@ -189,7 +189,7 @@ class Book extends EventClass {
         this.currentPage.$container.css('opacity',1);
 
         if( this.currentPage.panels.length ) {
-            var panel = this.e
+            var panel = this.e && this.e.type === "doubletap" && this.app.settings.get('detectPanelOnDoubleTap')
                 ? this.currentPage.findPanelWithPos(this.e.center.x,this.e.center.y)
                 : this.currentPage.getFirstPanel();
             this.currentPage.zoomToPanel(panel);

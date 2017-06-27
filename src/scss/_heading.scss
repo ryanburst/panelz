@@ -7,6 +7,9 @@
     }
     &--secondary {
         margin-bottom: 20px;
+        &-with-helper {
+            margin-bottom: 5px;
+        }
     }
     &--center {
         text-align: center;

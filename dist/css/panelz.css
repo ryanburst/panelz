@@ -33,6 +33,10 @@ p {
   margin-bottom: 20px;
 }
 
+.heading--secondary-with-helper {
+  margin-bottom: 5px;
+}
+
 .heading--center {
   text-align: center;
 }
@@ -210,6 +214,12 @@ p {
 
 .tutorial__menu-item-text {
   margin-left: 20px;
+}
+
+.tutorial__menu-helper-text {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 85%;
 }
 
 .tutorial .radio {

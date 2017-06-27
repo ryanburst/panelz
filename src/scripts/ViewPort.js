@@ -23,12 +23,13 @@ class ViewPort extends EventClass {
         var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
         var pinch = new Hammer.Pinch({ threshold: 0, enable: this.canRecognizePinch.bind(this), domEvents: true });
         var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
-        var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2 });
+        var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });
         var swipe = new Hammer.Swipe({enable: this.canRecognizeSwipe.bind(this)});
 
-        this.interactable.add([pan,singletap,doubletap,swipe,pinch]);
+        this.interactable.add([pan,doubletap,singletap,swipe,pinch]);
 
         pinch.recognizeWith(pan);
+        doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);
         //pan.requireFailure(pinch);
@@ -102,18 +103,17 @@ class ViewPort extends EventClass {
         this.interactable.on('pinchend',function(ev) {
             this.app.trigger('user:pinchend',ev);
         }.bind(this));
+        this.interactable.on('doubletap',function(ev) {
+            this.app.trigger('user:doubletap',ev);
+            this.app.switchModes();
+        }.bind(this));
         this.interactable.on("tap", function(ev) {
-
-            if( ev.tapCount >= 2 ) {
-                this.app.trigger('user:doubletap',ev);
-                return this.app.switchModes();
-            }
             this.app.trigger('user:tap',ev);
             var cmd = this.findTapZone(ev.center.x,ev.center.y);
             if( cmd === PAGE_FORWARD ) {
-                this.app.trigger('user:pageForward');
+                this.app.trigger('user:pageForward',ev);
             } else if( cmd === PAGE_BACK ) {
-                this.app.trigger('user:pageBackward');
+                this.app.trigger('user:pageBackward',ev);
             } else if( cmd === TOGGLE_MAIN_MENU ) {
                 if( ! this.$menu.hasClass('viewport__menu--was-shown') ) {
                     this.$menu.addClass('viewport__menu--active');
@@ -122,12 +122,12 @@ class ViewPort extends EventClass {
         }.bind(this));
         this.interactable.on("swipeleft", function(ev) {
             if( this.app.mode === PANEL_ZOOM_MODE ) {
-                this.app.trigger('user:pageForward');
+                this.app.trigger('user:pageForward',ev);
             }
         }.bind(this));
         this.interactable.on("swiperight", function(ev) {
             if( this.app.mode === PANEL_ZOOM_MODE ) {
-                this.app.trigger('user:pageBackward');
+                this.app.trigger('user:pageBackward',ev);
             }
         }.bind(this));
 

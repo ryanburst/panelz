@@ -7,6 +7,7 @@ class Settings extends EventClass {
             startInPanelZoom: false,
             panelTransitions: 250,
             letterboxing: 'solid',
+            detectPanelOnDoubleTap: true,
             showPageOnEnter: true,
             showPageOnExit: true,
             showTutorial: true

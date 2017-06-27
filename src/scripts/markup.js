@@ -59,6 +59,7 @@ const PANELZ_MARKUP = `
                     </video>
                 </div>
                 <p><strong>Double tap</strong> - Switch between Page Mode and Panel Zoom Mode.</p>
+                <p>The panel tapped on will be detected and zoomed on when switching to Panel Zoom mode. This option can be changed in the settings.
             </div>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
@@ -122,7 +123,8 @@ const PANELZ_MARKUP = `
                 <button class="tutorial__button tutorial__button--skip" data-tutorial-done>Cancel</button>
             </div>
             <form class="tutorial__content">
-                <div class="heading heading--secondary">Letterboxing</div>
+                <div class="heading heading--secondary heading--secondary-with-helper">Letterboxing</div>
+                <p>Set what style is used when blocking off a panel from the rest of the page.</p>
                 <div class="tutorial__image tutorial__image--small">
                     <video autoplay="autoplay" loop="loop" muted playsinline>
                         <source type="video/mp4" />
@@ -231,6 +233,16 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="checkbox">
+                            <input type="checkbox" value="true" id="detectPanelOnDoubleTap-tut" name="detectPanelOnDoubleTap" />
+                            <label for="detectPanelOnDoubleTap-tut" class="checkbox__label"></label>
+                        </div>
+                        <div class="tutorial__menu-item-text">
+                            Detect panel on double tap
+                            <p class="tutorial__menu-helper-text">Zooms to the panel that is double tapped on when switching to Panel Zoom Mode, otherwise defaults to the first panel</p>
+                        </div>
+                    </li>
+                    <li class="tutorial__menu-item">
+                        <div class="checkbox">
                           <input type="checkbox" value="true" id="showPageOnEnter-tut" name="showPageOnEnter" />
                           <label for="showPageOnEnter-tut" class="checkbox__label"></label>
                         </div>
@@ -240,8 +252,8 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="checkbox">
-                          <input type="checkbox" value="true" id="showPageOnExit-tut" name="showPageOnExit" />
-                          <label for="showPageOnExit-tut" class="checkbox__label"></label>
+                            <input type="checkbox" value="true" id="showPageOnExit-tut" name="showPageOnExit" />
+                            <label for="showPageOnExit-tut" class="checkbox__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
                             Show page on exit
@@ -343,6 +355,16 @@ const PANELZ_MARKUP = `
                                 <div class="pane__text">
                                     <p class="pane__option">Letterboxing</p>
                                     <p class="pane__helper-text">Use bars to mask content outside of the current panel</p>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Detect panel on double tap</p>
+                                    <p class="pane__helper-text">Zooms to the panel that is double tapped on when switching to Panel Zoom Mode</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="true" id="detectPanelOnDoubleTap" name="detectPanelOnDoubleTap" />
+                                  <label for="detectPanelOnDoubleTap" class="checkbox__label"></label>
                                 </div>
                             </li>
                             <li class="pane__item">
