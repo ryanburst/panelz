@@ -9,7 +9,10 @@ class Book extends EventClass {
         this.isLoaded = false;
         this.panFrozen = false;
         this.zoomPanAmount = 0;
+        this.size = config.size;
+        this.loadedSize = 0;
         this.setEventListeners();
+        console.log(this.config);
         config.comic.pages.forEach(function(pageConfig,index) {
             pageConfig.app = this.app;
             pageConfig.panels = pageConfig.panels || [];
@@ -19,16 +22,60 @@ class Book extends EventClass {
         }.bind(this));
     }
 
+    get size() {
+        return this._size;
+    }
+
+    set size(size) {
+        if( ! size ) {
+            size = 0;
+            this.config.comic.pages.forEach(function(pageConfig) {
+                size += parseInt(pageConfig.size);
+            });
+        }
+        this._size = size;
+        $('.loading__progress').circleProgress({
+            value: 0.2,
+            size: 80,
+            startAngle: Math.PI * 1.5,
+            fill: '#55a1e6'
+        });
+        $('[data-comic-size]').text(this.getReadableSize());
+    }
+
+    get loadedSize() {
+        return this._loadedSize;
+    }
+
+    set loadedSize(size) {
+        this._loadedSize = size;
+        var percent = this.loadedSize / this.size;
+        var degrees = 360 * percent;
+
+        $('.loading__progress').circleProgress('value', percent);
+        $('[data-loaded-size]').text(this.getReadableSize(this.loadedSize));
+    }
+
+    getReadableSize(size) {
+        var bytes = typeof size !== 'undefined' ? size : this.size;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) return '0 Byte';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+    };
+
     setEventListeners() {
         this.app.on('change:mode',this.onModeChange.bind(this));
         this.app.on('user:skipToPage',this.skipToPage.bind(this));
         this.app.on('user:panend',this.onPanEnd.bind(this));
         this.app.on('user:pageForward',this.pageForward.bind(this));
         this.app.on('user:pageBackward',this.pageBackward.bind(this));
+        this.app.on('user:doubletap',this.registerTapEvent.bind(this));
     }
 
     onPageLoaded(page) {
         this.loaded += 1;
+        this.loadedSize += parseInt(page.size);
         if(this.loaded === this.pages.length) {
             this.onBookLoaded();
         }
@@ -61,8 +108,11 @@ class Book extends EventClass {
             }
         }.bind(this));
         this.buildPageIndex();
-        this.isLoaded = true;
-        this.trigger('load:book',this);
+        setTimeout(function() {
+            this.isLoaded = true;
+            this.trigger('load:book',this);
+            $('.loading').addClass('loading--hidden');
+        }.bind(this),1200);
     }
 
     onModeChange(mode) {
@@ -93,6 +143,10 @@ class Book extends EventClass {
             $page.find('.page-list__number').text(page.index+1);
             $('.page-list').append($page);
         }.bind(this));
+    }
+
+    registerTapEvent(e) {
+        this.e = e;
     }
 
     setCurrentPage(page) {
@@ -135,7 +189,10 @@ class Book extends EventClass {
         this.currentPage.$container.css('opacity',1);
 
         if( this.currentPage.panels.length ) {
-            this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
+            var panel = this.e
+                ? this.currentPage.findPanelWithPos(this.e.center.x,this.e.center.y)
+                : this.currentPage.getFirstPanel();
+            this.currentPage.zoomToPanel(panel);
         }
     }
 

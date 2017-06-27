@@ -241,12 +241,21 @@ p {
   z-index: 7;
 }
 
+.viewport__loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+}
+
 .viewport__menu {
   position: absolute;
   bottom: -65px;
   height: 65px;
   width: 100%;
-  z-index: 10;
+  z-index: 8;
   background-color: rgba(0, 0, 0, 0.75);
   -webkit-transition: bottom 350ms ease;
   transition: bottom 350ms ease;
@@ -277,6 +286,44 @@ p {
   bottom: 50px;
   opacity: 0;
   z-index: 1;
+}
+
+.loading {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: white;
+  background-color: #404042;
+}
+
+.loading__progress {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.loading__size {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.loading--hidden {
+  display: none;
 }
 
 .message__text {

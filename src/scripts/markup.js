@@ -262,6 +262,10 @@ const PANELZ_MARKUP = `
     </div>
     <div class="viewport">
         <div class="viewport__interactable"></div>
+        <div class="viewport__loading loading">
+            <div class="loading__progress"><span data-loaded-size class="loading__size"></span></div>
+            <p>Loading Comic...</p>
+        </div>
         <div class="letterbox">
             <div class="letterbox__horizontal letterbox__horizontal--top"></div>
             <div class="letterbox__horizontal letterbox__horizontal--bottom"></div>
@@ -444,15 +448,6 @@ const PANELZ_MARKUP = `
                                   <label for="no-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item" data-readable="solid">
-                                <div class="pane__text">
-                                    <p class="pane__option">Solid letterboxing</p>
-                                </div>
-                                <div class="radio">
-                                  <input type="radio" value="solid" id="solid-letterboxing" name="letterboxing"/>
-                                  <label for="solid-letterboxing" class="radio__label"></label>
-                                </div>
-                            </li>
                             <li class="pane__item" data-readable="opaque">
                                 <div class="pane__text">
                                     <p class="pane__option">Opaque letterboxing</p>
@@ -460,6 +455,15 @@ const PANELZ_MARKUP = `
                                 <div class="radio">
                                   <input type="radio" value="opaque" id="opaque-letterboxing" name="letterboxing" />
                                   <label for="opaque-letterboxing" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-readable="solid">
+                                <div class="pane__text">
+                                    <p class="pane__option">Solid letterboxing (default)</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="solid" id="solid-letterboxing" name="letterboxing"/>
+                                  <label for="solid-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
                         </ul>
@@ -485,15 +489,6 @@ const PANELZ_MARKUP = `
                                   <label for="no-animation" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item" data-readable="fast">
-                                <div class="pane__text">
-                                    <p class="pane__option">Fast animations</p>
-                                </div>
-                                <div class="radio">
-                                  <input type="radio" value="250" id="fast-animation" name="panelTransitions" />
-                                  <label for="fast-animation" class="radio__label"></label>
-                                </div>
-                            </li>
                             <li class="pane__item" data-readable="slow">
                                 <div class="pane__text">
                                     <p class="pane__option">Slow animations</p>
@@ -501,6 +496,15 @@ const PANELZ_MARKUP = `
                                 <div class="radio">
                                   <input type="radio" value="650" id="slow-animation" name="panelTransitions" />
                                   <label for="slow-animation" class="radio__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item" data-readable="fast">
+                                <div class="pane__text">
+                                    <p class="pane__option">Fast animations (default)</p>
+                                </div>
+                                <div class="radio">
+                                  <input type="radio" value="250" id="fast-animation" name="panelTransitions" />
+                                  <label for="fast-animation" class="radio__label"></label>
                                 </div>
                             </li>
                         </ul>

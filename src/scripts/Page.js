@@ -7,6 +7,7 @@ class Page extends EventClass {
         this.index = index;
         this.isFirst = index===0;
         this.isLast = index===this.book.config.comic.pages.length-1;
+        this.size = config.size || 0;
         this.isCurrentPage = false;
         this.scale = 1;
         this.lastScale = 1;
@@ -41,7 +42,65 @@ class Page extends EventClass {
     }
 
     loadSrc(src) {
-        $('<img src="'+ src +'" />').on('load',this.onPageLoaded.bind(this));
+        /*$.ajax({
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                //Download progress
+                xhr.addEventListener("progress", function(evt){
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        //Do something with download progress
+                        //console.log(percentComplete);
+                    }
+                }, false);
+                return xhr;
+            },
+            type: 'GET',
+            url: src,
+            processData: false,
+            responseType: 'arraybuffer',
+            success: function(data,something,xhr) {
+                var h = xhr.getAllResponseHeaders(),
+                            m = h.match( /^Content-Type\:\s*(.*?)$/mi ),
+                            mimeType = m[ 1 ] || 'image/png';
+                var blob = new Blob([data],{ type: mimeType });
+                var $image = $("<img />").attr("src", window.URL.createObjectURL(blob)).on('load',this.onPageLoaded.bind(this))
+                $image.trigger('load',{currentTarget: $image[0]});
+            }.bind(this)
+        });*/
+        $("<img />").attr("src", src).on('load',this.onPageLoaded.bind(this));
+    }
+
+    base64Encode(str) {
+        var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        var out = "", i = 0, len = str.length, c1, c2, c3;
+        while (i < len) {
+            c1 = str.charCodeAt(i++) & 0xff;
+            if (i == len) {
+                out += CHARS.charAt(c1 >> 2);
+                out += CHARS.charAt((c1 & 0x3) << 4);
+                out += "==";
+                break;
+            }
+            c2 = str.charCodeAt(i++);
+            if (i == len) {
+                out += CHARS.charAt(c1 >> 2);
+                out += CHARS.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+                out += CHARS.charAt((c2 & 0xF) << 2);
+                out += "=";
+                break;
+            }
+            c3 = str.charCodeAt(i++);
+            out += CHARS.charAt(c1 >> 2);
+            out += CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
+            out += CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
+            out += CHARS.charAt(c3 & 0x3F);
+        }
+        return out;
+    }
+
+    onProgress(e) {
+        console.log(e);
     }
 
     onPageLoaded(e) {
@@ -264,12 +323,21 @@ class Page extends EventClass {
     }
 
     findPanelWithPos(x,y) {
-        var panel = false;
+        var found = false;
         if(this.panels.length) {
+            var left = this.getLeft();
+            var top = this.getTop();
             this.panels.forEach(function(panel) {
-                //var convertedX = this.
+                var convertedX = left + (panel.x * this.getWidth() / this.getOriginalWidth());
+                var convertedY = top + (panel.y * this.getHeight() / this.getOriginalHeight());
+                var convertedXMax = left + convertedX + (panel.width * this.getWidth() / this.getOriginalWidth());
+                var convertedYMax = top + convertedY + (panel.height * this.getHeight() / this.getOriginalHeight());
+                if( ! found && x > convertedX && x <= convertedXMax && y > convertedY && y <= convertedYMax ) {
+                    found = panel;
+                }
             }.bind(this));
         }
+        return found;
     }
 
     magnify(amount,animate) {

@@ -1,0 +1,25 @@
+.loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: #404042;
+
+    &__progress {
+        position: relative;
+        margin-bottom: 5px;
+    }
+    &__size {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 10px;
+        transform: translateY(-50%);
+    }
+    &--hidden {
+        display: none;
+    }
+}

@@ -103,9 +103,12 @@ class ViewPort extends EventClass {
             this.app.trigger('user:pinchend',ev);
         }.bind(this));
         this.interactable.on("tap", function(ev) {
+
             if( ev.tapCount >= 2 ) {
+                this.app.trigger('user:doubletap',ev);
                 return this.app.switchModes();
             }
+            this.app.trigger('user:tap',ev);
             var cmd = this.findTapZone(ev.center.x,ev.center.y);
             if( cmd === PAGE_FORWARD ) {
                 this.app.trigger('user:pageForward');
