@@ -28,7 +28,7 @@ class ViewPort extends EventClass {
 
         this.interactable.add([pan,doubletap,singletap,swipe,pinch]);
 
-        pinch.recognizeWith(pan);
+        pan.recognizeWith(pinch);
         doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);

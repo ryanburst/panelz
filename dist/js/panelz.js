@@ -1669,7 +1669,7 @@ var ViewPort = function (_EventClass7) {
 
         _this7.interactable.add([pan, doubletap, singletap, swipe, pinch]);
 
-        pinch.recognizeWith(pan);
+        pan.recognizeWith(pinch);
         doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);
