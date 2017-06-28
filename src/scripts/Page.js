@@ -205,7 +205,7 @@ class Page extends EventClass {
             e.deltaX = this.pinchOrigin.x - e.center.x;
             e.deltaY = this.pinchOrigin.y - e.center.y;
             if( e.deltaX > 0 ) {
-                this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'left' : 'right'),e);
+                this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'right' : 'left'),e);
             }
             var left = parseInt(this.$element.css('margin-left'));
             var top = parseInt(this.$element.css('margin-top'));
