@@ -93,7 +93,6 @@ class Page extends EventClass {
             this.book.zoomPanAmount = 0;
         }.bind(this));
         this.app.on("user:pan", function(ev) {
-            console.log('pan');
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
                 var minTop = maxTop * -1;
@@ -187,7 +186,16 @@ class Page extends EventClass {
                 }
             }
         }.bind(this));
-
+        this.app.on('user:pinchmove',function(e) {
+            var deltaX = this.pinchOrigin.x - e.center.x;
+            var deltaY = this.pinchOrigin.y - e.center.y;
+            if( deltaX > 0 || deltaY > 0 ) {
+                this.app.trigger('user:pan',e);
+            }
+            if( deltaX > 0 ) {
+                this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'left' : 'right'),e);
+            }
+        }.bind(this));
         this.app.on('user:pinchstart',function(e) {
             this.pinchOrigin = e.center;
         }.bind(this));

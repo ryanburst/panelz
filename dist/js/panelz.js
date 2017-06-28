@@ -678,7 +678,6 @@ var Page = function (_EventClass3) {
                 this.book.zoomPanAmount = 0;
             }.bind(this));
             this.app.on("user:pan", function (ev) {
-                console.log('pan');
                 if (this.isCurrentPage && this.scale !== 1) {
                     var maxTop = (this.getHeight() * this.scale - this.getFullHeight()) / 2;
                     var minTop = maxTop * -1;
@@ -772,7 +771,16 @@ var Page = function (_EventClass3) {
                     }
                 }
             }.bind(this));
-
+            this.app.on('user:pinchmove', function (e) {
+                var deltaX = this.pinchOrigin.x - e.center.x;
+                var deltaY = this.pinchOrigin.y - e.center.y;
+                if (deltaX > 0 || deltaY > 0) {
+                    this.app.trigger('user:pan', e);
+                }
+                if (deltaX > 0) {
+                    this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'left' : 'right'), e);
+                }
+            }.bind(this));
             this.app.on('user:pinchstart', function (e) {
                 this.pinchOrigin = e.center;
             }.bind(this));
@@ -1659,9 +1667,9 @@ var ViewPort = function (_EventClass7) {
         _this7.setTapThresholds();
         _this7.setLetterBoxStyle();
 
-        _this7.interactable = new Hammer.Manager(_this7.$element.find('.viewport__interactable')[0], { dragMaxTouches: 2 });
+        _this7.interactable = new Hammer.Manager(_this7.$element.find('.viewport__interactable')[0]);
 
-        var pan = new Hammer.Pan({ threshold: 20, enable: _this7.canRecognizePan.bind(_this7), dragMaxTouches: 2 });
+        var pan = new Hammer.Pan({ threshold: 20, enable: _this7.canRecognizePan.bind(_this7) });
         var pinch = new Hammer.Pinch({ threshold: 0, enable: _this7.canRecognizePinch.bind(_this7), domEvents: true });
         var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
         var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });
@@ -1669,7 +1677,7 @@ var ViewPort = function (_EventClass7) {
 
         _this7.interactable.add([pan, doubletap, singletap, swipe, pinch]);
 
-        pan.recognizeWith(pinch);
+        //pan.recognizeWith(pinch);
         doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);
@@ -1737,6 +1745,9 @@ var ViewPort = function (_EventClass7) {
             }.bind(this));
             this.interactable.on('pinch', function (ev) {
                 this.app.trigger('user:pinch', ev);
+            }.bind(this));
+            this.interactable.on('pinchmove', function (ev) {
+                this.app.trigger('user:pinchmove', ev);
             }.bind(this));
             this.interactable.on('pinchstart', function (ev) {
                 this.app.trigger('user:pinchstart', ev);

@@ -18,9 +18,9 @@ class ViewPort extends EventClass {
         this.setTapThresholds();
         this.setLetterBoxStyle();
 
-        this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0],{dragMaxTouches: 2});
+        this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 
-        var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this),dragMaxTouches: 2});
+        var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
         var pinch = new Hammer.Pinch({ threshold: 0, enable: this.canRecognizePinch.bind(this), domEvents: true });
         var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
         var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });
@@ -28,7 +28,7 @@ class ViewPort extends EventClass {
 
         this.interactable.add([pan,doubletap,singletap,swipe,pinch]);
 
-        pan.recognizeWith(pinch);
+        //pan.recognizeWith(pinch);
         doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);
@@ -93,6 +93,9 @@ class ViewPort extends EventClass {
         }.bind(this));
         this.interactable.on('pinch',function(ev) {
             this.app.trigger('user:pinch',ev);
+        }.bind(this));
+        this.interactable.on('pinchmove',function(ev) {
+            this.app.trigger('user:pinchmove',ev);
         }.bind(this));
         this.interactable.on('pinchstart',function(ev) {
             this.app.trigger('user:pinchstart',ev);
