@@ -678,6 +678,7 @@ var Page = function (_EventClass3) {
                 this.book.zoomPanAmount = 0;
             }.bind(this));
             this.app.on("user:pan", function (ev) {
+                console.log('pan');
                 if (this.isCurrentPage && this.scale !== 1) {
                     var maxTop = (this.getHeight() * this.scale - this.getFullHeight()) / 2;
                     var minTop = maxTop * -1;
@@ -1658,9 +1659,9 @@ var ViewPort = function (_EventClass7) {
         _this7.setTapThresholds();
         _this7.setLetterBoxStyle();
 
-        _this7.interactable = new Hammer.Manager(_this7.$element.find('.viewport__interactable')[0]);
+        _this7.interactable = new Hammer.Manager(_this7.$element.find('.viewport__interactable')[0], { dragMaxTouches: 2 });
 
-        var pan = new Hammer.Pan({ threshold: 20, enable: _this7.canRecognizePan.bind(_this7) });
+        var pan = new Hammer.Pan({ threshold: 20, enable: _this7.canRecognizePan.bind(_this7), dragMaxTouches: 2 });
         var pinch = new Hammer.Pinch({ threshold: 0, enable: _this7.canRecognizePinch.bind(_this7), domEvents: true });
         var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
         var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });

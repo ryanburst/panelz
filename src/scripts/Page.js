@@ -93,6 +93,7 @@ class Page extends EventClass {
             this.book.zoomPanAmount = 0;
         }.bind(this));
         this.app.on("user:pan", function(ev) {
+            console.log('pan');
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
                 var minTop = maxTop * -1;

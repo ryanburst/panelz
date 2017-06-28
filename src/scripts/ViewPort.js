@@ -18,9 +18,9 @@ class ViewPort extends EventClass {
         this.setTapThresholds();
         this.setLetterBoxStyle();
 
-        this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
+        this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0],{dragMaxTouches: 2});
 
-        var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this)});
+        var pan = new Hammer.Pan({threshold: 20, enable: this.canRecognizePan.bind(this),dragMaxTouches: 2});
         var pinch = new Hammer.Pinch({ threshold: 0, enable: this.canRecognizePinch.bind(this), domEvents: true });
         var singletap = new Hammer.Tap({threshold: 2, posThreshold: 150});
         var doubletap = new Hammer.Tap({event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });
