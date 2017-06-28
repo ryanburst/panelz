@@ -208,7 +208,7 @@ class Page extends EventClass {
             if( e.deltaX > 0 ) {
                 this.$element.css( {
                     "margin-top": this.elementOriginalTop + e.deltaY,
-                    "margin-left": this.originalLeft + e.deltaX
+                    "margin-left": this.originalLeft - e.deltaX
                 } );
                 //this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'right' : 'left'),e);
             }
