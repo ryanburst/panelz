@@ -71,34 +71,6 @@ class Page extends EventClass {
         $("<img />").attr("src", src).on('load',this.onPageLoaded.bind(this));
     }
 
-    base64Encode(str) {
-        var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        var out = "", i = 0, len = str.length, c1, c2, c3;
-        while (i < len) {
-            c1 = str.charCodeAt(i++) & 0xff;
-            if (i == len) {
-                out += CHARS.charAt(c1 >> 2);
-                out += CHARS.charAt((c1 & 0x3) << 4);
-                out += "==";
-                break;
-            }
-            c2 = str.charCodeAt(i++);
-            if (i == len) {
-                out += CHARS.charAt(c1 >> 2);
-                out += CHARS.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
-                out += CHARS.charAt((c2 & 0xF) << 2);
-                out += "=";
-                break;
-            }
-            c3 = str.charCodeAt(i++);
-            out += CHARS.charAt(c1 >> 2);
-            out += CHARS.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4));
-            out += CHARS.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6));
-            out += CHARS.charAt(c3 & 0x3F);
-        }
-        return out;
-    }
-
     onProgress(e) {
         console.log(e);
     }
@@ -215,20 +187,29 @@ class Page extends EventClass {
             }
         }.bind(this));
 
+        this.app.on('user:pinchstart',function(e) {
+            this.pinchOrigin = e.center;
+        }.bind(this));
+
         this.app.on("user:pinch",function(e) {
             if( ! this.isCurrentPage ) {
                 return;
             }
+            var left = parseInt(this.$element.css('margin-left'));
+            var top = parseInt(this.$element.css('margin-top'));
+
             if(this.app.mode !== PAGE_MODE) {
                 this.app.switchModes();
             }
-            this.magnify(e.scale - (1-this.lastScale));
+            this.magnify(e.scale * this.lastScale);
         }.bind(this));
 
         this.app.on("user:pinchend",function(e) {
             if( ! this.isCurrentPage ) {
                 return;
             }
+
+            this.pinchOrigin = {};
 
             this.book.panFrozen = true;
 

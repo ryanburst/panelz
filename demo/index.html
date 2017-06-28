@@ -22,7 +22,7 @@
             var urlParams;
             (window.onpopstate = function () {
                 var match,
-                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    pl     = /\+/g,
                     search = /([^&=]+)=?([^&]*)/g,
                     decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
                     query  = window.location.search.substring(1);
@@ -39,7 +39,8 @@
                     pages: [
                         {
                             url: "images/tmnt-01-01.png",
-                            panels: []
+                            panels: [],
+                            size: 1985854
                         },
                         {
                             url: "images/tmnt-01-02.png",
@@ -86,7 +87,8 @@
                                     width: 556,
                                     height: 298
                                 }
-                            ]
+                            ],
+                            size: 2661336
                         },
                         {
                             url: "images/tmnt-01-03.png",
@@ -109,7 +111,8 @@
                                     width: 1878,
                                     height: 1436
                                 }
-                            ]
+                            ],
+                            size: 4311599
                         },
                         {
                             url: "images/tmnt-01-04.png",
@@ -150,7 +153,8 @@
                                     width: 410,
                                     height: 665
                                 }
-                            ]
+                            ],
+                            size: 2401468
                         }
                     ]
                 },
