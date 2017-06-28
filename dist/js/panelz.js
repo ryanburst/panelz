@@ -796,10 +796,10 @@ var Page = function (_EventClass3) {
                 this.magnify(e.scale * this.lastScale);
                 e.deltaX = this.pinchOrigin.x - e.center.x;
                 e.deltaY = this.pinchOrigin.y - e.center.y;
-                if (e.deltaX > 0) {
+                if (e.deltaX > 0 || e.deltaY > 0) {
                     this.$element.css({
-                        "margin-top": this.elementOriginalTop + e.deltaY * e.scale * this.lastScale,
-                        "margin-left": this.originalLeft - e.deltaX * e.scale * this.lastScale
+                        "margin-top": this.elementOriginalTop - e.deltaY * e.scale * this.lastScale,
+                        "margin-left": this.originalLeft + e.deltaX * e.scale * this.lastScale
                     });
                     //this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'right' : 'left'),e);
                 }
