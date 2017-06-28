@@ -771,23 +771,24 @@ var Page = function (_EventClass3) {
                     }
                 }
             }.bind(this));
-            this.app.on('user:pinchmove', function (e) {
-                var deltaX = this.pinchOrigin.x - e.center.x;
-                var deltaY = this.pinchOrigin.y - e.center.y;
-                if (deltaX > 0 || deltaY > 0) {
-                    this.app.trigger('user:pan', e);
-                }
-                if (deltaX > 0) {
-                    this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'left' : 'right'), e);
-                }
-            }.bind(this));
+            this.app.on('user:pinchmove', function (e) {}.bind(this));
             this.app.on('user:pinchstart', function (e) {
                 this.pinchOrigin = e.center;
+                e.deltaX = this.pinchOrigin.x - e.center.x;
+                e.deltaY = this.pinchOrigin.y - e.center.y;
+                if (e.deltaX > 0 || e.deltaY > 0) {
+                    this.app.trigger('user:pan', e);
+                }
             }.bind(this));
 
             this.app.on("user:pinch", function (e) {
                 if (!this.isCurrentPage) {
                     return;
+                }
+                e.deltaX = this.pinchOrigin.x - e.center.x;
+                e.deltaY = this.pinchOrigin.y - e.center.y;
+                if (e.deltaX > 0) {
+                    this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'left' : 'right'), e);
                 }
                 var left = parseInt(this.$element.css('margin-left'));
                 var top = parseInt(this.$element.css('margin-top'));
