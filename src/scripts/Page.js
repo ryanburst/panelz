@@ -203,15 +203,7 @@ class Page extends EventClass {
             if( ! this.isCurrentPage ) {
                 return;
             }
-            e.deltaX = this.pinchOrigin.x - e.center.x;
-            e.deltaY = this.pinchOrigin.y - e.center.y;
-            if( e.deltaX > 0 ) {
-                this.$element.css( {
-                    "margin-top": this.elementOriginalTop + e.deltaY,
-                    "margin-left": this.originalLeft - e.deltaX
-                } );
-                //this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'right' : 'left'),e);
-            }
+
             var left = parseInt(this.$element.css('margin-left'));
             var top = parseInt(this.$element.css('margin-top'));
 
@@ -219,6 +211,15 @@ class Page extends EventClass {
                 this.app.switchModes();
             }
             this.magnify(e.scale * this.lastScale);
+            e.deltaX = this.pinchOrigin.x - e.center.x;
+            e.deltaY = this.pinchOrigin.y - e.center.y;
+            if( e.deltaX > 0 ) {
+                this.$element.css( {
+                    "margin-top": this.elementOriginalTop + (e.deltaY * e.scale * this.lastScale),
+                    "margin-left": this.originalLeft - (e.deltaX * e.scale * this.lastScale)
+                } );
+                //this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'right' : 'left'),e);
+            }
         }.bind(this));
 
         this.app.on("user:pinchend",function(e) {
