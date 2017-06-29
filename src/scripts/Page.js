@@ -206,8 +206,8 @@ class Page extends EventClass {
             var deltaX = this.pinchOrigin.x - e.center.x;
             var deltaY = this.pinchOrigin.y - e.center.y;
             this.$element.css( {
-                "margin-top": -1 * (this.elementOriginalTop - (deltaY * e.scale)),
-                "margin-left": -1 * (this.elementOriginalLeft - (deltaX * e.scale))
+                "margin-top": (this.elementOriginalTop - (deltaY * e.scale)),
+                "margin-left": (this.elementOriginalLeft - (deltaX * e.scale))
             } );
         }.bind(this));
 
