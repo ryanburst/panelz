@@ -788,8 +788,8 @@ var Page = function (_EventClass3) {
                 }
                 this.magnify(e.scale * this.lastScale);
 
-                var deltaX = e.center.x - this.pinchOrigin.x;
-                var deltaY = e.center.y - this.pinchOrigin.y;
+                var deltaX = -1 * (this.pinchOrigin.x - e.center.x);
+                var deltaY = -1 * (this.pinchOrigin.y - e.center.y);
                 this.$element.css({
                     "margin-top": this.elementOriginalTop - deltaY * e.scale,
                     "margin-left": this.elementOriginalLeft - deltaX * e.scale
