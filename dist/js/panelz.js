@@ -774,9 +774,8 @@ var Page = function (_EventClass3) {
             this.app.on('user:pinchmove', function (e) {}.bind(this));
             this.app.on('user:pinchstart', function (e) {
                 this.pinchOrigin = e.center;
-                e.deltaX = this.pinchOrigin.x - e.center.x;
-                e.deltaY = this.pinchOrigin.y - e.center.y;
-                this.app.trigger('user:pan', e);
+                this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
+                this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
             }.bind(this));
 
             this.app.on("user:pinch", function (e) {
@@ -791,11 +790,11 @@ var Page = function (_EventClass3) {
                     this.app.switchModes();
                 }
                 this.magnify(e.scale * this.lastScale);
-                e.deltaX = this.pinchOrigin.x - e.center.x;
-                e.deltaY = this.pinchOrigin.y - e.center.y;
+                var deltaX = this.pinchOrigin.x - e.center.x;
+                var deltaY = this.pinchOrigin.y - e.center.y;
                 this.$element.css({
-                    "margin-top": -1 * (this.elementOriginalTop - e.deltaY * e.scale),
-                    "margin-left": -1 * (this.elementOriginalLeft - e.deltaX * e.scale)
+                    "margin-top": -1 * (this.elementOriginalTop - deltaY * e.scale),
+                    "margin-left": -1 * (this.elementOriginalLeft - deltaX * e.scale)
                 });
             }.bind(this));
 
