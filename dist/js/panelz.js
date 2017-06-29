@@ -1726,21 +1726,6 @@ var ViewPort = function (_EventClass7) {
         key: 'onBookLoaded',
         value: function onBookLoaded() {
             console.log('Book loaded');
-            this.interactable.on('panstart', function (ev) {
-                this.app.trigger('user:panstart', ev);
-            }.bind(this));
-            this.interactable.on('pan', function (ev) {
-                this.app.trigger('user:pan', ev);
-            }.bind(this));
-            this.interactable.on('panleft', function (ev) {
-                this.app.trigger('user:panleft', ev);
-            }.bind(this));
-            this.interactable.on('panright', function (ev) {
-                this.app.trigger('user:panright', ev);
-            }.bind(this));
-            this.interactable.on('panend', function (ev) {
-                //this.app.trigger('user:panend',ev);
-            }.bind(this));
             this.interactable.on('pinchstart', function (ev) {
                 this.app.trigger('user:pinchstart', ev);
             }.bind(this));
@@ -1758,6 +1743,21 @@ var ViewPort = function (_EventClass7) {
             }.bind(this));
             this.interactable.on('pinchend', function (ev) {
                 this.app.trigger('user:pinchend', ev);
+            }.bind(this));
+            this.interactable.on('panstart', function (ev) {
+                this.app.trigger('user:panstart', ev);
+            }.bind(this));
+            this.interactable.on('pan', function (ev) {
+                this.app.trigger('user:pan', ev);
+            }.bind(this));
+            this.interactable.on('panleft', function (ev) {
+                this.app.trigger('user:panleft', ev);
+            }.bind(this));
+            this.interactable.on('panright', function (ev) {
+                this.app.trigger('user:panright', ev);
+            }.bind(this));
+            this.interactable.on('panend', function (ev) {
+                //this.app.trigger('user:panend',ev);
             }.bind(this));
             this.interactable.on('doubletap', function (ev) {
                 this.app.trigger('user:doubletap', ev);
