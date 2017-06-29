@@ -788,11 +788,11 @@ var Page = function (_EventClass3) {
                 }
                 this.magnify(e.scale * this.lastScale);
 
-                var deltaX = this.pinchOrigin.x + e.center.x;
-                var deltaY = this.pinchOrigin.y + e.center.y;
+                var deltaX = e.center.x - this.pinchOrigin.x;
+                var deltaY = e.center.y - this.pinchOrigin.y;
                 this.$element.css({
-                    "margin-top": -1 * (this.elementOriginalTop - deltaY * e.scale),
-                    "margin-left": -1 * (this.elementOriginalLeft - deltaX * e.scale)
+                    "margin-top": this.elementOriginalTop - deltaY * e.scale,
+                    "margin-left": this.elementOriginalLeft - deltaX * e.scale
                 });
             }.bind(this));
 
