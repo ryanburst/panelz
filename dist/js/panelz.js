@@ -791,8 +791,8 @@ var Page = function (_EventClass3) {
                 var deltaX = -1 * (this.pinchOrigin.x - e.center.x);
                 var deltaY = -1 * (this.pinchOrigin.y - e.center.y);
                 this.$element.css({
-                    "margin-top": this.elementOriginalTop - deltaY * e.scale,
-                    "margin-left": this.elementOriginalLeft - deltaX * e.scale
+                    "margin-top": this.elementOriginalTop + deltaY * e.scale,
+                    "margin-left": this.elementOriginalLeft + deltaX * e.scale
                 });
             }.bind(this));
 
@@ -1739,7 +1739,7 @@ var ViewPort = function (_EventClass7) {
                 this.app.trigger('user:panright', ev);
             }.bind(this));
             this.interactable.on('panend', function (ev) {
-                this.app.trigger('user:panend', ev);
+                //this.app.trigger('user:panend',ev);
             }.bind(this));
             this.interactable.on('pinchstart', function (ev) {
                 this.app.trigger('user:pinchstart', ev);
