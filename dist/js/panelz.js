@@ -788,8 +788,8 @@ var Page = function (_EventClass3) {
                 }
                 this.magnify(e.scale * this.lastScale);
 
-                var deltaX = this.pinchOrigin.x - e.center.x;
-                var deltaY = this.pinchOrigin.y - e.center.y;
+                var deltaX = this.pinchOrigin.x + e.center.x;
+                var deltaY = this.pinchOrigin.y + e.center.y;
                 this.$element.css({
                     "margin-top": -1 * (this.elementOriginalTop - deltaY * e.scale),
                     "margin-left": -1 * (this.elementOriginalLeft - deltaX * e.scale)
@@ -1741,14 +1741,14 @@ var ViewPort = function (_EventClass7) {
             this.interactable.on('panend', function (ev) {
                 //this.app.trigger('user:panend',ev);
             }.bind(this));
+            this.interactable.on('pinchstart', function (ev) {
+                this.app.trigger('user:pinchstart', ev);
+            }.bind(this));
             this.interactable.on('pinch', function (ev) {
                 this.app.trigger('user:pinch', ev);
             }.bind(this));
             this.interactable.on('pinchmove', function (ev) {
                 this.app.trigger('user:pinchmove', ev);
-            }.bind(this));
-            this.interactable.on('pinchstart', function (ev) {
-                this.app.trigger('user:pinchstart', ev);
             }.bind(this));
             this.interactable.on('pinchin', function (ev) {
                 this.app.trigger('user:pinchin', { e: ev });

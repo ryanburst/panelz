@@ -91,14 +91,14 @@ class ViewPort extends EventClass {
         this.interactable.on('panend',function(ev) {
             //this.app.trigger('user:panend',ev);
         }.bind(this));
+        this.interactable.on('pinchstart',function(ev) {
+            this.app.trigger('user:pinchstart',ev);
+        }.bind(this));
         this.interactable.on('pinch',function(ev) {
             this.app.trigger('user:pinch',ev);
         }.bind(this));
         this.interactable.on('pinchmove',function(ev) {
             this.app.trigger('user:pinchmove',ev);
-        }.bind(this));
-        this.interactable.on('pinchstart',function(ev) {
-            this.app.trigger('user:pinchstart',ev);
         }.bind(this));
         this.interactable.on('pinchin',function(ev) {
             this.app.trigger('user:pinchin',{e:ev});

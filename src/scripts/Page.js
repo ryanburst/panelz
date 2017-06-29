@@ -203,8 +203,8 @@ class Page extends EventClass {
             }
             this.magnify(e.scale * this.lastScale);
 
-            var deltaX = this.pinchOrigin.x - e.center.x;
-            var deltaY = this.pinchOrigin.y - e.center.y;
+            var deltaX = this.pinchOrigin.x + e.center.x;
+            var deltaY = this.pinchOrigin.y + e.center.y;
             this.$element.css( {
                 "margin-top": -1 * (this.elementOriginalTop - (deltaY * e.scale)),
                 "margin-left": -1 * (this.elementOriginalLeft - (deltaX * e.scale))
