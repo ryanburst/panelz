@@ -793,13 +793,10 @@ var Page = function (_EventClass3) {
                 this.magnify(e.scale * this.lastScale);
                 e.deltaX = this.pinchOrigin.x - e.center.x;
                 e.deltaY = this.pinchOrigin.y - e.center.y;
-                if (e.deltaX > 0 || e.deltaY > 0) {
-                    this.$element.css({
-                        "margin-top": this.elementOriginalTop + e.deltaY * e.scale * this.lastScale,
-                        "margin-left": this.elementOriginalLeft + e.deltaX * e.scale * this.lastScale
-                    });
-                    //this.app.trigger('user:pan' + (this.pinchOrigin.x > e.center.x ? 'right' : 'left'),e);
-                }
+                this.$element.css({
+                    "margin-top": -1 * (this.elementOriginalTop - e.deltaY * e.scale * this.lastScale),
+                    "margin-left": -1 * (this.elementOriginalLeft - e.deltaX * e.scale * this.lastScale)
+                });
             }.bind(this));
 
             this.app.on("user:pinchend", function (e) {
@@ -807,7 +804,7 @@ var Page = function (_EventClass3) {
                     return;
                 }
 
-                this.pinchOrigin = {};
+                //this.pinchOrigin = {};
 
                 this.book.panFrozen = true;
 
