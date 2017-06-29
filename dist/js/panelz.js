@@ -694,7 +694,7 @@ var Page = function (_EventClass3) {
 
             // panleft = rightedge = forward
             this.app.on("user:panleft", function (ev) {
-                alert('panleft');
+                //alert('panleft');
                 if (this.isCurrentPage && this.scale !== 1) {
                     var elLeft = parseInt(this.$element.css("left"), 10);
                     var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
@@ -736,7 +736,7 @@ var Page = function (_EventClass3) {
 
             // panright = leftedge = back
             this.app.on("user:panright", function (ev) {
-                alert('panright');
+                //alert('panright');
                 if (this.isCurrentPage && this.scale !== 1) {
                     var elLeft = parseInt(this.$element.css("left"), 10);
                     var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;

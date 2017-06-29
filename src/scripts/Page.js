@@ -109,7 +109,7 @@ class Page extends EventClass {
 
         // panleft = rightedge = forward
         this.app.on("user:panleft", function(ev) {
-            alert('panleft');
+            //alert('panleft');
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var elLeft = parseInt( this.$element.css( "left" ), 10 )
                 var maxLeft = (((this.getWidth() * this.scale) - this.getFullWidth()) / 2);
@@ -151,7 +151,7 @@ class Page extends EventClass {
 
         // panright = leftedge = back
         this.app.on("user:panright", function(ev) {
-            alert('panright');
+            //alert('panright');
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var elLeft = parseInt( this.$element.css( "left" ), 10 )
                 var maxLeft = (((this.getWidth() * this.scale) - this.getFullWidth()) / 2);
