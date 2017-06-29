@@ -186,9 +186,7 @@ class Page extends EventClass {
                 }
             }
         }.bind(this));
-        this.app.on('user:pinchmove',function(e) {
 
-        }.bind(this));
         this.app.on('user:pinchstart',function(e) {
             this.pinchOrigin = e.center;
             this.elementOriginalLeft = parseInt( this.$element.css( "margin-left" ), 10 );
@@ -200,13 +198,11 @@ class Page extends EventClass {
                 return;
             }
 
-            var left = parseInt(this.$element.css('margin-left'));
-            var top = parseInt(this.$element.css('margin-top'));
-
             if(this.app.mode !== PAGE_MODE) {
                 this.app.switchModes();
             }
             this.magnify(e.scale * this.lastScale);
+
             var deltaX = this.pinchOrigin.x - e.center.x;
             var deltaY = this.pinchOrigin.y - e.center.y;
             this.$element.css( {

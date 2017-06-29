@@ -77,19 +77,19 @@ class ViewPort extends EventClass {
     onBookLoaded() {
         console.log('Book loaded');
         this.interactable.on('panstart',function(ev) {
-            this.app.trigger('user:panstart',ev);
+            //this.app.trigger('user:panstart',ev);
         }.bind(this));
         this.interactable.on('pan',function(ev) {
-            this.app.trigger('user:pan',ev);
+            //this.app.trigger('user:pan',ev);
         }.bind(this));
         this.interactable.on('panleft',function(ev) {
-            this.app.trigger('user:panleft',ev);
+            //this.app.trigger('user:panleft',ev);
         }.bind(this));
         this.interactable.on('panright',function(ev) {
-            this.app.trigger('user:panright',ev);
+            //this.app.trigger('user:panright',ev);
         }.bind(this));
         this.interactable.on('panend',function(ev) {
-            this.app.trigger('user:panend',ev);
+            //this.app.trigger('user:panend',ev);
         }.bind(this));
         this.interactable.on('pinch',function(ev) {
             this.app.trigger('user:pinch',ev);

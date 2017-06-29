@@ -771,7 +771,7 @@ var Page = function (_EventClass3) {
                     }
                 }
             }.bind(this));
-            this.app.on('user:pinchmove', function (e) {}.bind(this));
+
             this.app.on('user:pinchstart', function (e) {
                 this.pinchOrigin = e.center;
                 this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
@@ -783,13 +783,11 @@ var Page = function (_EventClass3) {
                     return;
                 }
 
-                var left = parseInt(this.$element.css('margin-left'));
-                var top = parseInt(this.$element.css('margin-top'));
-
                 if (this.app.mode !== PAGE_MODE) {
                     this.app.switchModes();
                 }
                 this.magnify(e.scale * this.lastScale);
+
                 var deltaX = this.pinchOrigin.x - e.center.x;
                 var deltaY = this.pinchOrigin.y - e.center.y;
                 this.$element.css({
@@ -1729,19 +1727,19 @@ var ViewPort = function (_EventClass7) {
         value: function onBookLoaded() {
             console.log('Book loaded');
             this.interactable.on('panstart', function (ev) {
-                this.app.trigger('user:panstart', ev);
+                //this.app.trigger('user:panstart',ev);
             }.bind(this));
             this.interactable.on('pan', function (ev) {
-                this.app.trigger('user:pan', ev);
+                //this.app.trigger('user:pan',ev);
             }.bind(this));
             this.interactable.on('panleft', function (ev) {
-                this.app.trigger('user:panleft', ev);
+                //this.app.trigger('user:panleft',ev);
             }.bind(this));
             this.interactable.on('panright', function (ev) {
-                this.app.trigger('user:panright', ev);
+                //this.app.trigger('user:panright',ev);
             }.bind(this));
             this.interactable.on('panend', function (ev) {
-                this.app.trigger('user:panend', ev);
+                //this.app.trigger('user:panend',ev);
             }.bind(this));
             this.interactable.on('pinch', function (ev) {
                 this.app.trigger('user:pinch', ev);
