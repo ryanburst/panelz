@@ -808,6 +808,9 @@ var Page = function (_EventClass3) {
 
                 this.book.panFrozen = true;
 
+                this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
+                this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
+
                 if (this.scale < 1) {
                     return this.resetScale();
                 }
@@ -949,6 +952,8 @@ var Page = function (_EventClass3) {
                 'margin-left': 0,
                 'margin-top': 0
             });
+            this.elementOriginalLeft = 0;
+            this.elementOriginalTop = 0;
         }
     }, {
         key: 'snapTo',

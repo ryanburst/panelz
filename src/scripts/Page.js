@@ -223,6 +223,9 @@ class Page extends EventClass {
 
             this.book.panFrozen = true;
 
+            this.elementOriginalLeft = parseInt( this.$element.css( "margin-left" ), 10 );
+            this.elementOriginalTop = parseInt( this.$element.css( "margin-top" ), 10 );
+
             if( this.scale < 1 ) {
                 return this.resetScale();
             }
@@ -357,6 +360,8 @@ class Page extends EventClass {
             'margin-left': 0,
             'margin-top': 0
         });
+        this.elementOriginalLeft = 0;
+        this.elementOriginalTop = 0;
     }
 
     snapTo(amount) {
