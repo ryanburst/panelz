@@ -85,6 +85,7 @@ class Page extends EventClass {
         this.centerInViewPort();
 
         this.app.on("user:panstart", function(ev) {
+            alert('panstart');
             this.elementOriginalLeft = parseInt( this.$element.css( "margin-left" ), 10 );
             this.elementOriginalTop = parseInt( this.$element.css( "margin-top" ), 10 );
             if( this.scale == 1 ) {
@@ -108,6 +109,7 @@ class Page extends EventClass {
 
         // panleft = rightedge = forward
         this.app.on("user:panleft", function(ev) {
+            alert('panleft');
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var elLeft = parseInt( this.$element.css( "left" ), 10 )
                 var maxLeft = (((this.getWidth() * this.scale) - this.getFullWidth()) / 2);
@@ -149,6 +151,7 @@ class Page extends EventClass {
 
         // panright = leftedge = back
         this.app.on("user:panright", function(ev) {
+            alert('panright');
             if( this.isCurrentPage && this.scale !== 1 ) {
                 var elLeft = parseInt( this.$element.css( "left" ), 10 )
                 var maxLeft = (((this.getWidth() * this.scale) - this.getFullWidth()) / 2);
