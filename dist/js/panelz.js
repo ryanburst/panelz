@@ -686,10 +686,8 @@ var Page = function (_EventClass3) {
                     this.$element.css({
                         "margin-top": top
                     });
-                } else if (ev.offsetDirection === 8) {
+                } else if (ev.offsetDirection !== 2 && ev.offsetDirection !== 4) {
                     return true;
-                } else {
-                    alert(ev.offsetDirection);
                 }
             }.bind(this));
 
