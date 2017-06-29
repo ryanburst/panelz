@@ -1679,8 +1679,7 @@ var ViewPort = function (_EventClass7) {
         doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);
-        //pan.requireFailure(pinch);
-
+        pan.requireFailure(pinch);
 
         $('body').on('touchend', function () {
             this.$menu.removeClass('viewport__menu--was-shown');

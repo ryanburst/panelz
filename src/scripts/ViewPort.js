@@ -32,7 +32,7 @@ class ViewPort extends EventClass {
         doubletap.recognizeWith(singletap);
 
         singletap.requireFailure(doubletap);
-        //pan.requireFailure(pinch);
+        pan.requireFailure(pinch);
 
 
         $('body').on('touchend',function() {
