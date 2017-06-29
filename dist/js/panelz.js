@@ -811,8 +811,8 @@ var Page = function (_EventClass3) {
                 var top = parseInt(this.$element.css("margin-top"), 10);
                 var restrictedPosition = this.restrictPosition(left, top);
                 this.$element.css({
-                    left: restrictedPosition.left,
-                    top: restrictedPosition.top
+                    'margin-left': restrictedPosition.left,
+                    'margin-top': restrictedPosition.top
                 });
 
                 if (this.scale < 1) {
@@ -825,8 +825,8 @@ var Page = function (_EventClass3) {
                     var top = parseInt(this.$element.css("margin-top"), 10);
                     var restrictedPosition = this.restrictPosition(left, top);
                     this.$element.css({
-                        left: restrictedPosition.left,
-                        top: restrictedPosition.top
+                        'margin-left': restrictedPosition.left,
+                        'margin-top': restrictedPosition.top
                     });
                     this.lastScale = this.scale;
                     return;
