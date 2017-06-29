@@ -322,9 +322,9 @@ class Page extends EventClass {
 
         // Calculate the restrained top position
         var maxTop = (this.getFullHeight() - (this.getHeight() * this.scale)) / 2;
-        var maxTop = maxTop * -1;
+        var minTop = maxTop * -1;
         if( this.getHeight() * this.scale < this.getFullHeight() ) {
-            maxTop = maxTop = 0;
+            minTop = maxTop = 0;
         }
         top = Math.min(minTop,Math.max(maxTop,top));
         return {left: left, top:top};
