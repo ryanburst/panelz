@@ -670,7 +670,6 @@ var Page = function (_EventClass3) {
             this.centerInViewPort();
 
             this.app.on("user:panstart", function (ev) {
-                alert('panstart');
                 this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
                 this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
                 if (this.scale == 1) {
@@ -1734,6 +1733,7 @@ var ViewPort = function (_EventClass7) {
         value: function onBookLoaded() {
             console.log('Book loaded');
             this.interactable.on('pinchstart', function (ev) {
+                this.pinching = true;
                 this.app.trigger('user:pinchstart', ev);
             }.bind(this));
             this.interactable.on('pinch', function (ev) {
@@ -1749,6 +1749,9 @@ var ViewPort = function (_EventClass7) {
                 this.app.trigger('user:pinchout', { e: ev });
             }.bind(this));
             this.interactable.on('pinchend', function (ev) {
+                setTimeout(function () {
+                    this.pinching = false;
+                }.bind(this), 100);
                 this.app.trigger('user:pinchend', ev);
             }.bind(this));
             this.interactable.on('panstart', function (ev) {
@@ -1820,7 +1823,7 @@ var ViewPort = function (_EventClass7) {
     }, {
         key: 'canRecognizePan',
         value: function canRecognizePan(rec, input) {
-            return this.app.mode === PAGE_MODE;
+            return this.app.mode === PAGE_MODE && !this.pinching;
         }
     }, {
         key: 'canRecognizeSwipe',

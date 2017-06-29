@@ -77,6 +77,7 @@ class ViewPort extends EventClass {
     onBookLoaded() {
         console.log('Book loaded');
         this.interactable.on('pinchstart',function(ev) {
+            this.pinching = true;
             this.app.trigger('user:pinchstart',ev);
         }.bind(this));
         this.interactable.on('pinch',function(ev) {
@@ -92,6 +93,9 @@ class ViewPort extends EventClass {
             this.app.trigger('user:pinchout',{e:ev});
         }.bind(this));
         this.interactable.on('pinchend',function(ev) {
+            setTimeout(function() {
+                this.pinching = false;
+            }.bind(this),100);
             this.app.trigger('user:pinchend',ev);
         }.bind(this));
         this.interactable.on('panstart',function(ev) {
@@ -160,7 +164,7 @@ class ViewPort extends EventClass {
     }
 
     canRecognizePan(rec, input) {
-        return this.app.mode === PAGE_MODE;
+        return this.app.mode === PAGE_MODE && ! this.pinching;
     }
 
     canRecognizeSwipe(rec, input) {

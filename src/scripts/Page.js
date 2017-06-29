@@ -85,7 +85,6 @@ class Page extends EventClass {
         this.centerInViewPort();
 
         this.app.on("user:panstart", function(ev) {
-            alert('panstart');
             this.elementOriginalLeft = parseInt( this.$element.css( "margin-left" ), 10 );
             this.elementOriginalTop = parseInt( this.$element.css( "margin-top" ), 10 );
             if( this.scale == 1 ) {
