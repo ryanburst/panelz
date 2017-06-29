@@ -803,7 +803,7 @@ var Page = function (_EventClass3) {
 
                 //this.pinchOrigin = {};
 
-                this.book.panFrozen = true;
+                //this.book.panFrozen = true;
 
                 if (this.scale < 1) {
                     return this.resetScale();
@@ -1756,7 +1756,7 @@ var ViewPort = function (_EventClass7) {
                 this.app.trigger('user:panright', ev);
             }.bind(this));
             this.interactable.on('panend', function (ev) {
-                //this.app.trigger('user:panend',ev);
+                this.app.trigger('user:panend', ev);
             }.bind(this));
             this.interactable.on('doubletap', function (ev) {
                 this.app.trigger('user:doubletap', ev);

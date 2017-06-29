@@ -218,7 +218,7 @@ class Page extends EventClass {
 
             //this.pinchOrigin = {};
 
-            this.book.panFrozen = true;
+            //this.book.panFrozen = true;
 
             if( this.scale < 1 ) {
                 return this.resetScale();
