@@ -222,23 +222,13 @@ class Page extends EventClass {
 
             this.book.panFrozen = true;
 
-            var elLeft = parseInt( this.$element.css( "left" ), 10 )
-            var elTop = parseInt( this.$element.css( "top" ), 10 )
             var left = parseInt( this.$element.css( "margin-left" ), 10 );
             var top = parseInt( this.$element.css( "margin-top" ), 10 );
-
-            if( left - elLeft > 0 ) {
-                left = 0;
-            }
-            //if( left - elLeft + this.getWidth() <  )
-            if( top - elTop > 0 ) {
-                top = 0;
-            }
-
-            // this.$element.css({
-            //     left: left,
-            //     top: top
-            // });
+            var restrictedPosition = this.restrictPosition(left,top);
+            this.$element.css({
+                left: restrictedPosition.left,
+                top: restrictedPosition.top
+            });
 
             if( this.scale < 1 ) {
                 return this.resetScale();
@@ -246,6 +236,13 @@ class Page extends EventClass {
 
             if( this.scale > 3 ) {
                 this.magnify(3,true);
+                var left = parseInt( this.$element.css( "margin-left" ), 10 );
+                var top = parseInt( this.$element.css( "margin-top" ), 10 );
+                var restrictedPosition = this.restrictPosition(left,top);
+                this.$element.css({
+                    left: restrictedPosition.left,
+                    top: restrictedPosition.top
+                });
                 this.lastScale = this.scale;
                 return;
             }
@@ -312,6 +309,25 @@ class Page extends EventClass {
             duration: (animate ? this.PANEL_ANIMATION_SPEED : 0),
             easing: 'easeOutSine'
         });
+    }
+
+    restrictPosition(left,top) {
+        // Calculate the restrained left position
+        var maxLeft = (this.getFullWidth() - (this.getWidth() * this.scale)) / 2;
+        var minLeft = maxLeft * -1;
+        if( this.getWidth() * this.scale < this.getFullWidth() ) {
+            minLeft = maxLeft = 0;
+        }
+        left = Math.min(minLeft,Math.max(maxLeft,left));
+
+        // Calculate the restrained top position
+        var maxTop = (this.getFullHeight() - (this.getHeight() * this.scale)) / 2;
+        var maxTop = maxTop * -1;
+        if( this.getHeight() * this.scale < this.getFullHeight() ) {
+            maxTop = maxTop = 0;
+        }
+        top = Math.min(maxTop,Math.max(maxTop,top));
+        return {left: left, top:top};
     }
 
     shouldBeSetAsCurrent(env) {
