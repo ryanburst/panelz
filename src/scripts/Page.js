@@ -235,10 +235,10 @@ class Page extends EventClass {
                 top = 0;
             }
 
-            this.$element.css({
-                left: left,
-                top: top
-            });
+            // this.$element.css({
+            //     left: left,
+            //     top: top
+            // });
 
             if( this.scale < 1 ) {
                 return this.resetScale();
