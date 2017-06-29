@@ -688,6 +688,8 @@ var Page = function (_EventClass3) {
                     });
                 } else if (ev.offsetDirection === 8) {
                     return true;
+                } else {
+                    alert(ev.offsetDirection);
                 }
             }.bind(this));
 
@@ -801,9 +803,9 @@ var Page = function (_EventClass3) {
                     return;
                 }
 
-                //this.pinchOrigin = {};
+                this.pinchOrigin = {};
 
-                //this.book.panFrozen = true;
+                this.book.panFrozen = true;
 
                 if (this.scale < 1) {
                     return this.resetScale();

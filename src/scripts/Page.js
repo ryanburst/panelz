@@ -103,6 +103,8 @@ class Page extends EventClass {
                 } );
             } else if(ev.offsetDirection === 8) {
                 return true;
+            } else {
+                alert(ev.offsetDirection);
             }
         }.bind(this));
 
@@ -216,9 +218,9 @@ class Page extends EventClass {
                 return;
             }
 
-            //this.pinchOrigin = {};
+            this.pinchOrigin = {};
 
-            //this.book.panFrozen = true;
+            this.book.panFrozen = true;
 
             if( this.scale < 1 ) {
                 return this.resetScale();
