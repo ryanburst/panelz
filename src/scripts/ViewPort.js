@@ -93,6 +93,8 @@ class ViewPort extends EventClass {
             this.app.trigger('user:pinchout',{e:ev});
         }.bind(this));
         this.interactable.on('pinchend',function(ev) {
+            // Hammer is throwing pan events after a pinch end,
+            // so add some delay before turning pinching off
             setTimeout(function() {
                 this.pinching = false;
             }.bind(this),100);
