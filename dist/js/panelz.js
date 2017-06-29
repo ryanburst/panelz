@@ -915,7 +915,7 @@ var Page = function (_EventClass3) {
             if (this.getHeight() * this.scale < this.getFullHeight()) {
                 maxTop = maxTop = 0;
             }
-            top = Math.min(maxTop, Math.max(maxTop, top));
+            top = Math.min(minTop, Math.max(maxTop, top));
             return { left: left, top: top };
         }
     }, {
