@@ -97,7 +97,7 @@ class Page extends EventClass {
                 var deltaY = this.elementOriginalTop + ev.deltaY;
                 var restrictedPosition = this.restrictPosition(0,deltaY);
                 this.$element.css( {
-                    "margin-top": restrictPosition.top
+                    "margin-top": restrictedPosition.top
                 } );
             } else if(ev.offsetDirection !== 2 && ev.offsetDirection !== 4 ) {
                 return true;
