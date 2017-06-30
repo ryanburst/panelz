@@ -94,12 +94,10 @@ class Page extends EventClass {
         }.bind(this));
         this.app.on("user:pan", function(ev) {
             if( this.isCurrentPage && this.scale !== 1 ) {
-                var maxTop = ((this.getHeight() * this.scale) - this.getFullHeight()) / 2;
-                var minTop = maxTop * -1;
                 var deltaY = this.elementOriginalTop + ev.deltaY;
-                var top = Math.min(maxTop,Math.max(deltaY,minTop));
+                var restrictedPosition = this.restrictPosition(0,deltaY);
                 this.$element.css( {
-                    "margin-top": top
+                    "margin-top": restrictPosition.top
                 } );
             } else if(ev.offsetDirection !== 2 && ev.offsetDirection !== 4 ) {
                 return true;
@@ -208,8 +206,8 @@ class Page extends EventClass {
             var deltaX = -1 * (this.pinchOrigin.x - e.center.x);
             var deltaY = -1 * (this.pinchOrigin.y - e.center.y);
             this.$element.css( {
-                "margin-top": this.elementOriginalTop + (deltaY * e.scale * this.lastScale),
-                "margin-left": this.elementOriginalLeft + (deltaX * e.scale * this.lastScale)
+                "margin-left": this.elementOriginalLeft + (deltaX * e.scale),
+                "margin-top": this.elementOriginalTop + (deltaY * e.scale)
             } );
         }.bind(this));
 
@@ -327,7 +325,14 @@ class Page extends EventClass {
             minTop = maxTop = 0;
         }
         top = Math.min(minTop,Math.max(maxTop,top));
-        return {left: left, top:top};
+        return {
+            left: left,
+            top: top,
+            minLeft: minLeft,
+            maxLeft: maxLeft,
+            minTop: minTop,
+            maxTop: maxTop
+        };
     }
 
     shouldBeSetAsCurrent(env) {
