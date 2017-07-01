@@ -129,7 +129,7 @@ p {
 }
 
 .tutorial__image--loaded {
-  background-color: none;
+  background-color: transparent;
 }
 
 .tutorial__image--loaded:after {

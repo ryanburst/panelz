@@ -58,7 +58,7 @@
             height: 160px;
         }
         &--loaded {
-            background-color: none;
+            background-color: transparent;
             &:after {
                 display: none;
             }
