@@ -39,11 +39,11 @@
         position: relative;
         margin-bottom: 10px;
         text-align: center;
+        background-color: #dbdbdb;
         img,
         video {
             position: relative;
             height: 200px;
-            background-color: #dbdbdb;
         }
         &:after {
             content: "Loading...";
@@ -58,6 +58,7 @@
             height: 160px;
         }
         &--loaded {
+            background-color: none;
             &:after {
                 display: none;
             }

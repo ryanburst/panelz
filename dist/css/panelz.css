@@ -104,13 +104,13 @@ p {
   position: relative;
   margin-bottom: 10px;
   text-align: center;
+  background-color: #dbdbdb;
 }
 
 .tutorial__image img,
 .tutorial__image video {
   position: relative;
   height: 200px;
-  background-color: #dbdbdb;
 }
 
 .tutorial__image:after {
@@ -126,6 +126,10 @@ p {
 .tutorial__image--small img,
 .tutorial__image--small video {
   height: 160px;
+}
+
+.tutorial__image--loaded {
+  background-color: none;
 }
 
 .tutorial__image--loaded:after {
