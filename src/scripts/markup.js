@@ -285,8 +285,19 @@ const PANELZ_MARKUP = `
             <div class="letterbox__vertical letterbox__vertical--right"></div>
         </div>
         <div class="viewport__message viewport__message--hide message">
-            <div class="message__text">Panel Zoom mode activated.</div>
+            <div class="message__text"></div>
         </div>
+        <ul class="viewport__menu viewport__menu--top menu menu--top">
+            <li class="menu__list-item">
+                <div class="menu__text" data-book-title>Unknown Title</div>
+            </li>
+            <li class="menu__list-item">
+                <div class="menu__text">
+                    <span data-page-num>0</span>/<span data-total-pages>0</span>
+                </div>
+            </li>
+        </ul>
+        </ul>
         <ul class="viewport__menu menu">
             <li class="menu__list-item">
                 <div href="#" class="menu__option" data-open-pane="pages">
@@ -398,6 +409,16 @@ const PANELZ_MARKUP = `
                                 <div class="checkbox">
                                   <input type="checkbox" value="true" id="leftHanded" name="leftHandMode" />
                                   <label for="leftHanded" class="checkbox__label"></label>
+                                </div>
+                            </li>
+                            <li class="pane__item">
+                                <div class="pane__text">
+                                    <p class="pane__option">Page Change Message</p>
+                                    <p class="pane__helper-text">Shows a message when changing pages</p>
+                                </div>
+                                <div class="checkbox">
+                                  <input type="checkbox" value="true" id="showPageChangeMessage" name="showPageChangeMessage" />
+                                  <label for="showPageChangeMessage" class="checkbox__label"></label>
                                 </div>
                             </li>
                             <li class="pane__item" data-open-pane="tutorial">

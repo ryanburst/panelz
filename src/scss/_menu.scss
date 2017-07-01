@@ -11,6 +11,7 @@
         padding: 0;
         height: 100%;
         border-right: 1px solid #fafafa;
+        color: #fafafa;
         &:last-child {
             border-right: none;
         }
@@ -37,5 +38,26 @@
     }
     &__icon {
         font-size: 28px;
+    }
+    &__text {
+        height: 100%;
+        width: 100%;
+        line-height: 2;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    &--top {
+        .menu__list-item {
+            padding: 0 15px;
+            flex-basis: initial;
+            align-items: center;
+            &:first-child {
+                width: 75%;
+            }
+            &:last-child {
+                text-align: center;
+            }
+        }
     }
 }

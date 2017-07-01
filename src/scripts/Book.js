@@ -6,13 +6,13 @@ class Book extends EventClass {
         this.app = config.app;
         this.pages = [];
         this.loaded = 0;
+        this.title = config.comic.title || 'Unknown title';
         this.isLoaded = false;
         this.panFrozen = false;
         this.zoomPanAmount = 0;
-        this.size = config.size;
+        this.size = config.comic.size || 0;
         this.loadedSize = 0;
         this.setEventListeners();
-        console.log(this.config);
         config.comic.pages.forEach(function(pageConfig,index) {
             pageConfig.app = this.app;
             pageConfig.panels = pageConfig.panels || [];
@@ -127,12 +127,20 @@ class Book extends EventClass {
         if( this.panFrozen ) {
             return;
         }
+        var currentPage = this.currentPage;
         this.pages.forEach(function(page) {
             if(page.shouldBeSetAsCurrent(ev)) {
                 this.setCurrentPage(page);
             }
         }.bind(this));
         this.snapPagesToCurrent();
+        if( this.currentPage === currentPage && currentPage.isLast ) {
+            this.onEndReached();
+        }
+    }
+
+    onEndReached() {
+        this.app.message('End of comic');
     }
 
     buildPageIndex() {
@@ -222,6 +230,9 @@ class Book extends EventClass {
                 console.log('Zoom out');
                 this.currentPage.zoomOut();
                 this.currentPage.previousPanel = this.currentPage.getLastPanel();
+                if( this.currentPage.isLast && ! this.currentPage.hasNextPanel() ) {
+                    this.onEndReached();
+                }
                 if( this.app.settings.get('showPageOnExit') ) {
                     return true;
                 }
@@ -229,6 +240,7 @@ class Book extends EventClass {
         }
 
         if( this.currentPage.isLast ) {
+            this.onEndReached();
             return false;
         }
 
@@ -237,6 +249,9 @@ class Book extends EventClass {
             this.snapPagesToCurrent();
         }
         this.currentPage.onPageEnterForward();
+        if( this.app.settings.get('showPageChangeMessage') ) {
+            this.app.message('Page ' + this.currentPage.num);
+        }
         return true;
     }
 
@@ -265,6 +280,9 @@ class Book extends EventClass {
         this.setCurrentPage(this.getPreviousPage());
         if( this.app.mode === PAGE_MODE ) {
             this.snapPagesToCurrent();
+        }
+        if( this.app.settings.get('showPageChangeMessage') ) {
+            this.app.message('Page ' + this.currentPage.num);
         }
         this.currentPage.onPageEnterBackward();
     }

@@ -5,6 +5,7 @@ class Page extends EventClass {
         this.app = config.app;
         this.book = Book;
         this.index = index;
+        this.num = index + 1;
         this.isFirst = index===0;
         this.isLast = index===this.book.config.comic.pages.length-1;
         this.size = config.size || 0;

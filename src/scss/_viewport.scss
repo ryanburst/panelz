@@ -21,11 +21,21 @@
         bottom: -65px;
         height: 65px;
         width: 100%;
+        margin: 0;
+        padding: 0;
         z-index: 8;
         background-color: rgba(0,0,0,0.75);
-        transition: bottom 350ms ease;
+        transition: bottom 350ms ease, top 350ms ease;
+        &--top {
+            top: -50px;
+            height: 50px;
+            bottom: auto;
+        }
         &--active {
             bottom: 0;
+            &.viewport__menu--top {
+                top: 0;
+            }
         }
     }
     &__message {

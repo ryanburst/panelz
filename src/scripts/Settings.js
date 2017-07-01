@@ -10,7 +10,8 @@ class Settings extends EventClass {
             detectPanelOnDoubleTap: true,
             showPageOnEnter: true,
             showPageOnExit: true,
-            showTutorial: true
+            showTutorial: true,
+            showPageChangeMessage: false
         };
 
         this.storageKey = 'panelz_2.0';

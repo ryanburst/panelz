@@ -74,7 +74,7 @@ class ViewPort extends EventClass {
         });
     }
 
-    onBookLoaded() {
+    onBookLoaded(book) {
         console.log('Book loaded');
         this.interactable.on('pinchstart',function(ev) {
             this.pinching = true;
@@ -154,6 +154,13 @@ class ViewPort extends EventClass {
         }.bind(this));
 
         $(window).on('resize orientationchange',this.onResize.bind(this));
+
+        $('[data-book-title]').text(book.title);
+        $('[data-total-pages]').text(book.pages.length);
+        $('[data-page-num]').text(book.currentPage.index + 1);
+        book.on('pageSet',function(page) {
+            $('[data-page-num]').text(page.index + 1);
+        }.bind(this));
     }
 
     onTutorialDone() {

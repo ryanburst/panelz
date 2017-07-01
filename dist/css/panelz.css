@@ -269,14 +269,26 @@ p {
   bottom: -65px;
   height: 65px;
   width: 100%;
+  margin: 0;
+  padding: 0;
   z-index: 8;
   background-color: rgba(0, 0, 0, 0.75);
-  -webkit-transition: bottom 350ms ease;
-  transition: bottom 350ms ease;
+  -webkit-transition: bottom 350ms ease, top 350ms ease;
+  transition: bottom 350ms ease, top 350ms ease;
+}
+
+.viewport__menu--top {
+  top: -50px;
+  height: 50px;
+  bottom: auto;
 }
 
 .viewport__menu--active {
   bottom: 0;
+}
+
+.viewport__menu--active.viewport__menu--top {
+  top: 0;
 }
 
 .viewport__message {
@@ -409,6 +421,7 @@ p {
   padding: 0;
   height: 100%;
   border-right: 1px solid #fafafa;
+  color: #fafafa;
 }
 
 .menu__list-item:last-child {
@@ -451,6 +464,32 @@ p {
 
 .menu__icon {
   font-size: 28px;
+}
+
+.menu__text {
+  height: 100%;
+  width: 100%;
+  line-height: 2;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.menu--top .menu__list-item {
+  padding: 0 15px;
+  -ms-flex-preferred-size: initial;
+      flex-basis: initial;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.menu--top .menu__list-item:first-child {
+  width: 75%;
+}
+
+.menu--top .menu__list-item:last-child {
+  text-align: center;
 }
 
 .pane {
