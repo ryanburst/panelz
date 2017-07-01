@@ -42,7 +42,7 @@
         img,
         video {
             position: relative;
-            max-width: 100%;
+            height: 200px;
             background-color: #dbdbdb;
         }
         &:after {
@@ -55,7 +55,7 @@
         }
         &--small img,
         &--small video {
-            max-width: 80%;
+            height: 160px;
         }
         &--loaded {
             &:after {

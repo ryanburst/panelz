@@ -109,7 +109,7 @@ p {
 .tutorial__image img,
 .tutorial__image video {
   position: relative;
-  max-width: 100%;
+  height: 200px;
   background-color: #dbdbdb;
 }
 
@@ -125,7 +125,7 @@ p {
 
 .tutorial__image--small img,
 .tutorial__image--small video {
-  max-width: 80%;
+  height: 160px;
 }
 
 .tutorial__image--loaded:after {
