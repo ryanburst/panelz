@@ -1,4 +1,28 @@
+/**
+ * Class for showing and handling the beginners tutorial that
+ * appears in front of loading the comic (unless the reader has
+ * turned this option off or completed the tutorial previously)
+ *
+ * The tutorial shows mp4 videos on repeat as the reader steps
+ * through. At the end of the tutorial, the user is asked if
+ * they want to customize settings. This is also handled by this
+ * class and portion of the interface, as it's another way
+ * to introduce the reader to the various options available to them.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
 class Tutorial extends EventClass {
+    /**
+     * Initializes the tutorial class with an interactable interface
+     * than can listen to touch events via the HammerJS library.
+     *
+     * @constructs Tutorial
+     * @param  {Class} app      The Panelz class app instance
+     * @param  {Class} settings Settings class instance
+     */
     constructor(app,settings) {
         super();
 
@@ -15,6 +39,10 @@ class Tutorial extends EventClass {
         }
     }
 
+    /**
+     * Adds the various event listeners needed. Listens for user
+     * interactions and settings changes.
+     */
     addEventListeners() {
         $('body').on('click','[data-tutorial-next]',this.next.bind(this));
         $('body').on('click','[data-tutorial-back]',this.back.bind(this));
@@ -28,6 +56,13 @@ class Tutorial extends EventClass {
         this.interactable.on('swiperight',this.back.bind(this));
     }
 
+    /**
+     * User has interacted with the tutorial and wants to proceed
+     * to the next item in the tutorial. This method also employs
+     * hot loading the video of the next panel.
+     *
+     * @param  {Object} e Event object
+     */
     next(e) {
         var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
         if( $panel.next().length ) {
@@ -46,6 +81,12 @@ class Tutorial extends EventClass {
 
     }
 
+    /**
+     * User has interacted with a tutorial and wants to go back
+     * to the previous item in the tutorial.
+     *
+     * @param  {Object} e Event object
+     */
     back(e) {
         var $panel = $('.tutorial__panel:not(.tutorial__panel--hidden)');
         if( $panel.prev().length ) {
@@ -54,12 +95,32 @@ class Tutorial extends EventClass {
         }
     }
 
+    /**
+     * When the tutorial is done, make sure their settings are remembered.
+     * Since the settings can be altered through the tutorial, make sure
+     * the settings fields are set properly.
+     *
+     * @fires Tutorial#done
+     */
     done() {
         this.settings.set('showTutorial',false);
         this.settings.setFields();
+        /**
+         * Triggers the tutorial done event
+         *
+         * @event Tutorial#done
+         * @type {object}
+         */
         this.trigger('done');
     }
 
+    /**
+     * Swaps the image/video when the user selects one of
+     * the tutorial options. This is to show the user different
+     * image/videos for each option.
+     *
+     * @param  {Object} e Event object]
+     */
     swapImage(e) {
         var $this = $(e.currentTarget);
         var imageSrc = $this.attr('data-tutorial-image');
@@ -74,29 +135,44 @@ class Tutorial extends EventClass {
 
     }
 
+    /**
+     * Sets the mode on the application when they check
+     * or uncheck a specific radio box.
+     *
+     * @param {Object} e Event object
+     */
     setBeginnerMode(e) {
         var $checkbox = $(e.currentTarget);
         var mode = $checkbox.is(':checked')
             ? PANEL_ZOOM_MODE
             : PAGE_MODE;
-        if( this.app.book.isLoaded ) {
-            this.app.setMode(mode);
-        }
+        this.app.setMode(mode);
     }
 
-    toggle(ev) {
-        if(ev.value === true) {
+    /**
+     * Toggles whether or not the tutorial is shown or hidden.
+     *
+     * @param {Object} e Event object
+     */
+    toggle(e) {
+        if(e.value === true) {
             this.show();
         } else {
             this.hide();
         }
     }
 
+    /**
+     * Shows the tutorial interface.
+     */
     show() {
         $('.tutorial__panel').addClass('tutorial__panel--hidden').first().removeClass('tutorial__panel--hidden');
         $('.tutorial').removeClass('tutorial--hidden');
     }
 
+    /**
+     * Hides the tutorial interface.
+     */
     hide() {
         $('.tutorial').addClass('tutorial--hidden');
     }

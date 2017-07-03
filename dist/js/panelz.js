@@ -208,37 +208,109 @@ var EventClass = function () {
     return EventClass;
 }();
 
+/**
+ * Book classes representing the entire comic. Loads
+ * all of the pages and handles what happens when they
+ * want to navigate between pages.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
+
 var Book = function (_EventClass) {
     _inherits(Book, _EventClass);
 
-    function Book(config) {
+    /**
+     * Creates a new instance of the Book class. Sets all the
+     * initial varaibles and listens for events on the application.
+     *
+     * @constructs Book
+     * @param  {Class}  app    Panelz app instance
+     * @param  {Object} config Configuration options
+     */
+    function Book(app, config) {
         _classCallCheck(this, Book);
 
+        /**
+         * Configuration options
+         * @type {Object}
+         */
         var _this = _possibleConstructorReturn(this, (Book.__proto__ || Object.getPrototypeOf(Book)).call(this));
 
         _this.config = config;
-        _this.app = config.app;
-        _this.pages = [];
+        /**
+         * Panelz app instance
+         * @type {Class}
+         */
+        _this.app = app;
+        /**
+         * Title of the comic
+         * @type {String}
+         */
+        _this.title = config.title || 'Unknown title';
+        /**
+         * Size of the comic.
+         * @type {Number}
+         */
+        _this.size = config.size || 0;
+        /**
+         * How many pages have been loaded
+         * @type {Number}
+         */
         _this.loaded = 0;
-        _this.title = config.comic.title || 'Unknown title';
-        _this.isLoaded = false;
-        _this.panFrozen = false;
-        _this.zoomPanAmount = 0;
-        _this.size = config.comic.size || 0;
+        /**
+         * How much of the book has been loaded in bytes
+         * @type {Number}
+         */
         _this.loadedSize = 0;
+        /**
+         * Whether or not the book has been fully loaded
+         * @type {Boolean}
+         */
+        _this.isLoaded = false;
+        /**
+         * Whether or not the user should be allowed to
+         * pan all the pages or not.
+         * @type {Boolean}
+         */
+        _this.panFrozen = false;
+        /**
+         * How much the user has zoomed in on the book
+         * @type {Number}
+         */
+        _this.zoomPanAmount = 0;
+
         _this.setEventListeners();
-        config.comic.pages.forEach(function (pageConfig, index) {
-            pageConfig.app = this.app;
+        _this.pages = [];
+        config.pages.forEach(function (pageConfig, index) {
             pageConfig.panels = pageConfig.panels || [];
-            var page = new Page(this, pageConfig, index);
+            var page = new Page(this.app, this, pageConfig, index);
             page.on('load', this.onPageLoaded.bind(this));
             this.pages.push(page);
         }.bind(_this));
         return _this;
     }
 
+    /**
+     * Getter for the size of the comic
+     *
+     * @return {Number}
+     */
+
+
     _createClass(Book, [{
         key: 'getReadableSize',
+
+
+        /**
+         * Gets a readable size of the comic, as it is in bytes.
+         *
+         * @param  {Number} size Size in bytes
+         * @return {String}
+         */
         value: function getReadableSize(size) {
             var bytes = typeof size !== 'undefined' ? size : this.size;
             var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -248,14 +320,26 @@ var Book = function (_EventClass) {
         }
     }, {
         key: 'setEventListeners',
+
+
+        /**
+         * Application event listeners
+         */
         value: function setEventListeners() {
-            this.app.on('change:mode', this.onModeChange.bind(this));
-            this.app.on('user', this.registerUserEvent.bind(this));
             this.app.on('user:skipToPage', this.skipToPage.bind(this));
             this.app.on('user:panend', this.onPanEnd.bind(this));
             this.app.on('user:pageForward', this.pageForward.bind(this));
             this.app.on('user:pageBackward', this.pageBackward.bind(this));
+            this.app.on('change:mode', this.onModeChange.bind(this));
         }
+
+        /**
+         * When a page is loaded, update the total number of pages
+         * loaded. If that's all of them, trigger the book loaded method.
+         *
+         * @param  {Class} page Page instance
+         */
+
     }, {
         key: 'onPageLoaded',
         value: function onPageLoaded(page) {
@@ -265,6 +349,18 @@ var Book = function (_EventClass) {
                 this.onBookLoaded();
             }
         }
+
+        /**
+         * Book has loaded. Set the current page and determine whether
+         * or not to zoom in on a panel. Otherwise set all the pages
+         * left positions to be offset to each other.
+         *
+         * Waits 1200ms to trigger the loaded event due to the progress
+         * timer animation taking 1200ms to update.
+         *
+         * @fires Book#load:book
+         */
+
     }, {
         key: 'onBookLoaded',
         value: function onBookLoaded() {
@@ -278,7 +374,6 @@ var Book = function (_EventClass) {
                 if (this.app.settings.getBookSetting('panel') !== false) {
                     this.currentPage.zoomToPanel(this.currentPage.panels[this.app.settings.getBookSetting('panel')]);
                 } else if (!this.currentPage.SHOW_PAGE_ON_ENTER) {
-                    console.log('show first');
                     this.currentPage.zoomToPanel(this.currentPage.getFirstPanel());
                 } else {
                     this.currentPage.nextPanel = this.currentPage.getFirstPanel();
@@ -296,10 +391,24 @@ var Book = function (_EventClass) {
             this.buildPageIndex();
             setTimeout(function () {
                 this.isLoaded = true;
+                /**
+                 * Load book event
+                 *
+                 * @event Book#load:book:<setting>
+                 * @type {Object}
+                 * @property {Class} Book class instance
+                 */
                 this.trigger('load:book', this);
                 $('.loading').addClass('loading--hidden');
             }.bind(this), 1200);
         }
+
+        /**
+         * When there is a mode change, setup the book for that mode.
+         *
+         * @param  {String} mode Mode of app
+         */
+
     }, {
         key: 'onModeChange',
         value: function onModeChange(mode) {
@@ -309,15 +418,25 @@ var Book = function (_EventClass) {
                 this.setForPanelZoomMode();
             }
         }
+
+        /**
+         * Pan has ended. Check to see if a new page needs to be set
+         * as the current page and snap (animate) all the pages to
+         * their respective positions.
+         *
+         * @param  {Object} e Event object
+         * @return {[type]}    [description]
+         */
+
     }, {
         key: 'onPanEnd',
-        value: function onPanEnd(ev) {
+        value: function onPanEnd(e) {
             if (this.panFrozen) {
                 return;
             }
             var currentPage = this.currentPage;
             this.pages.forEach(function (page) {
-                if (page.shouldBeSetAsCurrent(ev)) {
+                if (page.shouldBeSetAsCurrent(e)) {
                     this.setCurrentPage(page);
                 }
             }.bind(this));
@@ -326,11 +445,22 @@ var Book = function (_EventClass) {
                 this.onEndReached();
             }
         }
+
+        /**
+         * The end of the comic has been reached. Message the user.
+         */
+
     }, {
         key: 'onEndReached',
         value: function onEndReached() {
             this.app.message('End of comic');
         }
+
+        /**
+         * Builds the page index so the user can jump to any page
+         * wherever they are in the comic.
+         */
+
     }, {
         key: 'buildPageIndex',
         value: function buildPageIndex() {
@@ -342,11 +472,14 @@ var Book = function (_EventClass) {
                 $('.page-list').append($page);
             }.bind(this));
         }
-    }, {
-        key: 'registerUserEvent',
-        value: function registerUserEvent(e) {
-            this.e = e;
-        }
+
+        /**
+         * Sets the current page of the comic.
+         *
+         * @param {Class} page Page class instance
+         * @fires Book#pageSet
+         */
+
     }, {
         key: 'setCurrentPage',
         value: function setCurrentPage(page) {
@@ -365,10 +498,24 @@ var Book = function (_EventClass) {
                 }, { duration: 550, easing: 'easeOutSine' });
             }
 
+            /**
+             * Page Set event
+             *
+             * @event Book#pageSet
+             * @type {Object}
+             * @property {Class} Page instance of current page
+             */
             this.trigger('pageSet', page);
 
             this.app.settings.rememberBookSetting('page', page.index);
         }
+
+        /**
+         * Sets up all the pages for Page Mode. All of the
+         * pages need to be side by side so the user can
+         * pan left and right through them.
+         */
+
     }, {
         key: 'setForPageMode',
         value: function setForPageMode() {
@@ -380,6 +527,16 @@ var Book = function (_EventClass) {
             }.bind(this));
             this.currentPage.zoomOut();
         }
+
+        /**
+         * Sets up all the pages for Panel Zoom Mode. All of
+         * the pages can stack on top of each other, with the
+         * "active" page on top. If this page has panels,
+         * zoom in on one of them, either the first one or if
+         * they were double tapping, the panel they double
+         * tapped on (if settings allow it)
+         */
+
     }, {
         key: 'setForPanelZoomMode',
         value: function setForPanelZoomMode() {
@@ -389,22 +546,41 @@ var Book = function (_EventClass) {
                 page.$container.css('left', 0).css('opacity', 0);
             }.bind(this));
             this.currentPage.$container.css('opacity', 1);
-
             if (this.currentPage.panels.length) {
-                var panel = this.e && this.e.type === "doubletap" && this.app.settings.get('detectPanelOnDoubleTap') ? this.currentPage.findPanelWithPos(this.e.center.x, this.e.center.y) : this.currentPage.getFirstPanel();
+                var lastUserEvent = this.app.getLastUserEvent();
+                var panel = lastUserEvent && lastUserEvent.type === "doubletap" && this.app.settings.get('detectPanelOnDoubleTap') ? this.currentPage.findPanelWithPos(lastUserEvent.center.x, lastUserEvent.center.y) : this.currentPage.getFirstPanel();
                 this.currentPage.zoomToPanel(panel);
             }
         }
+
+        /**
+         * Gets the next page instance in the sequence.
+         *
+         * @return {Class}
+         */
+
     }, {
         key: 'getNextPage',
         value: function getNextPage() {
             return this.pages[this.currentPage.index + 1];
         }
+
+        /**
+         * Gets the previous page instance in the sequence.
+         *
+         * @return {Class}
+         */
+
     }, {
         key: 'getPreviousPage',
         value: function getPreviousPage() {
             return this.pages[this.currentPage.index - 1];
         }
+
+        /**
+         * Snaps all the pages relative to the current page.
+         */
+
     }, {
         key: 'snapPagesToCurrent',
         value: function snapPagesToCurrent() {
@@ -413,15 +589,26 @@ var Book = function (_EventClass) {
                 page.snapTo(amount);
             });
         }
+
+        /**
+         * Pages the user forward in the book. If they are in Panel
+         * Zoom Mode, it will move them forward by panels. If they
+         * are in page mode, it will move them forward an entire page.
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'pageForward',
         value: function pageForward() {
             if (this.app.mode === PANEL_ZOOM_MODE && this.currentPage.panels.length) {
+                // Zoom in on the next panel and bail from method
                 if (this.currentPage.hasNextPanel()) {
                     console.log('Zoom to next panel');
-                    this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
-                    return true;
+                    return this.currentPage.zoomToPanel(this.currentPage.getNextPanel());
                 }
+                // Currently zoomed on a panel, but there are no next panels, we need to zoom out
+                // and bail from method (if they don't want to show page on exit)
                 if (this.currentPage.currentPanel !== false && !this.currentPage.hasNextPanel()) {
                     console.log('Zoom out');
                     this.currentPage.zoomOut();
@@ -435,11 +622,12 @@ var Book = function (_EventClass) {
                 }
             }
 
+            // No panels to zoom on, we're zoomed out, but this is the last page
             if (this.currentPage.isLast) {
-                this.onEndReached();
-                return false;
+                return this.onEndReached() && false;
             }
 
+            // No panels to zoom on, we're zoomed out, so move on to the next page
             this.setCurrentPage(this.getNextPage());
             if (this.app.mode === PAGE_MODE) {
                 this.snapPagesToCurrent();
@@ -450,15 +638,26 @@ var Book = function (_EventClass) {
             }
             return true;
         }
+
+        /**
+         * Pages the user backward in the book. If they are in Panel
+         * Zoom Mode, it will move them backward by panels. If they
+         * are in page mode, it will move them backward an entire page.
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'pageBackward',
         value: function pageBackward() {
             if (this.app.mode === PANEL_ZOOM_MODE && this.currentPage.panels.length) {
+                // Zoom in on the next panel and bail from method
                 if (this.currentPage.hasPreviousPanel()) {
                     console.log('Zoom to last panel');
-                    this.currentPage.zoomToPanel(this.currentPage.getPreviousPanel());
-                    return true;
+                    return this.currentPage.zoomToPanel(this.currentPage.getPreviousPanel());
                 }
+                // Currently zoomed on a panel, but there are no next panels, we need to zoom out
+                // and bail from the method (if they don't want to show page on enter)
                 if (this.currentPage.currentPanel !== false && !this.currentPage.hasPreviousPanel()) {
                     console.log('Zoom out');
                     this.currentPage.zoomOut();
@@ -469,10 +668,12 @@ var Book = function (_EventClass) {
                 }
             }
 
+            // No panels to zoom on, we're zoomed out, but this is the last page
             if (this.currentPage.isFirst) {
                 return false;
             }
 
+            // No panels to zoom on, we're zoomed out, so move on to the next page
             this.setCurrentPage(this.getPreviousPage());
             if (this.app.mode === PAGE_MODE) {
                 this.snapPagesToCurrent();
@@ -482,10 +683,21 @@ var Book = function (_EventClass) {
             }
             this.currentPage.onPageEnterBackward();
         }
+
+        /**
+         * Skips to specific page in the sequence. In order to do so,
+         * we need to to take care of a few things. First, make sure
+         * the current page is zoomed out (may or may not be), set
+         * the current page to the requested page, set all the pages
+         * left positions to account for moving to the new page,
+         * and then set the page for whatever mode we're in.
+         *
+         * @param  {Number} pageNum Page number to skip to
+         */
+
     }, {
         key: 'skipToPage',
         value: function skipToPage(pageNum) {
-            console.log('Skip to', pageNum);
             var page = this.pages[pageNum - 1];
             this.currentPage.zoomOut();
             this.setCurrentPage(page);
@@ -503,11 +715,22 @@ var Book = function (_EventClass) {
         key: 'size',
         get: function get() {
             return this._size;
-        },
+        }
+
+        /**
+         * Setter for the size of the comic. If the size is
+         * zero or a non number, go through all the pages to
+         * determine the total comic size.
+         *
+         * Also initializes the progress loader.
+         *
+         * @param  {Number} size Size of the comic
+         */
+        ,
         set: function set(size) {
             if (!size) {
                 size = 0;
-                this.config.comic.pages.forEach(function (pageConfig) {
+                this.config.pages.forEach(function (pageConfig) {
                     size += parseInt(pageConfig.size);
                 });
             }
@@ -520,11 +743,26 @@ var Book = function (_EventClass) {
             });
             $('[data-comic-size]').text(this.getReadableSize());
         }
+
+        /**
+         * Gets the currently loaded size of the comic.
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'loadedSize',
         get: function get() {
             return this._loadedSize;
-        },
+        }
+
+        /**
+         * Update the total loaded size. Updates the progress
+         * loader element for the user.
+         *
+         * @param  {Number} size Size to add to total
+         */
+        ,
         set: function set(size) {
             this._loadedSize = size;
             var percent = this.loadedSize / this.size;
@@ -538,53 +776,198 @@ var Book = function (_EventClass) {
     return Book;
 }(EventClass);
 
+/**
+ * The Menu class handles the center tap popup menu
+ * and adds context to a few of the buttons.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
+
 var Menu = function (_EventClass2) {
     _inherits(Menu, _EventClass2);
 
-    function Menu(config) {
+    /**
+     * Creates a new Menu instance by establishing the
+     * main element as a jQuery object and listening
+     * for events on the application instance.
+     *
+     * @constructs Menu
+     * @param {Class} app      Panelz app instance
+     * @param {Class} Book     Book instance
+     * @param {Class} Tutorial Tutorial instance
+     */
+    function Menu(app, Book, Tutorial) {
         _classCallCheck(this, Menu);
 
         var _this2 = _possibleConstructorReturn(this, (Menu.__proto__ || Object.getPrototypeOf(Menu)).call(this));
 
-        _this2.app = config.app;
+        _this2.app = app;
+        _this2.book = Book;
+        _this2.tutorial = Tutorial;
         _this2.$menu = $('.viewport__menu');
 
         _this2.setEventListeners();
-
         _this2.onModeChange(_this2.app.mode);
-
         return _this2;
     }
+
+    /**
+     * Listens for user touch events or application mode changes
+     */
+
 
     _createClass(Menu, [{
         key: 'setEventListeners',
         value: function setEventListeners() {
             $('body').on('touchend click', '.menu__option--mode', this.onModeToggleClick.bind(this));
+            $('body').on('touchend', this.onTouchEnd.bind(this));
             this.app.on('change:mode', this.onModeChange.bind(this));
+            this.app.on('show:menu', this.show.bind(this));
+            this.book.on('load:book', this.setTitleBar.bind(this));
+            this.book.on('pageSet', this.onPageSet.bind(this));
+            this.tutorial.on('done', this.onTutorialDone.bind(this));
         }
+
+        /**
+         * Sets the menu title bar with book data, like the title, current
+         * page number, and total number of pages.
+         */
+
+    }, {
+        key: 'setTitleBar',
+        value: function setTitleBar() {
+            $('[data-book-title]').text(this.book.title);
+            $('[data-total-pages]').text(this.book.pages.length);
+            $('[data-page-num]').text(this.book.currentPage.num);
+        }
+
+        /**
+         * Adds an activation class to a given menu option
+         *
+         * @param  {String} option Menu option to activate
+         */
+
     }, {
         key: 'activateOption',
         value: function activateOption(option) {
             this.$menu.find('.menu__option--' + option).addClass('menu__option--active');
         }
+
+        /**
+         * Removes an activation class to a given menu option
+         *
+         * @param  {String} option Menu option to deactivate
+         */
+
     }, {
         key: 'deactivateOption',
         value: function deactivateOption(option) {
             this.$menu.find('.menu__option--' + option).removeClass('menu__option--active');
         }
+
+        /**
+         * Shows the menu by adding an active CSS class. Sometimes
+         * multiple events get fired in one interaction, so a --was-shown
+         * modifier class has been added in another specific use case. If
+         * that class is not present, then we can show the menu.
+         */
+
+    }, {
+        key: 'show',
+        value: function show() {
+            if (!this.$menu.hasClass('viewport__menu--was-shown')) {
+                this.$menu.addClass('viewport__menu--active');
+            }
+        }
+
+        /**
+         * Hides the menu by removing the active CSS class.
+         * @return {[type]} [description]
+         */
+
+    }, {
+        key: 'hide',
+        value: function hide() {
+            this.$menu.removeClass('viewport__menu--active');
+        }
+
+        /**
+         * The user has clicked on the mode toggle button, tell the
+         * application to switch modes.
+         *
+         * @param  {Object} e Tap event object
+         */
+
     }, {
         key: 'onModeToggleClick',
         value: function onModeToggleClick(e) {
             e.preventDefault();
             this.app.switchModes();
         }
+
+        /**
+         * The application's mode has been changed. Update the
+         * wording of our mode toggle button to maintain context.
+         *
+         * @param  {String} mode Mode that was switched to
+         */
+
     }, {
         key: 'onModeChange',
         value: function onModeChange(mode) {
+            var readable = this.app.getReadableModeText(mode, true);
             if (mode === PAGE_MODE) {
-                this.$menu.find('.menu__option--mode').html('Page<br />Mode');
+                this.$menu.find('.menu__option--mode').html(readable);
             } else {
-                this.$menu.find('.menu__option--mode').html('Panel Zoom<br />Mode');
+                this.$menu.find('.menu__option--mode').html(readable);
+            }
+        }
+
+        /**
+         * When a new page has been set, set the current page text
+         * to reflect the current page number.
+         *
+         * @param  {Class} page Page instance of the new current page
+         */
+
+    }, {
+        key: 'onPageSet',
+        value: function onPageSet(page) {
+            $('[data-page-num]').text(page.num);
+        }
+
+        /**
+         * When the tutorial is finished, show the menu and message the
+         * user about being able to find the tutorial in the settings menu.
+         */
+
+    }, {
+        key: 'onTutorialDone',
+        value: function onTutorialDone() {
+            this.show();
+            this.app.message('The tutorial is always available in the settings menu at the bottom right.', 5000);
+        }
+
+        /**
+         * Touch events and click events both get fired sometimes. To prevent
+         * hiding the menu when we just showed it, add a special class to
+         * indicate that it was just shown.
+         *
+         * @param  {Object} e Event object
+         */
+
+    }, {
+        key: 'onTouchEnd',
+        value: function onTouchEnd(e) {
+            this.$menu.removeClass('viewport__menu--was-shown');
+            if (this.$menu.hasClass('viewport__menu--active')) {
+                setTimeout(function () {
+                    this.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
+                }.bind(this), 500);
             }
         }
     }]);
@@ -594,92 +977,325 @@ var Menu = function (_EventClass2) {
 
 ;
 
+/**
+ * Directional number used by the HammerJS
+ * library to indicate a left pan.
+ *
+ * @constant
+ * @type {Number}
+ * @default
+ */
+var PAN_LEFT_DIR = 2;
+
+/**
+ * Directional number used by the HammerJS
+ * library to indicate a right pan.
+ *
+ * @constant
+ * @type {Number}
+ * @default
+ */
+var PAN_RIGHT_DIR = 4;
+
+/**
+ * Page class representing a comic page. Represents the
+ * actual image on the screen, as well as all the calculations
+ * for panning/zooming and determining which panel should
+ * be zoomed on/zooming on panels.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
 var Page = function (_EventClass3) {
     _inherits(Page, _EventClass3);
 
-    function Page(Book, config, index) {
+    /**
+     * Creates a new instance of the Page class. Sets all
+     * the initial variables needed by this class and
+     * a few event listeners for setting changes. This
+     * constructor also initializes all the panels, if any,
+     * as new classes and stores them in a local array property.
+     *
+     * @constructs Page
+     * @param  {Class}  app    Panelz app instance
+     * @param  {Class}  Book   Book instance
+     * @param  {Object} config Configuration options
+     * @param  {Number} index  Which index within the book this page is
+     */
+    function Page(app, Book, config, index) {
         _classCallCheck(this, Page);
 
+        /**
+         * Keep a reference to the app instance as
+         * a local property
+         * @type {Class}
+         */
         var _this3 = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this));
 
-        _this3.config = config;
-        _this3.app = config.app;
+        _this3.app = app;
+        /**
+         * Book class reference as local property
+         * @type {Class}
+         */
         _this3.book = Book;
+        /**
+         * The configuration options for this page
+         * @type {Object}
+         */
+        _this3.config = config;
+        /**
+         * Which index within the book this page is
+         * @type {Number}
+         */
         _this3.index = index;
+        /**
+         * The Page number
+         * @type {Number}
+         */
         _this3.num = index + 1;
+        /**
+         * If the index is 0, this is the first page
+         * @type {Boolean}
+         */
         _this3.isFirst = index === 0;
-        _this3.isLast = index === _this3.book.config.comic.pages.length - 1;
+        /**
+         * If the index is the very last index, using
+         * the book configuration object to count, this
+         * would be the last page
+         * @type {Boolean}
+         */
+        _this3.isLast = index === _this3.book.config.pages.length - 1;
+        /**
+         * Size of the page image element, in bytes, used for
+         * calculating total book size and wait time for loading
+         * @type {Number}
+         */
         _this3.size = config.size || 0;
+        /**
+         * Whether or not this is the current page
+         * @type {Boolean}
+         */
         _this3.isCurrentPage = false;
+        /**
+         * Current scale of the page image element
+         * @type {Number}
+         */
         _this3.scale = 1;
+        /**
+         * Number that keeps track of the last scale size
+         * between starting/stopping events like pinching
+         * @type {Number}
+         */
         _this3.lastScale = 1;
+        /**
+         * Whether or not the left edge is visible and
+         * the page element should be panned normally
+         * @type {Boolean}
+         */
         _this3.leftEdge = true;
+        /**
+         * Whether or not the right edge is visible and
+         * the page element should be panned normally
+         * @type {Boolean}
+         */
         _this3.rightEdge = true;
+        /**
+         * Holds all of the panels objects for this page.
+         * @type {Array}
+         */
         _this3.panels = [];
-        _this3.PANEL_ANIMATION_SPEED = _this3.app.settings.get('panelTransitions');
-        _this3.SHOW_PAGE_ON_ENTER = _this3.app.settings.get('showPageOnEnter');
-        _this3.SHOW_PAGE_ON_EXIT = _this3.app.settings.get('showPageOnExit');
-        _this3.TURN_THRESHHOLD = 30;
+        /**
+         * Holds the current panel being zoomed on, if any
+         * @type {Boolean}
+         */
         _this3.currentPanel = false;
+        /**
+         * Which panel comes before the current one, if any
+         * @type {Boolean}
+         */
         _this3.previousPanel = false;
+        /**
+         * Which panel comes after the current one, if any
+         * @type {Boolean}
+         */
         _this3.nextPanel = false;
-        _this3.lastPanelSeen = false;
-        _this3.loadSrc(config.url);
+        /**
+         * Holds the jQuery element containing the page container
+         * @type {Object}
+         */
+        _this3.$container = false;
+        /**
+         * Holds the jQuery image element
+         * @type {Object}
+         */
+        _this3.$element = false;
+        /**
+         * Original/actual width of page image
+         * @type {Number}
+         */
+        _this3.originalWidth = 0;
+        /**
+         * Original/actual height of page image
+         * @type {Number}
+         */
+        _this3.originalHeight = 0;
+        /**
+         * Holds how far left an image sits within
+         * a container in order to be centered
+         * @type {Number}
+         */
+        _this3.originalLeft = 0;
+        /**
+         * When panning, we adjust the margin. Holds the
+         * original left position at the start of a pan
+         * @type {Number}
+         */
+        _this3.elementOriginalLeft = 0;
+        /**
+         * When panning, we adjust the margin. Holds the
+         * original top position at the start of a pan
+         * @type {Number}
+         */
+        _this3.elementOriginalTop = 0;
+        /**
+         * Object representing the origin of a punch event.
+         * Should have an x/y property
+         * @type {Object}
+         */
+        _this3.pinchOrigin = {};
+        /**
+         * Speed in ms at which the panel transition animation
+         * should occur. Treated like a constant although it
+         * can be changed through the settings by the user.
+         * @type {Number}
+         */
+        _this3.PANEL_ANIMATION_SPEED = _this3.app.settings.get('panelTransitions');
+        /**
+         * Whether or not to show the entire page when it
+         * becomes current. Applies for Panel Zoom Mode only.
+         * @type {Boolean}
+         */
+        _this3.SHOW_PAGE_ON_ENTER = _this3.app.settings.get('showPageOnEnter');
+        /**
+         * Whether or not to show the entire page before moving
+         * to a new page. Applies for Panel Zoom Mode only.
+         * @type {Boolean}
+         */
+        _this3.SHOW_PAGE_ON_EXIT = _this3.app.settings.get('showPageOnExit');
+        /**
+         * How many pixels a page needs to be panned before
+         * snapping fully to the next or previous page.
+         * @type {Number}
+         */
+        _this3.TURN_THRESHHOLD = 30;
+        /**
+         * Maximum scale value when pinching
+         * @type {Number}
+         */
+        _this3.MAX_SCALE = 3;
+
+        _this3.setEventListeners();
+
+        _this3.panels = [];
         config.panels.forEach(function (panel, index) {
             this.panels.push(new Panel(this, panel, index));
-        }.bind(_this3));
-        _this3.app.settings.on('change:panelTransitions', function (data) {
-            this.PANEL_ANIMATION_SPEED = data.value;
-        }.bind(_this3));
-        _this3.app.settings.on('change:showPageOnEnter', function (data) {
-            this.SHOW_PAGE_ON_ENTER = data.value;
-        }.bind(_this3));
-        _this3.app.settings.on('change:showPageOnExit', function (data) {
-            this.SHOW_PAGE_ON_EXIT = data.value;
-        }.bind(_this3));
-        _this3.app.on('resize', _this3.setPosition.bind(_this3));
-        _this3.book.on('pageSet', function (page) {
-            this.isCurrentPage = page.index === this.index;
         }.bind(_this3));
         return _this3;
     }
 
+    /**
+     * When setting the configation property, set the
+     * internal property. Also kick off loading the
+     * image from the config url
+     *
+     * @param  {Object} config Configuration options
+     */
+
+
     _createClass(Page, [{
-        key: 'loadSrc',
-        value: function loadSrc(src) {
-            /*$.ajax({
-                xhr: function() {
-                    var xhr = new window.XMLHttpRequest();
-                    //Download progress
-                    xhr.addEventListener("progress", function(evt){
-                        if (evt.lengthComputable) {
-                            var percentComplete = evt.loaded / evt.total;
-                            //Do something with download progress
-                            //console.log(percentComplete);
-                        }
-                    }, false);
-                    return xhr;
-                },
-                type: 'GET',
-                url: src,
-                processData: false,
-                responseType: 'arraybuffer',
-                success: function(data,something,xhr) {
-                    var h = xhr.getAllResponseHeaders(),
-                                m = h.match( /^Content-Type\:\s*(.*?)$/mi ),
-                                mimeType = m[ 1 ] || 'image/png';
-                    var blob = new Blob([data],{ type: mimeType });
-                    var $image = $("<img />").attr("src", window.URL.createObjectURL(blob)).on('load',this.onPageLoaded.bind(this))
-                    $image.trigger('load',{currentTarget: $image[0]});
-                }.bind(this)
-            });*/
-            $("<img />").attr("src", src).on('load', this.onPageLoaded.bind(this));
+        key: 'setEventListeners',
+
+
+        /**
+         * Sets all event listeners for internal classes
+         */
+        value: function setEventListeners() {
+            this.on('load:page', this.centerInViewPort.bind(this));
+            this.app.settings.on('change:panelTransitions', this.onSettingsChange.bind(this));
+            this.app.settings.on('change:showPageOnEnter', this.onSettingsChange.bind(this));
+            this.app.settings.on('change:showPageOnExit', this.onSettingsChange.bind(this));
+            this.app.on("user:panstart", this.onPanStart.bind(this));
+            this.app.on("user:pan", this.onPan.bind(this));
+            this.app.on("user:panleft", this.onPanLeft.bind(this));
+            this.app.on("user:panright", this.onPanRight.bind(this));
+            this.app.on('user:pinchstart', this.onPinchStart.bind(this));
+            this.app.on("user:pinch", this.onPinch.bind(this));
+            this.app.on("user:pinchend", this.onPinchEnd.bind(this));
+            this.app.on('resize', this.setPosition.bind(this));
+            this.book.on('pageSet', this.setCurrentPageStatus.bind(this));
         }
+
+        /**
+         * When certain settings are changed, update our local
+         * property references to those settings
+         *
+         * @param  {Object} data Event data for the settings change
+         */
+
     }, {
-        key: 'onProgress',
-        value: function onProgress(e) {
-            console.log(e);
+        key: 'onSettingsChange',
+        value: function onSettingsChange(data) {
+            switch (data.setting) {
+                case 'panelTransitions':
+                    this.PANEL_ANIMATION_SPEED = data.value;
+                    break;
+                case 'showPageOnEnter':
+                    this.SHOW_PAGE_ON_ENTER = data.value;
+                    break;
+                case 'showPageOnExit':
+                    this.SHOW_PAGE_ON_EXIT = data.value;
+                    break;
+            }
         }
+
+        /**
+         * Checks to see if a page class instance is this
+         * page instance. If it is, this should be the
+         * current page.
+         *
+         * @param {Class} page Page instance
+         */
+
+    }, {
+        key: 'setCurrentPageStatus',
+        value: function setCurrentPageStatus(page) {
+            this.isCurrentPage = page.index === this.index;
+        }
+
+        /**
+         * Loads the page element into an img tag and when it
+         * has been loaded, initiates a page load method.
+         */
+
+    }, {
+        key: 'loadPageElement',
+        value: function loadPageElement() {
+            $("<img />").attr("src", this.config.url).on('load', this.onPageLoaded.bind(this));
+        }
+
+        /**
+         * When the page has been loaded, set a container element
+         * and a property holding the image itself. The page needs
+         * to be centered in the viewport and its original dimensions
+         * pulled in so we can perform sizing calculations.
+         *
+         * @param  {Object} e Event object
+         * @fires Page#load:page
+         */
+
     }, {
         key: 'onPageLoaded',
         value: function onPageLoaded(e) {
@@ -687,144 +1303,252 @@ var Page = function (_EventClass3) {
             this.$element = $(e.currentTarget).addClass('page__image').appendTo(this.$container);
             this.originalWidth = this.$element.width();
             this.originalHeight = this.$element.height();
-            this.centerInViewPort();
+            /**
+             * Load page event
+             *
+             * @event Page#load:page
+             * @type {Object}
+             * @property {Class} Current page instance
+             */
+            this.trigger('load:page', this);
+        }
 
-            this.app.on("user:panstart", function (ev) {
-                this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
-                this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
-                if (this.scale == 1) {
-                    this.originalLeft = parseInt(this.$container.css("left"), 10);
-                }
-                this.book.zoomPanAmount = 0;
-            }.bind(this));
-            this.app.on("user:pan", function (ev) {
-                if (this.isCurrentPage && this.scale !== 1) {
-                    var deltaY = this.elementOriginalTop + ev.deltaY;
-                    var restrictedPosition = this.restrictPosition(0, deltaY);
-                    this.$element.css({
-                        "margin-top": restrictedPosition.top
-                    });
-                } else if (ev.offsetDirection !== 2 && ev.offsetDirection !== 4) {
-                    return true;
-                }
-            }.bind(this));
+        /**
+         * When a user initiates a pan event, we need to set the original
+         * positions and zoom amount and use that number when calculating
+         * how far the pan delta needs to be offset by.
+         *
+         * @param  {Object} e Event object
+         */
 
-            // panleft = rightedge = forward
-            this.app.on("user:panleft", function (ev) {
-                //alert('panleft');
-                if (this.isCurrentPage && this.scale !== 1) {
-                    var elLeft = parseInt(this.$element.css("left"), 10);
-                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
-                    var minLeft = maxLeft * -1;
-                    if (this.getWidth() * this.scale < this.getFullWidth()) {
-                        maxLeft = 0;
-                    }
-                    var deltaX = this.elementOriginalLeft + ev.deltaX;
-                    var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
+    }, {
+        key: 'onPanStart',
+        value: function onPanStart(e) {
+            this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
+            this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
+            this.originalLeft = parseInt(this.$container.css("left"), 10);
+            this.book.zoomPanAmount = 0;
+        }
 
-                    var rightEdgeBefore = this.rightEdge;
-                    this.rightEdge = left <= minLeft ? true : false;
-                    if (rightEdgeBefore !== this.rightEdge && this.rightEdge) {
-                        this.book.panFrozen = false;
-                        this.book.zoomPanAmount = ev.deltaX;
-                    }
+        /**
+         * When the user pans, they are allowed to pan up or down
+         * if they are zoomed in on a panel (via pinching). If
+         * they are not zoomed in or the pan direction is not left
+         * or right, then return true to event further pan events
+         * from registering and screwing things up.
+         *
+         * @param  {Object} e Event object
+         * @return {boolean}
+         */
 
-                    if (this.book.panFrozen) {
-                        this.$element.css({
-                            "margin-left": left
-                        });
-                    }
-                } else if (this.book.panFrozen) {
-                    // Helps make sure the other pages are set correctly (math isn't quite right)
-                    this.setLeftPosition(this.book.currentPage.index);
-                }
-
-                if (!this.book.panFrozen) {
-                    this.left = this.originalLeft + ev.deltaX - this.book.zoomPanAmount;
-                    this.$container.css({
-                        "left": this.left
-                    });
-
-                    if (this.isCurrentPage && this.scale !== 1 && this.left < 0 && !this.rightEdge) {
-                        this.book.panFrozen = true;
-                    }
-                }
-            }.bind(this));
-
-            // panright = leftedge = back
-            this.app.on("user:panright", function (ev) {
-                //alert('panright');
-                if (this.isCurrentPage && this.scale !== 1) {
-                    var elLeft = parseInt(this.$element.css("left"), 10);
-                    var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
-                    var minLeft = maxLeft * -1;
-                    if (this.getWidth() * this.scale < this.getFullWidth()) {
-                        maxLeft = 0;
-                    }
-                    var deltaX = this.elementOriginalLeft + ev.deltaX;
-                    var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
-
-                    var leftEdgeBefore = this.leftEdge;
-                    this.leftEdge = left == maxLeft ? true : false;
-                    if (leftEdgeBefore !== this.leftEdge && this.leftEdge) {
-                        this.book.panFrozen = false;
-                        this.book.zoomPanAmount = ev.deltaX;
-                    }
-
-                    if (this.book.panFrozen) {
-                        this.$element.css({
-                            "margin-left": left
-                        });
-                    }
-                } else if (this.book.panFrozen) {
-                    // Helps make sure the other pages are set correctly (math isn't quite right)
-                    this.setLeftPosition(this.book.currentPage.index);
-                }
-
-                if (!this.book.panFrozen) {
-                    this.left = this.originalLeft + ev.deltaX - this.book.zoomPanAmount;
-                    this.$container.css({
-                        "left": this.left
-                    });
-                    if (this.isCurrentPage && this.scale !== 1 && this.left >= 0 && !this.leftEdge) {
-                        this.book.panFrozen = true;
-                    }
-                }
-            }.bind(this));
-
-            this.app.on('user:pinchstart', function (e) {
-                this.pinchOrigin = e.center;
-                this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
-                this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
-            }.bind(this));
-
-            this.app.on("user:pinch", function (e) {
-                if (!this.isCurrentPage) {
-                    return;
-                }
-
-                if (this.app.mode !== PAGE_MODE) {
-                    this.app.switchModes();
-                }
-                this.magnify(e.scale * this.lastScale);
-
-                var deltaX = -1 * (this.pinchOrigin.x - e.center.x);
-                var deltaY = -1 * (this.pinchOrigin.y - e.center.y);
+    }, {
+        key: 'onPan',
+        value: function onPan(e) {
+            // If the page is zoomed, allow them to pan up. Pan left and
+            // right is handled by specific event handlers below.
+            if (this.isZoomed()) {
+                var deltaY = this.elementOriginalTop + e.deltaY;
+                var restrictedPosition = this.restrictPosition(0, deltaY);
                 this.$element.css({
-                    "margin-left": this.elementOriginalLeft + deltaX * e.scale,
-                    "margin-top": this.elementOriginalTop + deltaY * e.scale
+                    "margin-top": restrictedPosition.top
                 });
-            }.bind(this));
+            } else if (e.offsetDirection !== PAN_LEFT_DIR && e.offsetDirection !== PAN_RIGHT_DIR) {
+                return true;
+            }
+        }
 
-            this.app.on("user:pinchend", function (e) {
-                if (!this.isCurrentPage) {
-                    return;
+        /**
+         * The user wants to pan left. There are several use cases that
+         * need to be accounted for. If the user is zoomed in on the
+         * current page image/element, than only the element itself
+         * should be allowed to be panned. If the right edge has been
+         * reached (visible), than the entire page (and all the other
+         * pages), should also pan together. This is accomplished by
+         * "pan freezing" the entire book when an edge is not visible
+         * and "un pan freezing" the entire book when it is.
+         *
+         * panleft = rightedge = forward
+         *
+         * @param  {Object} e Event object
+         */
+
+    }, {
+        key: 'onPanLeft',
+        value: function onPanLeft(e) {
+            if (this.isZoomed()) {
+                var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                var minLeft = maxLeft * -1;
+                if (this.getWidth() * this.scale < this.getFullWidth()) {
+                    maxLeft = 0;
+                }
+                var deltaX = this.elementOriginalLeft + e.deltaX;
+                var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
+
+                var rightEdgeBefore = this.rightEdge;
+                this.rightEdge = left <= minLeft ? true : false;
+                if (rightEdgeBefore !== this.rightEdge && this.rightEdge) {
+                    this.book.panFrozen = false;
+                    this.book.zoomPanAmount = e.deltaX;
                 }
 
-                this.pinchOrigin = {};
+                if (this.book.panFrozen) {
+                    this.$element.css({
+                        "margin-left": left
+                    });
+                }
+            } else if (this.book.panFrozen) {
+                // Helps make sure the other pages are set correctly (math isn't quite right)
+                this.setLeftPosition(this.book.currentPage.index);
+            }
 
-                this.book.panFrozen = true;
+            if (!this.book.panFrozen) {
+                this.left = this.originalLeft + e.deltaX - this.book.zoomPanAmount;
+                this.$container.css({
+                    "left": this.left
+                });
 
+                if (this.isCurrentPage && this.scale !== 1 && this.left < 0 && !this.rightEdge) {
+                    this.book.panFrozen = true;
+                }
+            }
+        }
+        /**
+         * The user wants to pan right. There are several use cases that
+         * need to be accounted for. If the user is zoomed in on the
+         * current page image/element, than only the element itself
+         * should be allowed to be panned. If the left edge has been
+         * reached (visible), than the entire page (and all the other
+         * pages), should also pan together. This is accomplished by
+         * "pan freezing" the entire book when an edge is not visible
+         * and "un pan freezing" the entire book when it is.
+         *
+         * panright = leftedge = backward
+         *
+         * @param  {Object} e Event object
+         */
+
+    }, {
+        key: 'onPanRight',
+        value: function onPanRight(e) {
+            if (this.isZoomed()) {
+                var maxLeft = (this.getWidth() * this.scale - this.getFullWidth()) / 2;
+                var minLeft = maxLeft * -1;
+                if (this.getWidth() * this.scale < this.getFullWidth()) {
+                    maxLeft = 0;
+                }
+                var deltaX = this.elementOriginalLeft + e.deltaX;
+                var left = Math.min(maxLeft, Math.max(deltaX, minLeft));
+
+                var leftEdgeBefore = this.leftEdge;
+                this.leftEdge = left == maxLeft ? true : false;
+                if (leftEdgeBefore !== this.leftEdge && this.leftEdge) {
+                    this.book.panFrozen = false;
+                    this.book.zoomPanAmount = e.deltaX;
+                }
+
+                if (this.book.panFrozen) {
+                    this.$element.css({
+                        "margin-left": left
+                    });
+                }
+            } else if (this.book.panFrozen) {
+                // Helps make sure the other pages are set correctly (math isn't quite right)
+                this.setLeftPosition(this.book.currentPage.index);
+            }
+
+            if (!this.book.panFrozen) {
+                this.left = this.originalLeft + e.deltaX - this.book.zoomPanAmount;
+                this.$container.css({
+                    "left": this.left
+                });
+                if (this.isCurrentPage && this.scale !== 1 && this.left >= 0 && !this.leftEdge) {
+                    this.book.panFrozen = true;
+                }
+            }
+        }
+
+        /**
+         * When starting a pinch event, record the images current
+         * left and top position (margin) in order to calculate
+         * the total offset with the pinch delta. Also records
+         * the punch origin in case the user wants to pan the
+         * entire image while they are pinching.
+         *
+         * @param  {Object} e Event class
+         */
+
+    }, {
+        key: 'onPinchStart',
+        value: function onPinchStart(e) {
+            this.pinchOrigin = e.center;
+            this.elementOriginalLeft = parseInt(this.$element.css("margin-left"), 10);
+            this.elementOriginalTop = parseInt(this.$element.css("margin-top"), 10);
+        }
+
+        /**
+         * The user is pinching, so magnify the image by the
+         * pinch scale. This method also moves the image should
+         * they want to pan while they are pinching by taking
+         * the delta of the current pinch center and the original
+         * pinch center. Not perfect, but works.
+         *
+         * @param  {Object} e Event class
+         */
+
+    }, {
+        key: 'onPinch',
+        value: function onPinch(e) {
+            if (!this.isCurrentPage) {
+                return;
+            }
+
+            if (this.app.mode !== PAGE_MODE) {
+                this.app.switchModes();
+            }
+            this.magnify(e.scale * this.lastScale);
+
+            var deltaX = -1 * (this.pinchOrigin.x - e.center.x);
+            var deltaY = -1 * (this.pinchOrigin.y - e.center.y);
+            this.$element.css({
+                "margin-left": this.elementOriginalLeft + deltaX * e.scale,
+                "margin-top": this.elementOriginalTop + deltaY * e.scale
+            });
+        }
+
+        /**
+         * At the end of a pinch reset the left and right position so
+         * it sits at the min/max position and isn't mostly offscreen.
+         * Also normalze the scale if it's less than one (smaller than
+         * the viewport) or greater than the max scale value).
+         *
+         * @param  {Object} e Event class
+         */
+
+    }, {
+        key: 'onPinchEnd',
+        value: function onPinchEnd(e) {
+            if (!this.isCurrentPage) {
+                return;
+            }
+
+            this.pinchOrigin = {};
+
+            this.book.panFrozen = true;
+
+            var left = parseInt(this.$element.css("margin-left"), 10);
+            var top = parseInt(this.$element.css("margin-top"), 10);
+            var restrictedPosition = this.restrictPosition(left, top);
+            this.$element.css({
+                'margin-left': restrictedPosition.left,
+                'margin-top': restrictedPosition.top
+            });
+
+            if (this.scale < 1) {
+                return this.resetScale();
+            }
+
+            if (this.scale > this.MAX_SCALE) {
+                this.magnify(this.MAX_SCALE, true);
                 var left = parseInt(this.$element.css("margin-left"), 10);
                 var top = parseInt(this.$element.css("margin-top"), 10);
                 var restrictedPosition = this.restrictPosition(left, top);
@@ -832,29 +1556,20 @@ var Page = function (_EventClass3) {
                     'margin-left': restrictedPosition.left,
                     'margin-top': restrictedPosition.top
                 });
-
-                if (this.scale < 1) {
-                    return this.resetScale();
-                }
-
-                if (this.scale > 3) {
-                    this.magnify(3, true);
-                    var left = parseInt(this.$element.css("margin-left"), 10);
-                    var top = parseInt(this.$element.css("margin-top"), 10);
-                    var restrictedPosition = this.restrictPosition(left, top);
-                    this.$element.css({
-                        'margin-left': restrictedPosition.left,
-                        'margin-top': restrictedPosition.top
-                    });
-                    this.lastScale = this.scale;
-                    return;
-                }
-
                 this.lastScale = this.scale;
-            }.bind(this));
+                return;
+            }
 
-            this.trigger('load:page', this);
+            this.lastScale = this.scale;
         }
+
+        /**
+         * When this page is entering as the current page and
+         * in panel zoom mode, we have to setup the next/previous
+         * panels. If they user doesn't want to show the page
+         * on enter, then automatically zoom them to the first panel.
+         */
+
     }, {
         key: 'onPageEnterForward',
         value: function onPageEnterForward() {
@@ -866,6 +1581,14 @@ var Page = function (_EventClass3) {
                 }
             }
         }
+
+        /**
+         * When this page is entering as the current page, but from
+         * a succeeding page, setup the next/previous panels. If the user
+         * doesn't want to show page on exit, zoom them into the last panel.
+         * @return {[type]} [description]
+         */
+
     }, {
         key: 'onPageEnterBackward',
         value: function onPageEnterBackward() {
@@ -877,15 +1600,45 @@ var Page = function (_EventClass3) {
                 }
             }
         }
+
+        /**
+         * Check to see if this page is zoomed. Can only be considered
+         * zoomed if it's the current page and the scale is not 1.
+         *
+         * @return {Boolean}
+         */
+
+    }, {
+        key: 'isZoomed',
+        value: function isZoomed() {
+            return this.isCurrentPage && this.scale !== 1;
+        }
+
+        /**
+         * Set the page's starting position by centering it in the
+         * viewport and setting its left offset (relative to the
+         * books current page index). If we're in panel zoom mode
+         * and there is a current panel, zoom in on it.
+         */
+
     }, {
         key: 'setPosition',
         value: function setPosition() {
             this.centerInViewPort(false);
-            this.setLeftPosition(this.app.book.currentPage.index);
+            this.setLeftPosition(this.book.currentPage.index);
             if (this.app.mode === PANEL_ZOOM_MODE && this.currentPanel) {
                 this.zoomToPanel(this.currentPanel, false);
             }
         }
+
+        /**
+         * Uses the math to center this page in the viewport. Uses
+         * the pages original size compared to the viewport size
+         * to determine how to best fit it to the center of the screen.
+         *
+         * @param  {Boolean} animate Whether or not to animate the centering
+         */
+
     }, {
         key: 'centerInViewPort',
         value: function centerInViewPort(animate) {
@@ -916,6 +1669,17 @@ var Page = function (_EventClass3) {
                 easing: 'easeOutSine'
             });
         }
+
+        /**
+         * Restricts a left and top position to their maximum or
+         * minimum values. This normalizes a "requested" position
+         * with the best position available (so they can't over pan).
+         *
+         * @param  {Number} left Requested left position
+         * @param  {Number} top  Requested top position
+         * @return {Object}
+         */
+
     }, {
         key: 'restrictPosition',
         value: function restrictPosition(left, top) {
@@ -943,23 +1707,49 @@ var Page = function (_EventClass3) {
                 maxTop: maxTop
             };
         }
+
+        /**
+         * Checks to see if this page should be set as the current
+         * page. This method is requested when a user is panning
+         * manually and part of multiple pages may be visible at the
+         * same time. If the page passes the TURN THRESHHOLD, it
+         * should be set as current.
+         *
+         * @param  {Object} e Event Object
+         * @return {Boolean}
+         */
+
     }, {
         key: 'shouldBeSetAsCurrent',
-        value: function shouldBeSetAsCurrent(env) {
+        value: function shouldBeSetAsCurrent(e) {
             if (this.isFirst && this.left > 0) {
                 return true;
             }
             if (this.isLast && this.left < 0) {
                 return true;
             }
-            if (env.deltaX < 0 && this.left > 0 && this.left < this.getFullWidth() - this.TURN_THRESHHOLD) {
+            if (e.deltaX < 0 && this.left > 0 && this.left < this.getFullWidth() - this.TURN_THRESHHOLD) {
                 return true;
             }
-            if (env.deltaX > 0 && this.left + this.getFullWidth() > this.TURN_THRESHHOLD && this.left + this.getFullWidth() < this.getFullWidth()) {
+            if (e.deltaX > 0 && this.left + this.getFullWidth() > this.TURN_THRESHHOLD && this.left + this.getFullWidth() < this.getFullWidth()) {
                 return true;
             }
             return false;
         }
+
+        /**
+         * Finds a panel given a x and y coordinate. This is a little
+         * tricky because we have the original panel sizes, which need
+         * to be converted to the current panel size and then whether
+         * or not the x y coordinate is inside of THAT. Math=hard
+         *
+         * Returns the panel class instance if the panel is found.
+         *
+         * @param  {Number} x X coordinate
+         * @param  {Number} y Y coordinate
+         * @return {Class}
+         */
+
     }, {
         key: 'findPanelWithPos',
         value: function findPanelWithPos(x, y) {
@@ -979,6 +1769,16 @@ var Page = function (_EventClass3) {
             }
             return found;
         }
+
+        /**
+         * Magnifies a page to a given scale. Animates by adding
+         * a class that will animate a transform change, changes the
+         * transform scale, then removes the class afterward.
+         *
+         * @param  {Number}  amount  Scale amount
+         * @param  {Boolean} animate Whether or not to animate the scale
+         */
+
     }, {
         key: 'magnify',
         value: function magnify(amount, animate) {
@@ -996,6 +1796,13 @@ var Page = function (_EventClass3) {
                 }.bind(this), 260);
             }
         }
+
+        /**
+         * Resets the scale back 0 and unfreezes everything.
+         *
+         * @param  {Boolean} animate Whether or not to animate the scale change
+         */
+
     }, {
         key: 'resetScale',
         value: function resetScale(animate) {
@@ -1009,6 +1816,14 @@ var Page = function (_EventClass3) {
                 'margin-top': 0
             });
         }
+
+        /**
+         * Snaps the page to a left position by a given amount.
+         * Animates this change which gives the appearance of "snapping"
+         *
+         * @param  {Number} amount Amount needed to snap
+         */
+
     }, {
         key: 'snapTo',
         value: function snapTo(amount) {
@@ -1028,6 +1843,15 @@ var Page = function (_EventClass3) {
                 }.bind(this)
             });
         }
+
+        /**
+         * Sets the left position of the page given a page offset.
+         * This should lay out each page side by side (or stack
+         * them if the offset is 0)
+         *
+         * @param {Number} offset Number of pages to offset
+         */
+
     }, {
         key: 'setLeftPosition',
         value: function setLeftPosition(offset) {
@@ -1038,56 +1862,119 @@ var Page = function (_EventClass3) {
             this.originalLeft = this.left;
             this.$container.css('left', this.left);
         }
+
+        /**
+         * Checks to see if this page has any panels.
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'hasPanels',
         value: function hasPanels() {
             return this.panels.length !== 0;
         }
+
+        /**
+         * Sets the current panel and determines the next and previous panels.
+         *
+         * @param {Class} panel Panel instance to set to current
+         */
+
     }, {
         key: 'setCurrentPanel',
         value: function setCurrentPanel(panel) {
-            this.lastPanelSeen = this.currentPanel;
             this.currentPanel = panel;
 
             this.nextPanel = panel !== false ? panel.nextPanel !== false ? this.panels[panel.nextPanel] : false : false;
 
             this.previousPanel = panel !== false ? panel.previousPanel !== false ? this.panels[panel.previousPanel] : false : false;
         }
-    }, {
-        key: 'getLastPanelSeen',
-        value: function getLastPanelSeen() {
-            return this.lastPanelSeen;
-        }
+
+        /**
+         * Checks to see if there is a previous panel set.
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'hasPreviousPanel',
         value: function hasPreviousPanel() {
             return this.previousPanel !== false;
         }
+
+        /**
+         * Getter for the previous panel.
+         *
+         * @return {Class} Previous panel class instance
+         */
+
     }, {
         key: 'getPreviousPanel',
         value: function getPreviousPanel() {
             return this.previousPanel;
         }
+
+        /**
+         * Gets the very last panel in the panels array.
+         *
+         * @return {Class} Panel instance
+         */
+
     }, {
         key: 'getLastPanel',
         value: function getLastPanel() {
             return this.panels[this.panels.length - 1];
         }
+
+        /**
+         * Checks to see if there is a next panel
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'hasNextPanel',
         value: function hasNextPanel() {
             return this.nextPanel !== false;
         }
+
+        /**
+         * Gets the next panel instance.
+         *
+         * @return {Class}
+         */
+
     }, {
         key: 'getNextPanel',
         value: function getNextPanel() {
             return this.nextPanel;
         }
+
+        /**
+         * Gets the very first panel in the panel array
+         *
+         * @return {Class}
+         */
+
     }, {
         key: 'getFirstPanel',
         value: function getFirstPanel() {
             return this.panels.length ? this.panels[0] : false;
         }
+
+        /**
+         * Zooms into a specific panel on a page. Given the original
+         * image size, and the original panel size and location, use
+         * some maths to determine what the new size of the panel would
+         * be if it were best fit and centered on the screen. Again,
+         * maths is hard.
+         *
+         * @param  {Class}   panel   Panel instance
+         * @param  {Boolean} animate Whether or not to animate the zoom
+         * @return {Boolean}
+         */
+
     }, {
         key: 'zoomToPanel',
         value: function zoomToPanel(panel, animate) {
@@ -1125,11 +2012,19 @@ var Page = function (_EventClass3) {
                 easing: 'easeOutSine'
             });
 
+            // Set letterboxing with the leftover width and height
             this.app.setLetterBoxing(viewPortWidth - width, viewPortHeight - height, animate);
 
             this.setCurrentPanel(panel);
             this.app.settings.rememberBookSetting('panel', panel.index);
+            return true;
         }
+
+        /**
+         * Zooms the page out from a panel by resetting the page and
+         * getting rid of the letterboxing.
+         */
+
     }, {
         key: 'zoomOut',
         value: function zoomOut() {
@@ -1138,52 +2033,145 @@ var Page = function (_EventClass3) {
             this.app.setLetterBoxing(0, 0);
             this.app.settings.rememberBookSetting('panel', false);
         }
+
+        /**
+         * Gets the original image element width
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getOriginalWidth',
         value: function getOriginalWidth() {
             return this.originalWidth;
         }
+
+        /**
+         * Gets the original image element height
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getOriginalHeight',
         value: function getOriginalHeight() {
             return this.originalHeight;
         }
+
+        /**
+         * Gets the current top position of the image element
+         * by grabbing and parsing the css "top" property
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getTop',
         value: function getTop() {
             return parseInt(this.$element.css('top'));
         }
+
+        /**
+         * Gets the current left position of the image element
+         * by grabbing and parsing the css "left" property
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getLeft',
         value: function getLeft() {
             return parseInt(this.$element.css('left'));
         }
+
+        /**
+         * Gets the image element's current width
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getWidth',
         value: function getWidth() {
             return this.$element.width();
         }
+
+        /**
+         * Gets the container width
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getFullWidth',
         value: function getFullWidth() {
             return this.$container.width();
         }
+
+        /**
+         * Gets the image element's current height
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getHeight',
         value: function getHeight() {
             return this.$element.height();
         }
+
+        /**
+         * Gets the container height
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getFullHeight',
         value: function getFullHeight() {
             return this.$container.height();
+        }
+    }, {
+        key: 'config',
+        set: function set(config) {
+            this._config = config;
+            this.loadPageElement();
+        }
+
+        /**
+         * Gets the configuration internal
+         *
+         * @return {Object}
+         */
+        ,
+        get: function get() {
+            return this._config;
         }
     }]);
 
     return Page;
 }(EventClass);
 
+/**
+ * Class for representing the a panel within a page.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
+
 var Panel = function () {
+    /**
+     * Initializes the new panel object. Sets a number
+     * of local properties based on the passed in configuration
+     *
+     * @constructs Panel
+     * @param  {Class}  page   Page class instance
+     * @param  {Object} config Configuration
+     * @param  {Number} index  Index of panels within page
+     */
     function Panel(page, config, index) {
         _classCallCheck(this, Panel);
 
@@ -1191,27 +2179,55 @@ var Panel = function () {
         this.index = index;
         this.x = config.x;
         this.y = config.y;
-        this.nextPanel = this.page.config.panels[index + 1] ? index + 1 : false;
-        this.previousPanel = this.page.config.panels[index - 1] ? index - 1 : false;
         this.width = config.width;
         this.height = config.height;
+        this.nextPanel = this.page.config.panels[index + 1] ? index + 1 : false;
+        this.previousPanel = this.page.config.panels[index - 1] ? index - 1 : false;
     }
+
+    /**
+     * Gets the width of the panel.
+     *
+     * @return {Number}
+     */
+
 
     _createClass(Panel, [{
         key: 'getWidth',
         value: function getWidth() {
             return this.width;
         }
+
+        /**
+         * Gets the height of the panel.
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getHeight',
         value: function getHeight() {
             return this.height;
         }
+
+        /**
+         * Gets the x value
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getLeftPos',
         value: function getLeftPos() {
             return this.x;
         }
+
+        /**
+         * Gets the y value
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getTopPos',
         value: function getTopPos() {
@@ -1222,29 +2238,181 @@ var Panel = function () {
     return Panel;
 }();
 
+/**
+ * Constant holding the string value of Page Mode
+ * for comparisons and setters.
+ *
+ * @constant
+ * @type {String}
+ * @default
+ */
+
+
 var PAGE_MODE = 'PAGE_MODE';
+
+/**
+ * Constant holding the string value of Panel Zoom
+ * Mode for comparisons and setters.
+ *
+ * @constant
+ * @type {String}
+ * @default
+ */
 var PANEL_ZOOM_MODE = 'PANEL_ZOOM_MODE';
+
+/**
+ * Constant holding the string value of paging forward
+ * for comparisons and setters.
+ *
+ * @constant
+ * @type {String}
+ * @default
+ */
 var PAGE_BACK = 'PAGE_BACK';
+
+/**
+ * Constant holding the string value of paging backward
+ * for comparisons and setters.
+ *
+ * @constant
+ * @type {String}
+ * @default
+ */
 var PAGE_FORWARD = 'PAGE_FORWARD';
+
+/**
+ * Constant holding the string value of toggling
+ * the main menu for comparisons and setters.
+ *
+ * @constant
+ * @type {String}
+ * @default
+ */
 var TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU';
+/**
+ * String value for no letterbox styling
+ * @constant
+ * @type {String}
+ * @default
+ */
+var LETTERBOX_STYLE_NONE = 'no';
+/**
+ * Opacity value for no letterbox styling
+ * @constant
+ * @type {Number}
+ * @default
+ */
+var LETTERBOX_STYLE_NONE_VALUE = 0;
+/**
+ * String value for opaque letterbox styling
+ * @constant
+ * @type {String}
+ * @default
+ */
+var LETTERBOX_STYLE_OPAQUE = 'opaque';
+/**
+ * Opacity value for opaque letterbox styling
+ * @constant
+ * @type {Number}
+ * @default
+ */
+var LETTERBOX_STYLE_OPAQUE_VALUE = 0.75;
+/**
+ * String value for the solid letterbox styling
+ * @constant
+ * @type {String}
+ * @default
+ */
+var LETTERBOX_STYLE_SOLID = 'solid';
+/**
+ * Opacity value for the solid letterbox styling
+ * @constant
+ * @type {Number}
+ * @default
+ */
+var LETTERBOX_STYLE_SOLID_VALUE = 1;
+/**
+ * The main client class for the Panelz application.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
 
 var Panelz = function (_EventClass4) {
     _inherits(Panelz, _EventClass4);
 
+    /**
+     * Takes in a configuration object for the
+     * application settings.
+     *
+     * @constructs Panelz
+     * @param config
+     */
     function Panelz(config) {
         _classCallCheck(this, Panelz);
 
         var _this4 = _possibleConstructorReturn(this, (Panelz.__proto__ || Object.getPrototypeOf(Panelz)).call(this));
 
         _this4.DEFAULTS = {
-            id: false,
+            /**
+             * The container to load the comic reader into.
+             * Should be a jQuery selector
+             *
+             * @type {String}
+             */
             container: '.panelz-creator-container',
+
+            /**
+             * ID of the book to load when fetching the data.
+             * This value is required if a <#comic> object
+             * has not been provided.
+             *
+             * @type {Boolean}
+             */
+            id: false,
+
+            /**
+             * Object of comic data to load into the reader. Must
+             * contain an id, title, and array of pages. Each page
+             * object must look like the following:
+             *     {
+             *         url: "<urlOfImage>",
+             *         size: <size> //in bytes
+             *         panels: [
+             *             {
+             *                 x: xCoordinateOfPanel
+             *                 y: yCoordinateOfPanel
+             *                 width: widthOfPanel
+             *                 height: heightOfPanel
+             *             }
+             *             ...
+             *         ]
+             *     }
+             * The panels array within each page can be empty if the
+             * page contains to panels to zoom to for the Panel Zoom feature.
+             *
+             * @type {Object}
+             */
             comic: {
+                id: false,
                 title: false,
                 pages: []
             },
+
+            /**
+             * Supply a custom list of endpoints. The Panelz reader
+             * only requires a single endpoint for fetching comic data
+             * via the supplied <#id> configuration.
+             *
+             * The {id} placeholder will be swapped for the supplied
+             * <#id> configuration parameter.
+             *
+             * @type {Object}
+             */
             endpoints: {
-                get: '/comic/'
+                get: '/comic/{id}'
             }
         };
 
@@ -1252,6 +2420,11 @@ var Panelz = function (_EventClass4) {
 
         _this4.settings = new Settings(_this4);
 
+        /**
+         * If the user has supplied an id in the configuration,
+         * fetch the book data using the <#endpoint.get> endpoint.
+         * Otherwise we should have a <#comic> data object to use.
+         */
         if (_this4.config.id) {
             _this4.fetchBookData();
         } else {
@@ -1260,45 +2433,95 @@ var Panelz = function (_EventClass4) {
         return _this4;
     }
 
+    /**
+     * When setting the config object, use this setter to set
+     * a few of the items contained within the object.
+     *
+     * @param  {Object} config Configuration options
+     */
+
+
     _createClass(Panelz, [{
         key: 'getEndpoint',
+
+
+        /**
+         * Gets a specific endpoint from the array of endpoints. Replaces
+         * the {id} placeholder with the id set in the configuration.
+         *
+         * @param  {String} endpoint Which endpoint to grab from the array
+         * @return {String}
+         */
         value: function getEndpoint(endpoint) {
-            return this.endpoints[endpoint];
+            return this.endpoints[endpoint].replace('{id}', this.config.id);
         }
+
+        /**
+         * Uses the {get} endpoint to fetch book data.
+         */
+
     }, {
         key: 'fetchBookData',
         value: function fetchBookData() {
             $.ajax({
-                url: this.getEndpoint('get') + this.config.id,
+                url: this.getEndpoint('get'),
                 method: 'GET',
-                error: this.onRequestError.bind(this),
-                success: this.onBookDataFetched.bind(this)
+                success: this.onBookDataFetched.bind(this),
+                error: this.onRequestError.bind(this)
             });
         }
+
+        /**
+         * When book data has fetched, set internal configuration
+         * options and proceed with setting up the comic with the
+         * returned object. Assumes a valid return format.
+         *
+         * @param  {Object} comic Object data outlined in configuration
+         */
+
     }, {
         key: 'onBookDataFetched',
         value: function onBookDataFetched(comic) {
             this.config.comic = comic;
-
             this.setupBook();
         }
+
+        /**
+         * The request to grab comic data has failed. Currently
+         * does nothing more than output the response to the console.
+         */
+
     }, {
         key: 'onRequestError',
-        value: function onRequestError() {
+        value: function onRequestError(response) {
             console.log('ERROR FETCHING BOOK DATA!', response);
         }
+
+        /**
+         * The reader is ready to setup. Initialize all the objects
+         * needed to run the reader and setup event listeners.
+         */
+
     }, {
         key: 'setupBook',
         value: function setupBook() {
             this.setInitialMode();
 
             this.tutorial = new Tutorial(this, this.settings);
-            this.menu = new Menu(this.config);
-            this.viewport = new ViewPort(this.config);
-            this.book = new Book(this.config);
+            this.viewport = new ViewPort(this);
+            this.book = new Book(this, this.config.comic);
+            this.menu = new Menu(this, this.book, this.tutorial);
 
             this.setEventListeners();
         }
+
+        /**
+         * Sets the initial mode of the reader. If the reader has
+         * read this comic before, their previous mode will be
+         * remembered and used. Otherwise it will check their
+         * settings preferences and fall back on PAGE_MODE.
+         */
+
     }, {
         key: 'setInitialMode',
         value: function setInitialMode() {
@@ -1308,21 +2531,59 @@ var Panelz = function (_EventClass4) {
                 this.mode = this.settings.get('startInPanelZoom') ? PANEL_ZOOM_MODE : PAGE_MODE;
             }
         }
+
+        /**
+         * Sets event listeners on initialized objects. In this
+         * case, we're listening for when the comic has been
+         * fully loaded.
+         */
+
     }, {
         key: 'setEventListeners',
         value: function setEventListeners() {
+            this.on('user:doubletap', this.switchModes.bind(this));
             this.book.on('load', this.onBookLoaded.bind(this));
         }
+
+        /**
+         * Pass along the loaded book event so other objects
+         * only have to listen to and know about the app object.
+         *
+         * @param  {Class} book The class object representing a comic
+         * @fires Panelz#load:book
+         */
+
     }, {
         key: 'onBookLoaded',
         value: function onBookLoaded(book) {
+            /**
+             * Load book event.
+             *
+             * @event Panelz#load:book
+             * @type {object}
+             * @property {Class} book - Book instance
+             */
             this.trigger('load:book', book);
         }
+
+        /**
+         * Getter for the comicc ID
+         *
+         * @return {Mixed}
+         */
+
     }, {
         key: 'getComicId',
         value: function getComicId() {
             return this.config.comic.id;
         }
+
+        /**
+         * Switches the application between the two modes,
+         * PAGE_MODE and PANEL_ZOOM_MODE. Messages the user
+         * about the mode change so they know what mode they are in.
+         */
+
     }, {
         key: 'switchModes',
         value: function switchModes() {
@@ -1332,28 +2593,75 @@ var Panelz = function (_EventClass4) {
 
             this.message(this.getReadableModeText());
         }
+
+        /**
+         * Sets the current application mode. Makes sure the user's
+         * change is remembered in the settings and then triggers
+         * an event for other objects to hook into.
+         *
+         * @param {String} mode Which mode to set.
+         * @fires Panelz#change:mode
+         */
+
     }, {
         key: 'setMode',
         value: function setMode(mode) {
             this.mode = mode;
             this.settings.rememberBookSetting('mode', mode);
+            /**
+             * Change mode event
+             *
+             * @event Panelz#change:mode
+             * @type {String}
+             * @property {string} mode - What mode was set
+             */
             this.trigger('change:mode', mode);
         }
+
+        /**
+         * Gets the human readable version of the current or passed
+         * in mode. Takes the string and breaks it into something readable.
+         * PANEL_ZOOM_MODE -> Panel Zoom Mode
+         *
+         * @param  {String}  mode        Optional mode, otherwise use current mode
+         * @param  {Boolean} insertBreak Whether or not to insert a break element
+         * @return {String}
+         */
+
     }, {
         key: 'getReadableModeText',
-        value: function getReadableModeText(mode) {
+        value: function getReadableModeText(mode, insertBreak) {
             if (!mode) {
                 mode = this.mode;
             }
             return mode.replace(/_/g, ' ').toLowerCase().replace(/(?:^|\s)\S/g, function (a) {
                 return a.toUpperCase();
-            });
+            }).replace(' Mode', insertBreak ? '<br />Mode' : ' Mode');
         }
+
+        /**
+         * Sets the letterboxing in the viewport. Passes in the
+         * width and height available for use and whether or not
+         * the transition should be animated.
+         *
+         * @param {Number}  width   Width left to work with
+         * @param {Number}  height  Height left to work with
+         * @param {Boolean} animate Animate letterbox transition
+         */
+
     }, {
         key: 'setLetterBoxing',
         value: function setLetterBoxing(width, height, animate) {
             this.viewport.setLetterBoxing(width, height, animate);
         }
+
+        /**
+         * Gets the current size of the viewport as an object
+         * containing the width and height.
+         *
+         * @return {Object}
+         */
+
     }, {
         key: 'getViewPortSize',
         value: function getViewPortSize() {
@@ -1362,11 +2670,39 @@ var Panelz = function (_EventClass4) {
                 height: this.viewport.getHeight()
             };
         }
+
+        /**
+         * Returns the last user event object recorded.
+         *
+         * @return {Object}
+         */
+
+    }, {
+        key: 'getLastUserEvent',
+        value: function getLastUserEvent() {
+            return this.viewport.getLastUserEvent();
+        }
+
+        /**
+         * Appends a jQuery <#$markup> object to the viewport.
+         *
+         * @param {Object} $markup jQuery element representing the page
+         * @return {Object}
+         */
+
     }, {
         key: 'addPageMarkupToViewPort',
         value: function addPageMarkupToViewPort($markup) {
             return $markup.appendTo(this.viewport.$element);
         }
+
+        /**
+         * Displays a message for the user within the viewport.
+         *
+         * @param  {String} message Message to display
+         * @param  {Number} time    Time in ms to display the message
+         */
+
     }, {
         key: 'message',
         value: function message(_message, time) {
@@ -1379,15 +2715,37 @@ var Panelz = function (_EventClass4) {
             this.$container = $(config.container);
             config.app = this;
             this._config = config;
-        },
+        }
+
+        /**
+         * Gets the configuration object internal.
+         *
+         * @return {Object}
+         */
+        ,
         get: function get() {
             return this._config;
         }
+
+        /**
+         * When setting the $container property, append the the
+         * markup needed to run the Panelz reader.
+         *
+         * @param  {Object} $container jQuery object to append markup to
+         */
+
     }, {
         key: '$container',
         set: function set($container) {
             this._$container = $container.append(PANELZ_MARKUP);
-        },
+        }
+
+        /**
+         * Gets the $container object internal.
+         *
+         * @return {Object}
+         */
+        ,
         get: function get() {
             return _$container;
         }
@@ -1396,37 +2754,113 @@ var Panelz = function (_EventClass4) {
     return Panelz;
 }(EventClass);
 
+/**
+ * Handles the various user settings for the user. Keeps
+ * track of selections made by the user as well as how
+ * those selections are stored (local storage).
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
+
 var Settings = function (_EventClass5) {
     _inherits(Settings, _EventClass5);
 
+    /**
+     * Initializes the settings class with defaults and loads
+     * in saved preferences from local storage.
+     *
+     * @constructs Settings
+     * @param  {Class} app      The Panelz class app instance\
+     */
     function Settings(app) {
         _classCallCheck(this, Settings);
 
         var _this5 = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this));
 
         _this5.DEFAULTS = {
+            /**
+             * Left hand mode preference
+             * @type {Boolean}
+             */
             leftHandMode: false,
+
+            /**
+             * Whether or not to start in
+             * panel zoom mode
+             * @type {Boolean}
+             */
             startInPanelZoom: false,
+
+            /**
+             * Speed of panel transitions
+             * 0|250|650
+             * @type {Number}
+             */
             panelTransitions: 250,
+
+            /**
+             * Letter boxing style
+             * solid|opaque|none
+             * @type {String}
+             */
             letterboxing: 'solid',
+
+            /**
+             * Whether or not to detect panels
+             * on double tapping
+             * @type {Boolean}
+             */
             detectPanelOnDoubleTap: true,
+
+            /**
+             * Shows a page on enter in panel zoom mode
+             * @type {Boolean}
+             */
             showPageOnEnter: true,
+
+            /**
+             * Shows a page on exit in panel zoom mode
+             * @type {Boolean}
+             */
             showPageOnExit: true,
+
+            /**
+             * Whether or not to show the tutorial
+             * @type {Boolean}
+             */
             showTutorial: true,
+
+            /**
+             * Whether or not to show a panel change
+             * message in the viewport
+             * @type {Boolean}
+             */
             showPageChangeMessage: false
         };
 
+        /**
+         * What key to store the users preferences at
+         * @type {String}
+         */
         _this5.storageKey = 'panelz_2.0';
 
         _this5.app = app;
-        _this5.config = {};
-
         _this5.localSettings = _this5.getLocalSettings();
         _this5.loadConfig($.extend({}, _this5.DEFAULTS, _this5.getUserSettings()));
         _this5.setFields();
         _this5.setEventListeners();
         return _this5;
     }
+
+    /**
+     * Event listeners for listening to changes or whether or not
+     * they want to reset or clear their settings.
+     */
+
 
     _createClass(Settings, [{
         key: 'setEventListeners',
@@ -1435,33 +2869,74 @@ var Settings = function (_EventClass5) {
             $('body').on('click', '[data-reset-settings]', this.reset.bind(this));
             $('body').on('click', '[data-clear-data]', this.clear.bind(this));
         }
+
+        /**
+         * Loads the settings configuration by looping through
+         * the keys and setting them.
+         *
+         * @param  {Object} config Settings configuration
+         */
+
     }, {
         key: 'loadConfig',
         value: function loadConfig(config) {
+            this.config = {};
             Object.keys(config).forEach(function (setting) {
                 this.set(setting, config[setting]);
             }.bind(this));
         }
+
+        /**
+         * Loops through all of the settings and sets each
+         * field value and whether or not they should each
+         * be checked/filled out
+         */
+
     }, {
         key: 'setFields',
         value: function setFields() {
             this.keys().forEach(this.setField.bind(this));
         }
+
+        /**
+         * Sets an interface field with the value and status
+         * from a given setting value. Assumes that the input
+         * shares the same name value as the setting itself.
+         *
+         * @param {String} setting Which setting to set
+         */
+
     }, {
         key: 'setField',
         value: function setField(setting) {
             var $fields = $('[name="' + setting + '"]');
             var value = this.get(setting);
+            // May be a radio button, so may have several fields
             $fields.each(function (index, field) {
                 var $this = $(field);
                 var fieldVal = $this.val();
+                // If it's a checkbox condition, set the true/value
+                // property of the checked field
                 if ($this.is(':checkbox')) {
                     $this.prop('checked', !!value);
+                    // For radios, we need to normalize the field value to turn
+                    // true/false strings into booleans and string numbers
+                    // into actual numbers
                 } else if ($this.is(':radio') && this.normalizeValue(fieldVal) == value) {
                     $this.prop('checked', true);
                 }
             }.bind(this));
         }
+
+        /**
+         * Normalizes a value into it's proper type. String numbers
+         * are turned into actual integers and true/false strings
+         * are turned into true booleans.
+         *
+         * @param  {Mixed} val Value to normalize
+         * @return {Mixed}
+         */
+
     }, {
         key: 'normalizeValue',
         value: function normalizeValue(val) {
@@ -1471,6 +2946,15 @@ var Settings = function (_EventClass5) {
 
             return val;
         }
+
+        /**
+         * When a field is changed, set the settings accordingly.
+         * If the field has a certain attribute, message the user
+         * that the setting has changed.
+         *
+         * @param  {Object} e Event object
+         */
+
     }, {
         key: 'onFieldChange',
         value: function onFieldChange(e) {
@@ -1484,12 +2968,19 @@ var Settings = function (_EventClass5) {
 
             this.set(name, this.normalizeValue(val));
 
+            // If the field has a data-readable attribute, we can message the
+            // user with the human readable string of the field
             if ($field.closest('.pane__item[data-readable]').length) {
                 var readableFieldLabel = $field.closest('.pane__item[data-readable]').attr('data-readable');
                 var readableTitle = $field.closest('.pane[data-readable]').attr('data-readable');
                 this.app.message(readableTitle + ' set to ' + readableFieldLabel);
             }
         }
+
+        /**
+         * Resets all the settings and messages the user.
+         */
+
     }, {
         key: 'reset',
         value: function reset() {
@@ -1497,6 +2988,12 @@ var Settings = function (_EventClass5) {
             this.setFields();
             this.app.message('Settings reset');
         }
+
+        /**
+         * Clears all the settings, including all of the
+         * settings for every comic they have viewed.
+         */
+
     }, {
         key: 'clear',
         value: function clear() {
@@ -1505,17 +3002,43 @@ var Settings = function (_EventClass5) {
             this.reset();
             this.app.message('Application data cleared');
         }
+
+        /**
+         * Gets a specific setting
+         *
+         * @param  {String} setting Which setting to grab
+         * @return {Mixed}
+         */
+
     }, {
         key: 'get',
         value: function get(setting) {
             return this.config[setting];
         }
+
+        /**
+         * Sets a setting. Triggers a change event in the
+         * settings, making sure to send out the old values
+         * as well as the new value.
+         *
+         * @param {String} setting Setting to set
+         * @param {Mixed} val      What value to set the setting to
+         * @fires Settings#change:<setting>
+         */
+
     }, {
         key: 'set',
         value: function set(setting, val) {
             var oldVal = this.get(setting);
             this.config[setting] = val;
             this.setUserSettings();
+            /**
+             * Setting event
+             *
+             * @event Settings#change:<setting>
+             * @type {Object}
+             * @property {Object} setting, what setting was changed
+             */
             this.trigger('change:' + setting, {
                 setting: setting,
                 value: val,
@@ -1523,11 +3046,27 @@ var Settings = function (_EventClass5) {
                 settings: this.config
             });
         }
+
+        /**
+         * Returns all the configuration keys
+         *
+         * @return {Array} Array of configuration keys
+         */
+
     }, {
         key: 'keys',
         value: function keys() {
             return Object.keys(this.config);
         }
+
+        /**
+         * Gets the settings saved via local storage. If the pull
+         * from local storage fails for some reason catch the
+         * exception and return an empty object.
+         *
+         * @return {Object} Local settings object
+         */
+
     }, {
         key: 'getLocalSettings',
         value: function getLocalSettings() {
@@ -1539,43 +3078,106 @@ var Settings = function (_EventClass5) {
                 return {};
             }
         }
+
+        /**
+         * Sets local storage with the local settings object
+         */
+
     }, {
         key: 'setLocalSettings',
         value: function setLocalSettings() {
             localStorage.setItem(this.storageKey, JSON.stringify(this.localSettings));
         }
+
+        /**
+         * Remembers a setting in local storage. Triggers a
+         * save of the entire local settings object.
+         *
+         * @param  {String} key Setting to set
+         * @param  {Mixed}  val What to set the value to
+         */
+
     }, {
         key: 'remember',
         value: function remember(key, val) {
             this.localSettings[key] = val;
             this.setLocalSettings();
         }
+
+        /**
+         * Gets a local setting via a given key.
+         *
+         * @param  {String} key Setting to grab
+         * @return {Mixed}
+         */
+
     }, {
         key: 'getLocalSetting',
         value: function getLocalSetting(key) {
             return this.localSettings[key];
         }
+
+        /**
+         * Gets all the book specific settings.
+         *
+         * @param {Boolean} allBooks Return all books or just this one
+         * @return {Object}
+         */
+
+    }, {
+        key: 'getBookSettings',
+        value: function getBookSettings(allBooks) {
+            var books = this.getLocalSetting('comics') || {};
+            return allBooks ? books : books[this.app.getComicId()] || {};
+        }
+
+        /**
+         * Remembers a setting specific to the current comic/book.
+         *
+         * @param  {String} key Setting to set
+         * @param  {Mixed}  val Value to set for setting
+         */
+
     }, {
         key: 'rememberBookSetting',
         value: function rememberBookSetting(key, val) {
-            var books = this.getLocalSetting('comics') || {};
-            var bookSettings = books[this.app.getComicId()] || {};
+            var books = this.getBookSettings(true);
+            var bookSettings = books[this.app.getComicId()];
             bookSettings[key] = val;
             books[this.app.getComicId()] = bookSettings;
             this.remember('comics', books);
         }
+
+        /**
+         * Gets a book/comic specific setting
+         *
+         * @param  {String} key Setting to get
+         * @return {Mixed}
+         */
+
     }, {
         key: 'getBookSetting',
         value: function getBookSetting(key) {
-            var books = this.getLocalSetting('comics') || {};
-            var bookSettings = books[this.app.getComicId()] || {};
-            return bookSettings[key];
+            return this.getBookSettings()[key];
         }
+
+        /**
+         * Gets all the user settings.
+         *
+         * @return {Object}
+         */
+
     }, {
         key: 'getUserSettings',
         value: function getUserSettings() {
             return this.getLocalSetting('settings') ? this.getLocalSetting('settings') : {};
         }
+
+        /**
+         * Set user preferences by remembering them
+         * to local storage.
+         */
+
     }, {
         key: 'setUserSettings',
         value: function setUserSettings() {
@@ -1586,9 +3188,35 @@ var Settings = function (_EventClass5) {
     return Settings;
 }(EventClass);
 
+/**
+ * Class for showing and handling the beginners tutorial that
+ * appears in front of loading the comic (unless the reader has
+ * turned this option off or completed the tutorial previously)
+ *
+ * The tutorial shows mp4 videos on repeat as the reader steps
+ * through. At the end of the tutorial, the user is asked if
+ * they want to customize settings. This is also handled by this
+ * class and portion of the interface, as it's another way
+ * to introduce the reader to the various options available to them.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
+
 var Tutorial = function (_EventClass6) {
     _inherits(Tutorial, _EventClass6);
 
+    /**
+     * Initializes the tutorial class with an interactable interface
+     * than can listen to touch events via the HammerJS library.
+     *
+     * @constructs Tutorial
+     * @param  {Class} app      The Panelz class app instance
+     * @param  {Class} settings Settings class instance
+     */
     function Tutorial(app, settings) {
         _classCallCheck(this, Tutorial);
 
@@ -1608,6 +3236,12 @@ var Tutorial = function (_EventClass6) {
         return _this6;
     }
 
+    /**
+     * Adds the various event listeners needed. Listens for user
+     * interactions and settings changes.
+     */
+
+
     _createClass(Tutorial, [{
         key: 'addEventListeners',
         value: function addEventListeners() {
@@ -1622,6 +3256,15 @@ var Tutorial = function (_EventClass6) {
             this.interactable.on('swipeleft', this.next.bind(this));
             this.interactable.on('swiperight', this.back.bind(this));
         }
+
+        /**
+         * User has interacted with the tutorial and wants to proceed
+         * to the next item in the tutorial. This method also employs
+         * hot loading the video of the next panel.
+         *
+         * @param  {Object} e Event object
+         */
+
     }, {
         key: 'next',
         value: function next(e) {
@@ -1640,6 +3283,14 @@ var Tutorial = function (_EventClass6) {
                 $nextPanel.removeClass('tutorial__panel--hidden');
             }
         }
+
+        /**
+         * User has interacted with a tutorial and wants to go back
+         * to the previous item in the tutorial.
+         *
+         * @param  {Object} e Event object
+         */
+
     }, {
         key: 'back',
         value: function back(e) {
@@ -1649,13 +3300,37 @@ var Tutorial = function (_EventClass6) {
                 $panel.prev().removeClass('tutorial__panel--hidden');
             }
         }
+
+        /**
+         * When the tutorial is done, make sure their settings are remembered.
+         * Since the settings can be altered through the tutorial, make sure
+         * the settings fields are set properly.
+         *
+         * @fires Tutorial#done
+         */
+
     }, {
         key: 'done',
         value: function done() {
             this.settings.set('showTutorial', false);
             this.settings.setFields();
+            /**
+             * Triggers the tutorial done event
+             *
+             * @event Tutorial#done
+             * @type {object}
+             */
             this.trigger('done');
         }
+
+        /**
+         * Swaps the image/video when the user selects one of
+         * the tutorial options. This is to show the user different
+         * image/videos for each option.
+         *
+         * @param  {Object} e Event object]
+         */
+
     }, {
         key: 'swapImage',
         value: function swapImage(e) {
@@ -1670,30 +3345,53 @@ var Tutorial = function (_EventClass6) {
                 $video[0].play();
             }, false);
         }
+
+        /**
+         * Sets the mode on the application when they check
+         * or uncheck a specific radio box.
+         *
+         * @param {Object} e Event object
+         */
+
     }, {
         key: 'setBeginnerMode',
         value: function setBeginnerMode(e) {
             var $checkbox = $(e.currentTarget);
             var mode = $checkbox.is(':checked') ? PANEL_ZOOM_MODE : PAGE_MODE;
-            if (this.app.book.isLoaded) {
-                this.app.setMode(mode);
-            }
+            this.app.setMode(mode);
         }
+
+        /**
+         * Toggles whether or not the tutorial is shown or hidden.
+         *
+         * @param {Object} e Event object
+         */
+
     }, {
         key: 'toggle',
-        value: function toggle(ev) {
-            if (ev.value === true) {
+        value: function toggle(e) {
+            if (e.value === true) {
                 this.show();
             } else {
                 this.hide();
             }
         }
+
+        /**
+         * Shows the tutorial interface.
+         */
+
     }, {
         key: 'show',
         value: function show() {
             $('.tutorial__panel').addClass('tutorial__panel--hidden').first().removeClass('tutorial__panel--hidden');
             $('.tutorial').removeClass('tutorial--hidden');
         }
+
+        /**
+         * Hides the tutorial interface.
+         */
+
     }, {
         key: 'hide',
         value: function hide() {
@@ -1704,213 +3402,447 @@ var Tutorial = function (_EventClass6) {
     return Tutorial;
 }(EventClass);
 
+/**
+ * The ViewPort class represents the viewport available to the user
+ * and viewing the comic. All pages and panels have to be sized to
+ * fit within this viewport. It also handles and dispatches user
+ * interaction events.
+ *
+ * @class
+ * @extends EventClass
+ * @author  Ryan Burst <ryanburst@gmail.com>
+ * @version 0.3.0
+ */
+
+
 var ViewPort = function (_EventClass7) {
     _inherits(ViewPort, _EventClass7);
 
-    function ViewPort(config) {
+    /**
+     * Initiates the ViewPort class, by setting properties,
+     * listening to application and interaction events, and
+     * setting up the viewport for use.
+     *
+     * @constructs ViewPort
+     * @param  {Class} app Panelz app instance
+     */
+    function ViewPort(app) {
         _classCallCheck(this, ViewPort);
 
+        /**
+         * Panelz application instance
+         * @type {Class}
+         */
         var _this7 = _possibleConstructorReturn(this, (ViewPort.__proto__ || Object.getPrototypeOf(ViewPort)).call(this));
 
-        _this7.app = config.app;
+        _this7.app = app;
+        /**
+         * Settings class instance, derived from
+         * an application property.
+         * @type {Class}
+         */
+        _this7.settings = app.settings;
+        /**
+         * jQuery object holding the viewport element
+         * @type {Object}
+         */
         _this7.$element = $('.viewport');
+        /**
+         * jQuery object holding the viewport container
+         * @todo Switch this to be the container passed in the initial config
+         * @type {Object}
+         */
         _this7.$container = $(window);
-        _this7.$menu = $('.viewport__menu');
+        /**
+         * jQuery object holding the horizontal letter box
+         * @type {Object}
+         */
         _this7.$horizontalLetterBox = $('.letterbox__horizontal');
+        /**
+         * jQuery object holding the vertical letter box
+         * @type {Object}
+         */
         _this7.$verticalLetterBox = $('.letterbox__vertical');
-
+        /**
+         * The interactable object the user can swipe or perform
+         * user interactions on. Should be a HammerJS instance.
+         * @type {Object}
+         */
+        _this7.interactable = false;
+        /**
+         * Holds the last user event to occur.
+         * @type {Object}
+         */
+        _this7.e = false;
+        /**
+         * Whether or not the user is currently performing the
+         * pinch interaction on the interactable element.
+         * @type {Boolean}
+         */
+        _this7.pinching = false;
+        /**
+         * Function holding the message timeout.
+         * @type {Function}
+         */
+        _this7.messageTimeout = false;
+        /**
+         * Minimum x coordinate for the page back tap zone.
+         * @type {Number}
+         */
+        _this7.PAGE_BACK_MIN = 0;
+        /**
+         * Maximum x coordinate for the page back tap zone.
+         * @type {Number}
+         */
+        _this7.PAGE_BACK_MAX = 0;
+        /**
+         * Minimum x coordinate for the page forward tap zone.
+         * @type {Number}
+         */
+        _this7.PAGE_FORWARD_MIN = 0;
+        /**
+         * Maximum x coordinate for the page forward tap zone.
+         * @type {Number}
+         */
+        _this7.PAGE_FORWARD_MAX = 0;
+        /**
+         * What percentage of the page on the left and right
+         * is allocated to a page turn tap zone.
+         * @type {Number}
+         */
         _this7.PAGE_TURN_THRESHOLD = 0.25;
-        _this7.LETTERBOX_STYLE = _this7.app.settings.get('letterboxing');
-        _this7.LEFT_HAND_MODE = _this7.app.settings.get('leftHandMode');
+        /**
+         * The style of letterbox to use when showing. This
+         * value may change when the user update their settings.
+         * @type {String}
+         */
+        _this7.LETTERBOX_STYLE = _this7.settings.get('letterboxing');
+        /**
+         * Whether or not to switch the left and right tap zones for
+         * moving the book forward and backward. This value may change
+         * when the user updates their settings.
+         * @type {Boolean}
+         */
+        _this7.LEFT_HAND_MODE = _this7.settings.get('leftHandMode');
 
+        _this7.setInteractable();
         _this7.setEventListeners();
         _this7.setViewPortSize();
         _this7.setTapThresholds();
         _this7.setLetterBoxStyle();
+        return _this7;
+    }
 
-        _this7.interactable = new Hammer.Manager(_this7.$element.find('.viewport__interactable')[0]);
+    /**
+     * Sets the interactable object by initiating the HammerJS library.
+     * Enables the relevant touch events and registers them accordingly.
+     */
 
-        var pan = new Hammer.Pan({ threshold: 20, enable: _this7.canRecognizePan.bind(_this7) });
-        var pinch = new Hammer.Pinch({ threshold: 0, enable: _this7.canRecognizePinch.bind(_this7), domEvents: true });
-        var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
-        var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });
-        var swipe = new Hammer.Swipe({ enable: _this7.canRecognizeSwipe.bind(_this7) });
 
-        _this7.interactable.add([pan, doubletap, singletap, swipe, pinch]);
+    _createClass(ViewPort, [{
+        key: 'setInteractable',
+        value: function setInteractable() {
+            this.interactable = new Hammer.Manager(this.$element.find('.viewport__interactable')[0]);
 
-        //pan.recognizeWith(pinch);
-        doubletap.recognizeWith(singletap);
+            var pan = new Hammer.Pan({ threshold: 20, enable: this.canRecognizePan.bind(this) });
+            var pinch = new Hammer.Pinch({ threshold: 0, enable: this.canRecognizePinch.bind(this), domEvents: true });
+            var singletap = new Hammer.Tap({ threshold: 2, posThreshold: 150 });
+            var doubletap = new Hammer.Tap({ event: 'doubletap', taps: 2, threshold: 2, posThreshold: 150 });
+            var swipe = new Hammer.Swipe({ enable: this.canRecognizeSwipe.bind(this) });
 
-        singletap.requireFailure(doubletap);
-        pan.requireFailure(pinch);
+            this.interactable.add([pan, doubletap, singletap, swipe, pinch]);
 
-        $('body').on('touchend', function () {
-            this.$menu.removeClass('viewport__menu--was-shown');
-            if (this.$menu.hasClass('viewport__menu--active')) {
-                setTimeout(function () {
-                    this.$menu.removeClass('viewport__menu--active').addClass('viewport__menu--was-shown');
-                }.bind(this), 500);
-            }
-        }.bind(_this7));
+            doubletap.recognizeWith(singletap);
 
-        _this7.app.tutorial.on('done', _this7.onTutorialDone.bind(_this7));
-        _this7.app.on('load:book', _this7.onBookLoaded.bind(_this7));
+            singletap.requireFailure(doubletap);
+            pan.requireFailure(pinch);
+        }
 
-        $('body').on('click', '[data-open-pane]', function (e) {
+        /**
+         * Sets event listeners on DOM elements and the application instance.
+         */
+
+    }, {
+        key: 'setEventListeners',
+        value: function setEventListeners() {
+            $('body').on('click', '[data-open-pane]', this.onOpenPane);
+            $('body').on('click', '.pane__item, .tutorial__menu-item', this.onPaneMenuItemClick);
+            $('body').on('click', '[data-skip-to-page]', this.onSkipToPageClick.bind(this));
+            $('body').on('click activate', '[data-close]', this.onCloseClick);
+            this.$container.on('resize', this.setViewPortSize.bind(this));
+            this.app.on('load:book', this.onBookLoaded.bind(this));
+            this.settings.on('change:letterboxing', this.onLetterboxSettingsChange.bind(this));
+            this.settings.on('change:leftHandMode', this.onLeftHandModeSettingsChange.bind(this));
+        }
+
+        /**
+         * User wants to open a pane, do so by removing a hidden class.
+         *
+         * @param {Object} e Event object
+         */
+
+    }, {
+        key: 'onOpenPane',
+        value: function onOpenPane(e) {
             $('.pane--' + $(this).attr('data-open-pane')).removeClass('pane--hidden');
-        });
-        $('body').on('click', '.pane__item, .tutorial__menu-item', function (e) {
+        }
+
+        /**
+         * On a pane menu item click, make sure the item is checked/unchecked accordingly
+         *
+         * @param {Object} e Event object
+         */
+
+    }, {
+        key: 'onPaneMenuItemClick',
+        value: function onPaneMenuItemClick(e) {
             if (!$(e.target).is(':radio, :checkbox, .checkbox__label')) {
                 var $input = $(this).find(':radio, :checkbox');
                 var checked = $input.is(':radio') ? true : !$input.prop('checked');
                 $input.prop('checked', checked).trigger('change');
-                $input.closest('.pane--modal').find('[data-close]').trigger('click');
+                $input.closest('.pane--modal').find('[data-close]').trigger('activate');
             }
-        });
+        }
 
-        $('body').on('click', '[data-skip-to-page]', function (e) {
+        /**
+         * The skip to page item has been clicked so trigger an app
+         * notification event to respond to.
+         * @param {Object} e Event object
+         * @fires Panelz#user:skipToPage
+         */
+
+    }, {
+        key: 'onSkipToPageClick',
+        value: function onSkipToPageClick(e) {
             var $this = $(e.currentTarget);
             var page = $this.attr('data-skip-to-page');
-            $this.closest('.pane').find('[data-close]').trigger('click');
+            $this.closest('.pane').find('[data-close]').trigger('activate');
+            /**
+             * User skip to page event
+             *
+             * @event Panelz#user:skipToPage
+             * @type {Object}
+             * @property {Class} Page instance to skip to
+             */
             this.app.trigger('user:skipToPage', page);
-        }.bind(_this7));
+        }
 
-        $('body').on('click', '[data-close]', function (e) {
+        /**
+         * User wants to close a pane, add the CSS hidden class to hide it
+         * @param {Object} e Event object
+         */
+
+    }, {
+        key: 'onCloseClick',
+        value: function onCloseClick(e) {
             e.preventDefault();
             var $this = $(this);
             $this.closest('.pane').addClass('pane--hidden');
             $this.closest('.pane').find('.pane__content')[0].scrollTop = 0;
-        });
-        return _this7;
-    }
+        }
 
-    _createClass(ViewPort, [{
+        /**
+         * The book/comic has been loaded, so we can add the interaction
+         * events. All of the interaction events are then passed up
+         * to the application for other classes to hook into.
+         *
+         * @param  {Class} book Book class instance
+         */
+
+    }, {
         key: 'onBookLoaded',
         value: function onBookLoaded(book) {
             console.log('Book loaded');
-            this.interactable.on('pinchstart', function (ev) {
+            this.interactable.on('pinchstart', this.passUserEventToApplication.bind(this));
+            this.interactable.on('pinch', this.passUserEventToApplication.bind(this));
+            this.interactable.on('pinchmove', this.passUserEventToApplication.bind(this));
+            this.interactable.on('pinchin', this.passUserEventToApplication.bind(this));
+            this.interactable.on('pinchout', this.passUserEventToApplication.bind(this));
+            this.interactable.on('pinchend', this.passUserEventToApplication.bind(this));
+            this.interactable.on('panstart', this.passUserEventToApplication.bind(this));
+            this.interactable.on('pan', this.passUserEventToApplication.bind(this));
+            this.interactable.on('panleft', this.passUserEventToApplication.bind(this));
+            this.interactable.on('panright', this.passUserEventToApplication.bind(this));
+            this.interactable.on('panend', this.passUserEventToApplication.bind(this));
+            this.interactable.on('doubletap', this.passUserEventToApplication.bind(this));
+            this.interactable.on('tap', this.passUserEventToApplication.bind(this));
+            this.interactable.on('swipeleft', this.passUserEventToApplication.bind(this));
+            this.interactable.on('swiperight', this.passUserEventToApplication.bind(this));
+            // Resize the book
+            $(window).on('resize orientationchange', this.onResize.bind(this));
+        }
+
+        /**
+         * When the letterboxing setting changes, update the
+         * letterbox style accordingly.
+         *
+         * @param  {Object} data Settings event object
+         */
+
+    }, {
+        key: 'onLetterboxSettingsChange',
+        value: function onLetterboxSettingsChange(data) {
+            this.LETTERBOX_STYLE = data.value;
+            this.setLetterBoxStyle();
+        }
+
+        /**
+         * When the left hand mode setting changes, update the
+         * tap zones/thresholds accordingly.
+         *
+         * @param  {Object} data Settings event object
+         */
+
+    }, {
+        key: 'onLeftHandModeSettingsChange',
+        value: function onLeftHandModeSettingsChange(data) {
+            this.LEFT_HAND_MODE = data.value;
+            this.setTapThresholds();
+        }
+
+        /**
+         * Passes a user interaction event up to the application. Some
+         * of the user events have special cases.
+         *
+         * @param  {Object} data Settings event object
+         * @fires  Panelz#user:<interaction>
+         * @return {Boolean}
+         */
+
+    }, {
+        key: 'passUserEventToApplication',
+        value: function passUserEventToApplication(e) {
+            // Hammer likes to fire pan and pinch events, so set
+            // a property which will allow us to disable pan events
+            // while the user is performing pinching
+            if (e.type === 'pinchstart') {
                 this.pinching = true;
-                this.app.trigger('user:pinchstart', ev);
-            }.bind(this));
-            this.interactable.on('pinch', function (ev) {
-                this.app.trigger('user:pinch', ev);
-            }.bind(this));
-            this.interactable.on('pinchmove', function (ev) {
-                this.app.trigger('user:pinchmove', ev);
-            }.bind(this));
-            this.interactable.on('pinchin', function (ev) {
-                this.app.trigger('user:pinchin', { e: ev });
-            }.bind(this));
-            this.interactable.on('pinchout', function (ev) {
-                this.app.trigger('user:pinchout', { e: ev });
-            }.bind(this));
-            this.interactable.on('pinchend', function (ev) {
-                // Hammer is throwing pan events after a pinch end,
-                // so add some delay before turning pinching off
+            }
+            // Hammer is throwing pan events after a pinch end,
+            // so add some delay before turning pinching off
+            if (e.type === 'pinchend') {
                 setTimeout(function () {
                     this.pinching = false;
                 }.bind(this), 100);
-                this.app.trigger('user:pinchend', ev);
-            }.bind(this));
-            this.interactable.on('panstart', function (ev) {
-                this.app.trigger('user:panstart', ev);
-            }.bind(this));
-            this.interactable.on('pan', function (ev) {
-                this.app.trigger('user:pan', ev);
-            }.bind(this));
-            this.interactable.on('panleft', function (ev) {
-                this.app.trigger('user:panleft', ev);
-            }.bind(this));
-            this.interactable.on('panright', function (ev) {
-                this.app.trigger('user:panright', ev);
-            }.bind(this));
-            this.interactable.on('panend', function (ev) {
-                this.app.trigger('user:panend', ev);
-            }.bind(this));
-            this.interactable.on('doubletap', function (ev) {
-                this.app.trigger('user:doubletap', ev);
-                this.app.switchModes();
-            }.bind(this));
-            this.interactable.on("tap", function (ev) {
-                this.app.trigger('user:tap', ev);
-                var cmd = this.findTapZone(ev.center.x, ev.center.y);
+            }
+            // On a tap, we have to figure out where they tapped
+            // and trigger the correct event
+            if (e.type === 'tap') {
+                this.app.trigger('user:tap', e);
+                var cmd = this.findTapZone(e.center.x, e.center.y);
                 if (cmd === PAGE_FORWARD) {
-                    this.app.trigger('user:pageForward', ev);
+                    return this.app.trigger('user:pageForward', e);
                 } else if (cmd === PAGE_BACK) {
-                    this.app.trigger('user:pageBackward', ev);
+                    return this.app.trigger('user:pageBackward', e);
                 } else if (cmd === TOGGLE_MAIN_MENU) {
-                    if (!this.$menu.hasClass('viewport__menu--was-shown')) {
-                        this.$menu.addClass('viewport__menu--active');
-                    }
+                    return this.app.trigger('show:menu');
+                } else {
+                    return true;
                 }
-            }.bind(this));
-            this.interactable.on("swipeleft", function (ev) {
-                if (this.app.mode === PANEL_ZOOM_MODE) {
-                    this.app.trigger('user:pageForward', ev);
-                }
-            }.bind(this));
-            this.interactable.on("swiperight", function (ev) {
-                if (this.app.mode === PANEL_ZOOM_MODE) {
-                    this.app.trigger('user:pageBackward', ev);
-                }
-            }.bind(this));
+            }
+            // Translate the swipeleft event
+            if (e.type === 'swipeleft') {
+                e.type = 'pageForward';
+            }
+            // Translate the swiperight event
+            if (e.type === 'swiperight') {
+                e.type = 'pageBackward';
+            }
 
-            this.app.settings.on('change:letterboxing', function (data) {
-                this.LETTERBOX_STYLE = data.value;
-                this.setLetterBoxStyle();
-            }.bind(this));
+            this.registerUserEvent(e);
 
-            this.app.settings.on('change:leftHandMode', function (data) {
-                this.LEFT_HAND_MODE = data.value;
-                this.setTapThresholds();
-            }.bind(this));
-
-            $(window).on('resize orientationchange', this.onResize.bind(this));
-
-            $('[data-book-title]').text(book.title);
-            $('[data-total-pages]').text(book.pages.length);
-            $('[data-page-num]').text(book.currentPage.index + 1);
-            book.on('pageSet', function (page) {
-                $('[data-page-num]').text(page.index + 1);
-            }.bind(this));
+            /**
+             * User interaction event
+             *
+             * @event Panelz#user:<interaction>
+             * @type {Object}
+             * @property {Object} Interaction event
+             */
+            this.app.trigger('user:' + e.type, e);
         }
+
+        /**
+         * Saves a user event to a local property.
+         *
+         * @param  {Object} e Event Object
+         */
+
     }, {
-        key: 'onTutorialDone',
-        value: function onTutorialDone() {
-            this.$menu.addClass('viewport__menu--active');
-            this.message('The tutorial is always available in the settings menu at the bottom right.', 5000);
+        key: 'registerUserEvent',
+        value: function registerUserEvent(e) {
+            this.e = e;
         }
+
+        /**
+         * Returns the last user event object recorded.
+         *
+         * @return {Object}
+         */
+
+    }, {
+        key: 'getLastUserEvent',
+        value: function getLastUserEvent() {
+            return this.e;
+        }
+
+        /**
+         * Recognize the user pinch event only in Page Mode.
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'canRecognizePinch',
-        value: function canRecognizePinch(rec, input) {
+        value: function canRecognizePinch() {
             return this.app.mode === PAGE_MODE;
         }
+
+        /**
+         * Recognize the user pan event only when in page mode
+         * and if the user is not currently also pinching.
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'canRecognizePan',
-        value: function canRecognizePan(rec, input) {
+        value: function canRecognizePan() {
             return this.app.mode === PAGE_MODE && !this.pinching;
         }
+
+        /**
+         * Recognize the user swipe event only when in panel zoom mode
+         *
+         * @return {Boolean}
+         */
+
     }, {
         key: 'canRecognizeSwipe',
-        value: function canRecognizeSwipe(rec, input) {
+        value: function canRecognizeSwipe() {
             return this.app.mode === PANEL_ZOOM_MODE;
         }
-    }, {
-        key: 'setContainer',
-        value: function setContainer($container) {
-            this.$container = $container;
-        }
-    }, {
-        key: 'setEventListeners',
-        value: function setEventListeners() {
-            this.$container.on('resize', this.setViewPortSize.bind(this));
-        }
+
+        /**
+         * Sets the view port size to the width and height of the
+         * container element.
+         */
+
     }, {
         key: 'setViewPortSize',
-        value: function setViewPortSize(e) {
+        value: function setViewPortSize() {
             this.$element.width(this.$container.outerWidth());
             this.$element.height(this.$container.outerHeight());
         }
+
+        /**
+         * Sets where the tap zones are. In normal mode, it uses
+         * the tap threshold to calculate a percentage of the screen
+         * used for the left and right to be used as forward/back
+         * with the leftover center area used as the menu toggle.
+         *
+         * If left hand mode, switches the left and right zones.
+         */
+
     }, {
         key: 'setTapThresholds',
         value: function setTapThresholds() {
@@ -1926,6 +3858,16 @@ var ViewPort = function (_EventClass7) {
                 this.PAGE_BACK_MAX = this.getWidth() * this.PAGE_TURN_THRESHOLD;
             }
         }
+
+        /**
+         * Figures out what tap zone a pair of x and y coordinates are in.
+         * returns the string constant associated with the correct tap zone.
+         *
+         * @param  {Number} x X coordinate
+         * @param  {Number} y Y coordinate
+         * @return {String}
+         */
+
     }, {
         key: 'findTapZone',
         value: function findTapZone(x, y) {
@@ -1937,12 +3879,21 @@ var ViewPort = function (_EventClass7) {
             }
             return TOGGLE_MAIN_MENU;
         }
+
+        /**
+         * Sets letterboxing style given leftover width and height to work with.
+         * The left over size is divided in half to put letterboxes on both sides.
+         * @param {Number}  width   Left over width
+         * @param {Number}  height  Left over height
+         * @param {Boolean} animate Whether or not to animate the letterboxes
+         */
+
     }, {
         key: 'setLetterBoxing',
         value: function setLetterBoxing(width, height, animate) {
             var horizSize = height > 0 ? height / 2 : 0;
             var vertSize = width > 0 ? width / 2 : 0;
-            var speed = this.app.settings.get('panelTransitions');
+            var speed = this.settings.get('panelTransitions');
             animate = typeof animate === 'undefined' ? true : animate;
             this.$horizontalLetterBox.animate({
                 height: horizSize
@@ -1957,24 +3908,52 @@ var ViewPort = function (_EventClass7) {
                 easing: 'easeOutSine'
             });
         }
+
+        /**
+         * Sets the letterbox style by setting the opacity.
+         */
+
     }, {
         key: 'setLetterBoxStyle',
         value: function setLetterBoxStyle() {
-            var opacity = this.LETTERBOX_STYLE === 'no' ? 0 : this.LETTERBOX_STYLE === 'opaque' ? 0.75 : 1;
+            var opacity = this.LETTERBOX_STYLE === LETTERBOX_STYLE_NONE ? LETTERBOX_STYLE_NONE_VALUE : this.LETTERBOX_STYLE === LETTERBOX_STYLE_OPAQUE ? LETTERBOX_STYLE_OPAQUE_VALUE : LETTERBOX_STYLE_SOLID_VALUE;
 
             this.$horizontalLetterBox.css('opacity', opacity);
             this.$verticalLetterBox.css('opacity', opacity);
         }
+
+        /**
+         * Gets the width of the viewport.
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getWidth',
         value: function getWidth() {
             return this.$element.outerWidth();
         }
+
+        /**
+         * Gets the height of the viewport.
+         *
+         * @return {Number}
+         */
+
     }, {
         key: 'getHeight',
         value: function getHeight() {
             return this.$element.outerHeight();
         }
+
+        /**
+         * Shows a message in the viewport for the user. Disappears
+         * after a set or passed in amount of time.
+         *
+         * @param  {String} text Message to display
+         * @param  {Number} time Time to show message in ms
+         */
+
     }, {
         key: 'message',
         value: function message(text, time) {
@@ -1992,11 +3971,27 @@ var ViewPort = function (_EventClass7) {
                 $messageContainer.addClass('viewport__message--hide');
             }, time);
         }
+
+        /**
+         * On resize, make sure the viewport and tap thresholds have
+         * been adjusted to fit the new size of the container.
+         *
+         * @param {Object} e Event object
+         * @fires Panelz#resize
+         */
+
     }, {
         key: 'onResize',
         value: function onResize(e) {
             this.setViewPortSize();
             this.setTapThresholds();
+            /**
+             * Resize event
+             *
+             * @event Panelz#resize
+             * @type {Object}
+             * @property {Object} Resize event
+             */
             this.app.trigger('resize', e);
         }
     }]);
