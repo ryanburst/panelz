@@ -291,6 +291,7 @@ class Book extends EventClass {
      */
     setCurrentPage(page) {
         if(this.currentPage && this.currentPage.panels.length) {
+            this.currentPage.resetZoom();
             this.currentPage.currentPanel = false;
         }
         if( this.app.mode === PANEL_ZOOM_MODE && this.currentPage ) {
@@ -402,12 +403,12 @@ class Book extends EventClass {
             // and bail from method (if they don't want to show page on exit)
             if( this.currentPage.currentPanel !== false && ! this.currentPage.hasNextPanel() ) {
                 console.log('Zoom out');
-                this.currentPage.zoomOut();
                 this.currentPage.previousPanel = this.currentPage.getLastPanel();
                 if( this.currentPage.isLast && ! this.currentPage.hasNextPanel() ) {
                     this.onEndReached();
                 }
                 if( this.app.settings.get('showPageOnExit') ) {
+                    this.currentPage.zoomOut();
                     return true;
                 }
             }
@@ -448,9 +449,9 @@ class Book extends EventClass {
             // and bail from the method (if they don't want to show page on enter)
             if( this.currentPage.currentPanel !== false && ! this.currentPage.hasPreviousPanel() ) {
                 console.log('Zoom out');
-                this.currentPage.zoomOut();
                 this.currentPage.nextPanel = this.currentPage.getFirstPanel()
                 if( this.app.settings.get('showPageOnEnter') ) {
+                    this.currentPage.zoomOut();
                     return true;
                 }
             }

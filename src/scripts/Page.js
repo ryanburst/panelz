@@ -962,9 +962,16 @@ class Page extends EventClass {
      * getting rid of the letterboxing.
      */
     zoomOut() {
+        this.app.setLetterBoxing(0,0);
+        this.resetZoom();
+    }
+
+    /**
+     * Resets the zoom level of a page.
+     */
+    resetZoom() {
         this.setCurrentPanel(false);
         this.centerInViewPort(true);
-        this.app.setLetterBoxing(0,0);
         this.app.settings.rememberBookSetting('panel',false);
     }
 

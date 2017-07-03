@@ -484,6 +484,7 @@ var Book = function (_EventClass) {
         key: 'setCurrentPage',
         value: function setCurrentPage(page) {
             if (this.currentPage && this.currentPage.panels.length) {
+                this.currentPage.resetZoom();
                 this.currentPage.currentPanel = false;
             }
             if (this.app.mode === PANEL_ZOOM_MODE && this.currentPage) {
@@ -611,12 +612,12 @@ var Book = function (_EventClass) {
                 // and bail from method (if they don't want to show page on exit)
                 if (this.currentPage.currentPanel !== false && !this.currentPage.hasNextPanel()) {
                     console.log('Zoom out');
-                    this.currentPage.zoomOut();
                     this.currentPage.previousPanel = this.currentPage.getLastPanel();
                     if (this.currentPage.isLast && !this.currentPage.hasNextPanel()) {
                         this.onEndReached();
                     }
                     if (this.app.settings.get('showPageOnExit')) {
+                        this.currentPage.zoomOut();
                         return true;
                     }
                 }
@@ -660,9 +661,9 @@ var Book = function (_EventClass) {
                 // and bail from the method (if they don't want to show page on enter)
                 if (this.currentPage.currentPanel !== false && !this.currentPage.hasPreviousPanel()) {
                     console.log('Zoom out');
-                    this.currentPage.zoomOut();
                     this.currentPage.nextPanel = this.currentPage.getFirstPanel();
                     if (this.app.settings.get('showPageOnEnter')) {
+                        this.currentPage.zoomOut();
                         return true;
                     }
                 }
@@ -2028,9 +2029,19 @@ var Page = function (_EventClass3) {
     }, {
         key: 'zoomOut',
         value: function zoomOut() {
+            this.app.setLetterBoxing(0, 0);
+            this.resetZoom();
+        }
+
+        /**
+         * Resets the zoom level of a page.
+         */
+
+    }, {
+        key: 'resetZoom',
+        value: function resetZoom() {
             this.setCurrentPanel(false);
             this.centerInViewPort(true);
-            this.app.setLetterBoxing(0, 0);
             this.app.settings.rememberBookSetting('panel', false);
         }
 
