@@ -327,7 +327,7 @@ class Settings extends EventClass {
      */
     rememberBookSetting(key,val) {
         var books = this.getBookSettings(true);
-        var bookSettings = books[this.app.getComicId()];
+        var bookSettings = books[this.app.getComicId()] || {};
         bookSettings[key] = val;
         books[this.app.getComicId()] = bookSettings;
         this.remember('comics',books);

@@ -3142,7 +3142,7 @@ var Settings = function (_EventClass5) {
         key: 'rememberBookSetting',
         value: function rememberBookSetting(key, val) {
             var books = this.getBookSettings(true);
-            var bookSettings = books[this.app.getComicId()];
+            var bookSettings = books[this.app.getComicId()] || {};
             bookSettings[key] = val;
             books[this.app.getComicId()] = bookSettings;
             this.remember('comics', books);
