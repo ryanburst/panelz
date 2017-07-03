@@ -114,6 +114,7 @@ class Panelz extends EventClass {
              * Should be a jQuery selector
              *
              * @type {String}
+             * @default
              */
             container: '.panelz-creator-container',
 
@@ -123,6 +124,7 @@ class Panelz extends EventClass {
              * has not been provided.
              *
              * @type {Boolean}
+             * @default
              */
             id: false,
 
@@ -147,6 +149,7 @@ class Panelz extends EventClass {
              * page contains to panels to zoom to for the Panel Zoom feature.
              *
              * @type {Object}
+             * @default
              */
             comic: {
                 id: false,
@@ -163,10 +166,18 @@ class Panelz extends EventClass {
              * <#id> configuration parameter.
              *
              * @type {Object}
+             * @default
              */
             endpoints: {
                 get: '/comic/{id}'
-            }
+            },
+            /**
+             * Directory where the tutorial images are stored
+             *
+             * @type {String}
+             * @default
+             */
+            tutorialImageLocation: '../dist/images/'
         };
 
         this.config = $.extend(true,{},this.DEFAULTS,config);
@@ -276,7 +287,9 @@ class Panelz extends EventClass {
     setupBook() {
         this.setInitialMode();
 
-        this.tutorial = new Tutorial(this,this.settings);
+        this.tutorial = new Tutorial(this,this.settings,{
+            imageLocation: this.config.tutorialImageLocation
+        });
         this.viewport = new ViewPort(this);
         this.book = new Book(this,this.config.comic);
         this.menu = new Menu(this,this.book,this.tutorial);

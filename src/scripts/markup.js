@@ -28,7 +28,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="../dist/images/tutorial-taps.mp4">
+                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="tutorial-taps.mp4">
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -54,7 +54,7 @@ const PANELZ_MARKUP = `
             </div>
             <div class="tutorial__content">
                 <div class="tutorial__image">
-                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="../dist/images/tutorial-double-taps.mp4">
+                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="tutorial-double-taps.mp4">
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -80,7 +80,7 @@ const PANELZ_MARKUP = `
             <div class="tutorial__content">
                 <div class="heading heading--secondary">You can also swipe to navigate!</div>
                 <div class="tutorial__image">
-                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="../dist/images/tutorial-swipes.mp4">
+                    <video autoplay="autoplay" loop="loop" muted playsinline data-tutorial-image="tutorial-swipes.mp4">
                         <source type="video/mp4" />
                     </video>
                 </div>
@@ -133,7 +133,7 @@ const PANELZ_MARKUP = `
                 <ul class="tutorial__menu">
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                          <input type="radio" value="no" id="no-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-none.mp4"/>
+                          <input type="radio" value="no" id="no-letterboxing-tut" name="letterboxing" data-tutorial-image="tutorial-letterboxing-none.mp4"/>
                           <label for="no-letterboxing-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
@@ -142,7 +142,7 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                          <input type="radio" value="opaque" id="opaque-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-opaque.mp4"/>
+                          <input type="radio" value="opaque" id="opaque-letterboxing-tut" name="letterboxing" data-tutorial-image="tutorial-letterboxing-opaque.mp4"/>
                           <label for="opaque-letterboxing-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
@@ -151,7 +151,7 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                          <input type="radio" value="solid" id="solid-letterboxing-tut" name="letterboxing" data-tutorial-image="../dist/images/tutorial-letterboxing-solid.mp4"/>
+                          <input type="radio" value="solid" id="solid-letterboxing-tut" name="letterboxing" data-tutorial-image="tutorial-letterboxing-solid.mp4"/>
                           <label for="solid-letterboxing-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
@@ -181,7 +181,7 @@ const PANELZ_MARKUP = `
                 <ul class="tutorial__menu">
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                            <input type="radio" value="0" id="no-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-none.mp4"/>
+                            <input type="radio" value="0" id="no-animation-tut" name="panelTransitions" data-tutorial-image="tutorial-animations-none.mp4"/>
                             <label for="no-animation-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
@@ -190,7 +190,7 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                            <input type="radio" value="650" id="slow-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-slow.mp4"/>
+                            <input type="radio" value="650" id="slow-animation-tut" name="panelTransitions" data-tutorial-image="tutorial-animations-slow.mp4"/>
                             <label for="slow-animation-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
@@ -199,7 +199,7 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                            <input type="radio" value="250" id="fast-animation-tut" name="panelTransitions" data-tutorial-image="../dist/images/tutorial-animations-fast.mp4"/>
+                            <input type="radio" value="250" id="fast-animation-tut" name="panelTransitions" data-tutorial-image="tutorial-animations-fast.mp4"/>
                             <label for="fast-animation-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">

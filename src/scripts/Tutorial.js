@@ -23,16 +23,18 @@ class Tutorial extends EventClass {
      * @param  {Class} app      The Panelz class app instance
      * @param  {Class} settings Settings class instance
      */
-    constructor(app,settings) {
+    constructor(app,settings,config) {
         super();
 
         this.app = app;
         this.settings = settings;
+        this.config = config;
 
         this.interactable = new Hammer.Manager($('.tutorial')[0]);
         this.interactable.add(new Hammer.Swipe());
 
         this.addEventListeners();
+        this.setImageLocations();
 
         if( this.settings.get('showTutorial') ) {
             this.show();
@@ -136,6 +138,18 @@ class Tutorial extends EventClass {
     }
 
     /**
+     * Updates all the image source locations with the configuration
+     * option. This allows the installer to put the tutorial images
+     * wherever they want.
+     */
+    setImageLocations() {
+        $('[data-tutorial-image]').each( function(index,element) {
+            var $image = $(element);
+            $image.attr('data-tutorial-image',this.imageUrl($image.attr('data-tutorial-image')));
+        }.bind(this));
+    }
+
+    /**
      * Sets the mode on the application when they check
      * or uncheck a specific radio box.
      *
@@ -175,5 +189,16 @@ class Tutorial extends EventClass {
      */
     hide() {
         $('.tutorial').addClass('tutorial--hidden');
+    }
+
+    /**
+     * Returns a full image path based on the config value
+     * of where the images are stored.
+     *
+     * @param  {String} image Which image
+     * @return {String}
+     */
+    imageUrl(image) {
+        return this.config.imageLocation + image;
     }
 }
