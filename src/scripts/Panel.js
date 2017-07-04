@@ -12,7 +12,7 @@ class Panel {
      * of local properties based on the passed in configuration
      *
      * @constructs Panel
-     * @param  {Class}  page   Page class instance
+     * @param  {Page}   page   Page class instance
      * @param  {Object} config Configuration
      * @param  {Number} index  Index of panels within page
      */

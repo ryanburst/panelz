@@ -38,8 +38,8 @@ class Page extends EventClass {
      * as new classes and stores them in a local array property.
      *
      * @constructs Page
-     * @param  {Class}  app    Panelz app instance
-     * @param  {Class}  Book   Book instance
+     * @param  {Panelz} app    Panelz app instance
+     * @param  {Book}   Book   Book instance
      * @param  {Object} config Configuration options
      * @param  {Number} index  Which index within the book this page is
      */
@@ -49,12 +49,12 @@ class Page extends EventClass {
         /**
          * Keep a reference to the app instance as
          * a local property
-         * @type {Class}
+         * @type {Panelz}
          */
         this.app = app;
         /**
          * Book class reference as local property
-         * @type {Class}
+         * @type {Book}
          */
         this.book = Book;
         /**
@@ -286,7 +286,7 @@ class Page extends EventClass {
      * page instance. If it is, this should be the
      * current page.
      *
-     * @param {Class} page Page instance
+     * @param {Page} page Page instance
      */
     setCurrentPageStatus(page) {
         this.isCurrentPage = (page.index===this.index);
@@ -321,7 +321,7 @@ class Page extends EventClass {
          *
          * @event Page#load:page
          * @type {Object}
-         * @property {Class} Current page instance
+         * @property {Page} Current page instance
          */
         this.trigger('load:page',this);
     }
@@ -718,7 +718,7 @@ class Page extends EventClass {
      *
      * @param  {Number} x X coordinate
      * @param  {Number} y Y coordinate
-     * @return {Class}
+     * @return {Panel}
      */
     findPanelWithPos(x,y) {
         var found = false;
@@ -831,7 +831,7 @@ class Page extends EventClass {
     /**
      * Sets the current panel and determines the next and previous panels.
      *
-     * @param {Class} panel Panel instance to set to current
+     * @param {Panel} panel Panel to set to current
      */
     setCurrentPanel(panel) {
         this.currentPanel = panel;
@@ -861,7 +861,7 @@ class Page extends EventClass {
     /**
      * Getter for the previous panel.
      *
-     * @return {Class} Previous panel class instance
+     * @return {Panel}
      */
     getPreviousPanel() {
         return this.previousPanel;
@@ -870,7 +870,7 @@ class Page extends EventClass {
     /**
      * Gets the very last panel in the panels array.
      *
-     * @return {Class} Panel instance
+     * @return {Panel}
      */
     getLastPanel() {
         return this.panels[this.panels.length-1];
@@ -888,7 +888,7 @@ class Page extends EventClass {
     /**
      * Gets the next panel instance.
      *
-     * @return {Class}
+     * @return {Panel}
      */
     getNextPanel() {
         return this.nextPanel;
@@ -897,7 +897,7 @@ class Page extends EventClass {
     /**
      * Gets the very first panel in the panel array
      *
-     * @return {Class}
+     * @return {Panel}
      */
     getFirstPanel() {
         return this.panels.length ? this.panels[0] : false;
@@ -910,7 +910,7 @@ class Page extends EventClass {
      * be if it were best fit and centered on the screen. Again,
      * maths is hard.
      *
-     * @param  {Class}   panel   Panel instance
+     * @param  {Panel}   panel   Panel instance
      * @param  {Boolean} animate Whether or not to animate the zoom
      * @return {Boolean}
      */

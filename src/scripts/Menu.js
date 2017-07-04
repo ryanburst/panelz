@@ -14,9 +14,9 @@ class Menu extends EventClass {
      * for events on the application instance.
      *
      * @constructs Menu
-     * @param {Class} app      Panelz app instance
-     * @param {Class} Book     Book instance
-     * @param {Class} Tutorial Tutorial instance
+     * @param {Panelz}   app      Panelz app instance
+     * @param {Book}     Book     Book instance
+     * @param {Tutorial} Tutorial Tutorial instance
      */
     constructor(app,Book,Tutorial) {
         super();
@@ -121,7 +121,7 @@ class Menu extends EventClass {
      * When a new page has been set, set the current page text
      * to reflect the current page number.
      *
-     * @param  {Class} page Page instance of the new current page
+     * @param {Page} page Page instance of the new current page
      */
     onPageSet(page) {
         $('[data-page-num]').text(page.num);
@@ -141,7 +141,7 @@ class Menu extends EventClass {
      * hiding the menu when we just showed it, add a special class to
      * indicate that it was just shown.
      *
-     * @param  {Object} e Event object
+     * @param {Object} e Event object
      */
     onTouchEnd(e) {
         this.$menu.removeClass('viewport__menu--was-shown');

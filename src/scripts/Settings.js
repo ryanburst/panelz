@@ -14,7 +14,7 @@ class Settings extends EventClass {
      * in saved preferences from local storage.
      *
      * @constructs Settings
-     * @param  {Class} app      The Panelz class app instance\
+     * @param {Panelz} app The Panelz class app instance\
      */
     constructor(app) {
         super();

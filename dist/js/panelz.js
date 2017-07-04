@@ -228,7 +228,7 @@ var Book = function (_EventClass) {
      * initial varaibles and listens for events on the application.
      *
      * @constructs Book
-     * @param  {Class}  app    Panelz app instance
+     * @param  {Panelz}  app    Panelz app instance
      * @param  {Object} config Configuration options
      */
     function Book(app, config) {
@@ -243,7 +243,7 @@ var Book = function (_EventClass) {
         _this.config = config;
         /**
          * Panelz app instance
-         * @type {Class}
+         * @type {Panelz}
          */
         _this.app = app;
         /**
@@ -337,7 +337,7 @@ var Book = function (_EventClass) {
          * When a page is loaded, update the total number of pages
          * loaded. If that's all of them, trigger the book loaded method.
          *
-         * @param  {Class} page Page instance
+         * @param {Page} page Page instance
          */
 
     }, {
@@ -396,7 +396,7 @@ var Book = function (_EventClass) {
                  *
                  * @event Book#load:book:<setting>
                  * @type {Object}
-                 * @property {Class} Book class instance
+                 * @property {Book} Book class instance
                  */
                 this.trigger('load:book', this);
                 $('.loading').addClass('loading--hidden');
@@ -476,7 +476,7 @@ var Book = function (_EventClass) {
         /**
          * Sets the current page of the comic.
          *
-         * @param {Class} page Page class instance
+         * @param {Page} page Page class instance
          * @fires Book#pageSet
          */
 
@@ -504,7 +504,7 @@ var Book = function (_EventClass) {
              *
              * @event Book#pageSet
              * @type {Object}
-             * @property {Class} Page instance of current page
+             * @property {Page} Page instance of current page
              */
             this.trigger('pageSet', page);
 
@@ -557,7 +557,7 @@ var Book = function (_EventClass) {
         /**
          * Gets the next page instance in the sequence.
          *
-         * @return {Class}
+         * @return {Array}
          */
 
     }, {
@@ -569,7 +569,7 @@ var Book = function (_EventClass) {
         /**
          * Gets the previous page instance in the sequence.
          *
-         * @return {Class}
+         * @return {Array}
          */
 
     }, {
@@ -797,9 +797,9 @@ var Menu = function (_EventClass2) {
      * for events on the application instance.
      *
      * @constructs Menu
-     * @param {Class} app      Panelz app instance
-     * @param {Class} Book     Book instance
-     * @param {Class} Tutorial Tutorial instance
+     * @param {Panelz}   app      Panelz app instance
+     * @param {Book}     Book     Book instance
+     * @param {Tutorial} Tutorial Tutorial instance
      */
     function Menu(app, Book, Tutorial) {
         _classCallCheck(this, Menu);
@@ -932,7 +932,7 @@ var Menu = function (_EventClass2) {
          * When a new page has been set, set the current page text
          * to reflect the current page number.
          *
-         * @param  {Class} page Page instance of the new current page
+         * @param {Page} page Page instance of the new current page
          */
 
     }, {
@@ -958,7 +958,7 @@ var Menu = function (_EventClass2) {
          * hiding the menu when we just showed it, add a special class to
          * indicate that it was just shown.
          *
-         * @param  {Object} e Event object
+         * @param {Object} e Event object
          */
 
     }, {
@@ -1021,8 +1021,8 @@ var Page = function (_EventClass3) {
      * as new classes and stores them in a local array property.
      *
      * @constructs Page
-     * @param  {Class}  app    Panelz app instance
-     * @param  {Class}  Book   Book instance
+     * @param  {Panelz} app    Panelz app instance
+     * @param  {Book}   Book   Book instance
      * @param  {Object} config Configuration options
      * @param  {Number} index  Which index within the book this page is
      */
@@ -1032,14 +1032,14 @@ var Page = function (_EventClass3) {
         /**
          * Keep a reference to the app instance as
          * a local property
-         * @type {Class}
+         * @type {Panelz}
          */
         var _this3 = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this));
 
         _this3.app = app;
         /**
          * Book class reference as local property
-         * @type {Class}
+         * @type {Book}
          */
         _this3.book = Book;
         /**
@@ -1267,7 +1267,7 @@ var Page = function (_EventClass3) {
          * page instance. If it is, this should be the
          * current page.
          *
-         * @param {Class} page Page instance
+         * @param {Page} page Page instance
          */
 
     }, {
@@ -1309,7 +1309,7 @@ var Page = function (_EventClass3) {
              *
              * @event Page#load:page
              * @type {Object}
-             * @property {Class} Current page instance
+             * @property {Page} Current page instance
              */
             this.trigger('load:page', this);
         }
@@ -1748,7 +1748,7 @@ var Page = function (_EventClass3) {
          *
          * @param  {Number} x X coordinate
          * @param  {Number} y Y coordinate
-         * @return {Class}
+         * @return {Panel}
          */
 
     }, {
@@ -1879,7 +1879,7 @@ var Page = function (_EventClass3) {
         /**
          * Sets the current panel and determines the next and previous panels.
          *
-         * @param {Class} panel Panel instance to set to current
+         * @param {Panel} panel Panel to set to current
          */
 
     }, {
@@ -1907,7 +1907,7 @@ var Page = function (_EventClass3) {
         /**
          * Getter for the previous panel.
          *
-         * @return {Class} Previous panel class instance
+         * @return {Panel}
          */
 
     }, {
@@ -1919,7 +1919,7 @@ var Page = function (_EventClass3) {
         /**
          * Gets the very last panel in the panels array.
          *
-         * @return {Class} Panel instance
+         * @return {Panel}
          */
 
     }, {
@@ -1943,7 +1943,7 @@ var Page = function (_EventClass3) {
         /**
          * Gets the next panel instance.
          *
-         * @return {Class}
+         * @return {Panel}
          */
 
     }, {
@@ -1955,7 +1955,7 @@ var Page = function (_EventClass3) {
         /**
          * Gets the very first panel in the panel array
          *
-         * @return {Class}
+         * @return {Panel}
          */
 
     }, {
@@ -1971,7 +1971,7 @@ var Page = function (_EventClass3) {
          * be if it were best fit and centered on the screen. Again,
          * maths is hard.
          *
-         * @param  {Class}   panel   Panel instance
+         * @param  {Panel}   panel   Panel instance
          * @param  {Boolean} animate Whether or not to animate the zoom
          * @return {Boolean}
          */
@@ -2179,7 +2179,7 @@ var Panel = function () {
      * of local properties based on the passed in configuration
      *
      * @constructs Panel
-     * @param  {Class}  page   Page class instance
+     * @param  {Page}   page   Page class instance
      * @param  {Object} config Configuration
      * @param  {Number} index  Index of panels within page
      */
@@ -2381,7 +2381,7 @@ var Panelz = function (_EventClass4) {
              * This value is required if a <#comic> object
              * has not been provided.
              *
-             * @type {Boolean}
+             * @type {String}
              * @default
              */
             id: false,
@@ -2573,8 +2573,8 @@ var Panelz = function (_EventClass4) {
          * Pass along the loaded book event so other objects
          * only have to listen to and know about the app object.
          *
-         * @param  {Class} book The class object representing a comic
-         * @fires Panelz#load:book
+         * @param  {Book} book The class object representing a comic
+         * @fires  Panelz#load:book
          */
 
     }, {
@@ -2585,7 +2585,7 @@ var Panelz = function (_EventClass4) {
              *
              * @event Panelz#load:book
              * @type {object}
-             * @property {Class} book - Book instance
+             * @property {Book} Book loaded
              */
             this.trigger('load:book', book);
         }
@@ -2798,7 +2798,7 @@ var Settings = function (_EventClass5) {
      * in saved preferences from local storage.
      *
      * @constructs Settings
-     * @param  {Class} app      The Panelz class app instance\
+     * @param {Panelz} app The Panelz class app instance\
      */
     function Settings(app) {
         _classCallCheck(this, Settings);
@@ -3238,8 +3238,8 @@ var Tutorial = function (_EventClass6) {
      * than can listen to touch events via the HammerJS library.
      *
      * @constructs Tutorial
-     * @param  {Class} app      The Panelz class app instance
-     * @param  {Class} settings Settings class instance
+     * @param  {Panelz}   app      The Panelz class app instance
+     * @param  {Settings} settings Settings class instance
      */
     function Tutorial(app, settings, config) {
         _classCallCheck(this, Tutorial);
@@ -3479,14 +3479,14 @@ var ViewPort = function (_EventClass7) {
      * setting up the viewport for use.
      *
      * @constructs ViewPort
-     * @param  {Class} app Panelz app instance
+     * @param {Panelz} app Panelz app instance
      */
     function ViewPort(app) {
         _classCallCheck(this, ViewPort);
 
         /**
          * Panelz application instance
-         * @type {Class}
+         * @type {Panelz}
          */
         var _this7 = _possibleConstructorReturn(this, (ViewPort.__proto__ || Object.getPrototypeOf(ViewPort)).call(this));
 
@@ -3494,7 +3494,7 @@ var ViewPort = function (_EventClass7) {
         /**
          * Settings class instance, derived from
          * an application property.
-         * @type {Class}
+         * @type {Settings}
          */
         _this7.settings = app.settings;
         /**
@@ -3677,7 +3677,7 @@ var ViewPort = function (_EventClass7) {
              *
              * @event Panelz#user:skipToPage
              * @type {Object}
-             * @property {Class} Page instance to skip to
+             * @property {Page} Page instance to skip to
              */
             this.app.trigger('user:skipToPage', page);
         }
@@ -3701,7 +3701,7 @@ var ViewPort = function (_EventClass7) {
          * events. All of the interaction events are then passed up
          * to the application for other classes to hook into.
          *
-         * @param  {Class} book Book class instance
+         * @param {Book} book The book that was loaded
          */
 
     }, {

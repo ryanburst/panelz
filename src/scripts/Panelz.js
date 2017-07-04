@@ -123,7 +123,7 @@ class Panelz extends EventClass {
              * This value is required if a <#comic> object
              * has not been provided.
              *
-             * @type {Boolean}
+             * @type {String}
              * @default
              */
             id: false,
@@ -327,8 +327,8 @@ class Panelz extends EventClass {
      * Pass along the loaded book event so other objects
      * only have to listen to and know about the app object.
      *
-     * @param  {Class} book The class object representing a comic
-     * @fires Panelz#load:book
+     * @param  {Book} book The class object representing a comic
+     * @fires  Panelz#load:book
      */
     onBookLoaded(book) {
         /**
@@ -336,7 +336,7 @@ class Panelz extends EventClass {
          *
          * @event Panelz#load:book
          * @type {object}
-         * @property {Class} book - Book instance
+         * @property {Book} Book loaded
          */
         this.trigger('load:book',book);
     }

@@ -15,7 +15,7 @@ class Book extends EventClass {
      * initial varaibles and listens for events on the application.
      *
      * @constructs Book
-     * @param  {Class}  app    Panelz app instance
+     * @param  {Panelz}  app    Panelz app instance
      * @param  {Object} config Configuration options
      */
     constructor(app,config) {
@@ -27,7 +27,7 @@ class Book extends EventClass {
         this.config = config;
         /**
          * Panelz app instance
-         * @type {Class}
+         * @type {Panelz}
          */
         this.app = app;
         /**
@@ -165,7 +165,7 @@ class Book extends EventClass {
      * When a page is loaded, update the total number of pages
      * loaded. If that's all of them, trigger the book loaded method.
      *
-     * @param  {Class} page Page instance
+     * @param {Page} page Page instance
      */
     onPageLoaded(page) {
         this.loaded += 1;
@@ -218,7 +218,7 @@ class Book extends EventClass {
              *
              * @event Book#load:book:<setting>
              * @type {Object}
-             * @property {Class} Book class instance
+             * @property {Book} Book class instance
              */
             this.trigger('load:book',this);
             $('.loading').addClass('loading--hidden');
@@ -286,7 +286,7 @@ class Book extends EventClass {
     /**
      * Sets the current page of the comic.
      *
-     * @param {Class} page Page class instance
+     * @param {Page} page Page class instance
      * @fires Book#pageSet
      */
     setCurrentPage(page) {
@@ -311,7 +311,7 @@ class Book extends EventClass {
          *
          * @event Book#pageSet
          * @type {Object}
-         * @property {Class} Page instance of current page
+         * @property {Page} Page instance of current page
          */
         this.trigger('pageSet',page);
 
@@ -360,7 +360,7 @@ class Book extends EventClass {
     /**
      * Gets the next page instance in the sequence.
      *
-     * @return {Class}
+     * @return {Array}
      */
     getNextPage() {
         return this.pages[this.currentPage.index+1];
@@ -369,7 +369,7 @@ class Book extends EventClass {
     /**
      * Gets the previous page instance in the sequence.
      *
-     * @return {Class}
+     * @return {Array}
      */
     getPreviousPage() {
         return this.pages[this.currentPage.index-1];

@@ -16,19 +16,19 @@ class ViewPort extends EventClass {
      * setting up the viewport for use.
      *
      * @constructs ViewPort
-     * @param  {Class} app Panelz app instance
+     * @param {Panelz} app Panelz app instance
      */
     constructor(app) {
         super();
         /**
          * Panelz application instance
-         * @type {Class}
+         * @type {Panelz}
          */
         this.app = app;
         /**
          * Settings class instance, derived from
          * an application property.
-         * @type {Class}
+         * @type {Settings}
          */
         this.settings = app.settings;
         /**
@@ -194,7 +194,7 @@ class ViewPort extends EventClass {
          *
          * @event Panelz#user:skipToPage
          * @type {Object}
-         * @property {Class} Page instance to skip to
+         * @property {Page} Page instance to skip to
          */
         this.app.trigger('user:skipToPage',page);
     }
@@ -215,7 +215,7 @@ class ViewPort extends EventClass {
      * events. All of the interaction events are then passed up
      * to the application for other classes to hook into.
      *
-     * @param  {Class} book Book class instance
+     * @param {Book} book The book that was loaded
      */
     onBookLoaded(book) {
         console.log('Book loaded');

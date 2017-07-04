@@ -20,8 +20,8 @@ class Tutorial extends EventClass {
      * than can listen to touch events via the HammerJS library.
      *
      * @constructs Tutorial
-     * @param  {Class} app      The Panelz class app instance
-     * @param  {Class} settings Settings class instance
+     * @param  {Panelz}   app      The Panelz class app instance
+     * @param  {Settings} settings Settings class instance
      */
     constructor(app,settings,config) {
         super();
