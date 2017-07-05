@@ -74,6 +74,7 @@ they were addressed in this round of coding.
 
 ### Version/Round Two Feedback
 [Version Two Demo](https://ryanburst.github.io/panelz/demo/v2.0/)
+
 | Feedback | How it was Addressed |
 | --- | --- |
 | Not zooming in on panel they tap on | Added panel detection on double tap. Since new users may get confused when switching to Panel Zoom Mode a setting option for turning this on and off has been added to the settings as well as the customize settings section.
