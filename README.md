@@ -93,6 +93,7 @@ they were addressed in this round of coding.
 
 ### Version/Round One Feedback
 [Version One Demo](https://ryanburst.github.io/panelz/demo/v1.0/)
+
 | Feedback | How it was Addressed |
 | --- | --- |
 | Panel Zoom toggle button on menu doesn't work | Fixed bug that was causing menu toggle to not work
