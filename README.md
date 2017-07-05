@@ -72,6 +72,7 @@
 Below is a table with a list of feedback from previous group discussions and how
 they were addressed in this round of coding.
 
+### Version/Round Two Feedback
 | Feedback | How it was Addressed |
 | --- | --- |
 | Not zooming in on panel they tap on | Added panel detection on double tap. Since new users may get confused when switching to Panel Zoom Mode a setting option for turning this on and off has been added to the settings as well as the customize settings section.
@@ -87,3 +88,18 @@ they were addressed in this round of coding.
 | Improvement | Added `End of Comic` message when the user has reached the end of the comic
 | Improvement | Added `Page X` messaging when switching pages and option in settings to turn it on  or off (off by default)
 | Improvement | Fully commented code
+
+### Version/Round One Feedback
+| Feedback | How it was Addressed |
+| --- | --- |
+| Panel Zoom toggle button on menu doesn't work | Fixed bug that was causing menu toggle to not work
+| Panel Zoom toggle button isn't clear when activated or not | Updated toggle button text to reflect what mode you are currently in
+| No or inconsistent messaging when switching mode | Added message that always pops up when you switch modes
+| Left Handed mode wording is confusing | Clarified wording
+| Page index icon was confusing/not clear | Added words/titles alongside iconography
+| Ordering of settings seemed off | Switched `Panel Zoom` options to the top and put `General` options at the bottom to follow other application patterns
+| Opening copy on tutorial seemed a little stand-offish to newer users | Updated copy to be more friendly and welcoming
+| `Left Tap` and `Tap left` language inconsistent | Clarified and updated language to be consistent
+| Swiping tutorial panel was confusing and unclear | Updated all tutorial imagery to be dynamic videos to better show actions
+| Default settings wanted for new users differs from default settings wanted by experienced users | Added a `Customize Settings` section after tutorial as a part of the onboarding experience, added ability to customize settings before using the application with the ability to skip and use defaults for experienced users
+| No user feedback when choosing radio options | Added messaging when selecting settings to reinforce the user's choice
