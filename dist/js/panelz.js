@@ -2870,7 +2870,7 @@ var Settings = function (_EventClass5) {
          * What key to store the users preferences at
          * @type {String}
          */
-        _this5.storageKey = 'panelz_2.0';
+        _this5.storageKey = 'panelz_3.0';
 
         _this5.app = app;
         _this5.localSettings = _this5.getLocalSettings();

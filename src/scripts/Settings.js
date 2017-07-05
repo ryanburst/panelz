@@ -84,7 +84,7 @@ class Settings extends EventClass {
          * What key to store the users preferences at
          * @type {String}
          */
-        this.storageKey = 'panelz_2.0';
+        this.storageKey = 'panelz_3.0';
 
         this.app = app;
         this.localSettings = this.getLocalSettings();
