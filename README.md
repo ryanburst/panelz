@@ -73,6 +73,7 @@ Below is a table with a list of feedback from previous group discussions and how
 they were addressed in this round of coding.
 
 ### Version/Round Two Feedback
+[Version Two Demo](https://ryanburst.github.io/panelz/demo/v2.0/)
 | Feedback | How it was Addressed |
 | --- | --- |
 | Not zooming in on panel they tap on | Added panel detection on double tap. Since new users may get confused when switching to Panel Zoom Mode a setting option for turning this on and off has been added to the settings as well as the customize settings section.
@@ -90,6 +91,7 @@ they were addressed in this round of coding.
 | Improvement | Fully commented code
 
 ### Version/Round One Feedback
+[Version One Demo](https://ryanburst.github.io/panelz/demo/v1.0/)
 | Feedback | How it was Addressed |
 | --- | --- |
 | Panel Zoom toggle button on menu doesn't work | Fixed bug that was causing menu toggle to not work
