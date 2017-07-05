@@ -709,6 +709,8 @@ var Book = function (_EventClass) {
          * Application event listeners
          */
         value: function setEventListeners() {
+            this.on('pageSet', this.messagePageNum.bind(this));
+            this.on('load:book', this.messagePageNum.bind(this));
             this.app.on('user:skipToPage', this.skipToPage.bind(this));
             this.app.on('user:panend', this.onPanEnd.bind(this));
             this.app.on('user:pageForward', this.pageForward.bind(this));
@@ -837,6 +839,18 @@ var Book = function (_EventClass) {
         key: 'onEndReached',
         value: function onEndReached() {
             this.app.message('End of comic');
+        }
+
+        /**
+         * If the settings allow, message the user the current page number.
+         */
+
+    }, {
+        key: 'messagePageNum',
+        value: function messagePageNum() {
+            if (this.isLoaded && this.app.settings.get('showPageChangeMessage')) {
+                this.app.message('Page ' + this.currentPage.num);
+            }
         }
 
         /**
@@ -1016,11 +1030,7 @@ var Book = function (_EventClass) {
             if (this.app.mode === PAGE_MODE) {
                 this.snapPagesToCurrent();
             }
-            this.currentPage.onPageEnterForward();
-            if (this.app.settings.get('showPageChangeMessage')) {
-                this.app.message('Page ' + this.currentPage.num);
-            }
-            return true;
+            return this.currentPage.onPageEnterForward();
         }
 
         /**
@@ -1062,10 +1072,7 @@ var Book = function (_EventClass) {
             if (this.app.mode === PAGE_MODE) {
                 this.snapPagesToCurrent();
             }
-            if (this.app.settings.get('showPageChangeMessage')) {
-                this.app.message('Page ' + this.currentPage.num);
-            }
-            this.currentPage.onPageEnterBackward();
+            return this.currentPage.onPageEnterBackward();
         }
 
         /**
