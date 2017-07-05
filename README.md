@@ -81,6 +81,7 @@ they were addressed in this round of coding.
 | Not zooming in on area that's being pinched on | Changing the pinch origin is extremely tricky, so added the ability to pan while pinching to create the more fluid effect of zooming in on the correct area
 | Scaling out in pinch zoom seems buggy | Fixed zoom out scaling
 | On a slower connection just got a blank screen until the book was loaded, difficult to tell load state | Added a progress load bar
+| On a slower connection couldn't tell when video was loading, just blank space | Added a loading message behind video and improved video sideloading experience
 | Page mode is listed second in the tutorial, but it's the default (and first A-Z) | Switched Page Mode to be first and added `(default)` to all default options in the tutorial
 | Double tap tutorial image could be clearer | Switched all tutorial images to show full page and chose pages that best displayed that tutorial items interaction
 | Order of letterboxing and transitions in customize settings is not in logical order | Changed to be in logical order
