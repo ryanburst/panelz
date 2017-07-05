@@ -85,4 +85,5 @@ they were addressed in this round of coding.
 | No `Mode change`, `Show full page on exit`, or `Show full page on enter` in tutorial's customize settings | Added all book specific options to customize tutorial final page
 | Improvement | Added comic title, current page number, and total page numbers to the popup menu (top)
 | Improvement | Added `End of Comic` message when the user has reached the end of the comic
+| Improvement | Added `Page X` messaging when switching pages and option in settings to turn it on  or off (off by default)
 | Improvement | Fully commented code
