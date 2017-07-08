@@ -72,6 +72,22 @@
 Below is a table with a list of feedback from previous group discussions and how
 they were addressed in this round of coding.
 
+### Final Round Notes
+
+| Feedback | Action | Priority Estimation | Effort Estimation
+| --- | --- | --- | --- |
+| Double Tap toggle, does this need to be a setting? | Keep | N/A | N/A
+| Turn default settings for `Show Page on Enter/Exit` off by default | Change | Low | 5 minutes
+| Page Message setting not needed? | Keep setting, but turn on by default | High | 5 minutes
+| Title bar of webpage reads `Panels` without the z | Add z | Low | 5 minutes
+| On final page in tutorial, `Final Panel Zoom Settings` reads like summary | Change to `Additional Panel Zoom Settings` | Low | 5 minutes
+| Landscape mode in tutorial overlaps items | Figure out how to rearrange layout | Low | 2-3 hours
+| 3rd tutorial page uses double `on` copy | Update copy to read smoother | Low | 10 minutes
+| On the welcome page, copy uses `Panel Zoom` | Update to `Panel Zoom Mode` | Low | 5 minutes
+| Settings should read `Show full page on enter/exit` | Update | Low | 5 minutes
+| For novices, still some confusion initially about what is a page, what is a panel | Figure out how to add explanation to tutorial | High | 4-6 hours
+
+
 ### Version/Round Two Feedback
 [Version Two Demo](https://ryanburst.github.io/panelz/demo/v2.0/)
 
