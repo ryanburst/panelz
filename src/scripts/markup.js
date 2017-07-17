@@ -8,7 +8,7 @@ const PANELZ_MARKUP = `
                 <div class="heading heading--lg">Welcome to Panelz</div>
                 <div class="heading heading--secondary">Here are some terms to get you started:</div>
                 <p><strong>Page Mode</strong> (default) - View the full page and all of its panels as you read.</p>
-                <p><strong>Panel Zoom</strong> - This mode will guide you along your comic, panel by panel.</p>
+                <p><strong>Panel Zoom Mode</strong> - This mode will guide you along your comic, panel by panel.</p>
             </div>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" style="visibility: hidden">Back</button>
@@ -59,7 +59,7 @@ const PANELZ_MARKUP = `
                     </video>
                 </div>
                 <p><strong>Double tap</strong> - Switch between Page Mode and Panel Zoom Mode.</p>
-                <p>The panel tapped on will be detected and zoomed on when switching to Panel Zoom mode. This option can be changed in the settings.
+                <p>The panel that was tapped will be detected and zoomed on when switching to Panel Zoom mode. This option can be changed in the settings.
             </div>
             <div class="tutorial__cta">
                 <button class="tutorial__button tutorial__button--back" data-tutorial-back>Back</button>
@@ -220,7 +220,7 @@ const PANELZ_MARKUP = `
         </div>
         <div class="tutorial__panel tutorial__panel--hidden">
             <form class="tutorial__content">
-                <div class="heading heading--secondary">Final Panel Zoom Settings</div>
+                <div class="heading heading--secondary">Additional Panel Zoom Settings</div>
                 <ul class="tutorial__menu">
                     <li class="tutorial__menu-item">
                         <div class="checkbox">
@@ -247,7 +247,7 @@ const PANELZ_MARKUP = `
                           <label for="showPageOnEnter-tut" class="checkbox__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
-                            Show page on enter
+                            Show full page on enter
                         </div>
                     </li>
                     <li class="tutorial__menu-item">
@@ -256,7 +256,7 @@ const PANELZ_MARKUP = `
                             <label for="showPageOnExit-tut" class="checkbox__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
-                            Show page on exit
+                            Show full page on exit
                         </div>
                     </li>
                 </ul>

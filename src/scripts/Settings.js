@@ -58,13 +58,13 @@ class Settings extends EventClass {
              * Shows a page on enter in panel zoom mode
              * @type {Boolean}
              */
-            showPageOnEnter: true,
+            showPageOnEnter: false,
 
             /**
              * Shows a page on exit in panel zoom mode
              * @type {Boolean}
              */
-            showPageOnExit: true,
+            showPageOnExit: false,
 
             /**
              * Whether or not to show the tutorial
