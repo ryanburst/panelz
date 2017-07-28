@@ -445,8 +445,8 @@ class ViewPort extends EventClass {
     setLetterBoxStyle() {
         var opacity = (this.LETTERBOX_STYLE === LETTERBOX_STYLE_NONE
             ? LETTERBOX_STYLE_NONE_VALUE
-            :(this.LETTERBOX_STYLE === LETTERBOX_STYLE_OPAQUE
-                ? LETTERBOX_STYLE_OPAQUE_VALUE
+            :(this.LETTERBOX_STYLE === LETTERBOX_STYLE_TRANSLUCENT
+                ? LETTERBOX_STYLE_TRANSLUCENT_VALUE
                 : LETTERBOX_STYLE_SOLID_VALUE));
 
         this.$horizontalLetterBox.css('opacity',opacity);

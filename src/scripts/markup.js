@@ -142,11 +142,11 @@ const PANELZ_MARKUP = `
                     </li>
                     <li class="tutorial__menu-item">
                         <div class="radio">
-                          <input type="radio" value="opaque" id="opaque-letterboxing-tut" name="letterboxing" data-tutorial-image="tutorial-letterboxing-opaque.mp4"/>
-                          <label for="opaque-letterboxing-tut" class="radio__label"></label>
+                          <input type="radio" value="translucent" id="translucent-letterboxing-tut" name="letterboxing" data-tutorial-image="tutorial-letterboxing-translucent.mp4"/>
+                          <label for="translucent-letterboxing-tut" class="radio__label"></label>
                         </div>
                         <div class="tutorial__menu-item-text">
-                            Opaque letterboxing
+                            Translucent letterboxing
                         </div>
                     </li>
                     <li class="tutorial__menu-item">
@@ -491,13 +491,13 @@ const PANELZ_MARKUP = `
                                   <label for="no-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
-                            <li class="pane__item" data-readable="opaque">
+                            <li class="pane__item" data-readable="translucent">
                                 <div class="pane__text">
-                                    <p class="pane__option">Opaque letterboxing</p>
+                                    <p class="pane__option">Translucent letterboxing</p>
                                 </div>
                                 <div class="radio">
-                                  <input type="radio" value="opaque" id="opaque-letterboxing" name="letterboxing" />
-                                  <label for="opaque-letterboxing" class="radio__label"></label>
+                                  <input type="radio" value="translucent" id="translucent-letterboxing" name="letterboxing" />
+                                  <label for="translucent-letterboxing" class="radio__label"></label>
                                 </div>
                             </li>
                             <li class="pane__item" data-readable="solid">

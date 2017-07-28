@@ -42,7 +42,7 @@ class Settings extends EventClass {
 
             /**
              * Letter boxing style
-             * solid|opaque|none
+             * solid|translucent|none
              * @type {String}
              */
             letterboxing: 'solid',

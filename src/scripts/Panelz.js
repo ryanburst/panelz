@@ -62,19 +62,19 @@ const LETTERBOX_STYLE_NONE = 'no';
  */
 const LETTERBOX_STYLE_NONE_VALUE = 0;
 /**
- * String value for opaque letterbox styling
+ * String value for translucent letterbox styling
  * @constant
  * @type {String}
  * @default
  */
-const LETTERBOX_STYLE_OPAQUE = 'opaque';
+const LETTERBOX_STYLE_TRANSLUCENT = 'translucent';
 /**
- * Opacity value for opaque letterbox styling
+ * Opacity value for translucent letterbox styling
  * @constant
  * @type {Number}
  * @default
  */
-const LETTERBOX_STYLE_OPAQUE_VALUE = 0.75;
+const LETTERBOX_STYLE_TRANSLUCENT_VALUE = 0.75;
 /**
  * String value for the solid letterbox styling
  * @constant
